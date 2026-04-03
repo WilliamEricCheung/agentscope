@@ -8,6 +8,14 @@ from ._stateful_client_base import StatefulClientBase
 from ._stdio_stateful_client import StdIOStatefulClient
 from ._http_stateless_client import HttpStatelessClient
 from ._http_stateful_client import HttpStatefulClient
+from ._mcp_server_helper import (
+    _DockerMCPServerConfig,
+    _ensure_local_docker_mcp_server,
+)
+from ._mcp_server_config import (
+    _DockerMCPRegistrationConfig,
+    _MCPServerConfigFactory,
+)
 
 
 __all__ = [
@@ -17,4 +25,8 @@ __all__ = [
     "StdIOStatefulClient",
     "HttpStatelessClient",
     "HttpStatefulClient",
+    "_DockerMCPServerConfig",
+    "_ensure_local_docker_mcp_server",
+    "_DockerMCPRegistrationConfig",
+    "_MCPServerConfigFactory",
 ]

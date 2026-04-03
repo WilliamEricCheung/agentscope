@@ -56,11 +56,11 @@ def truncate_by_words(
 def truncate_search_result(
     res: list,
     max_tool_results_words: int = 10000,
-    search_func: str = "tavily-search",
-    extract_function: str = "tavily-extract",
+    search_func: str = "tavily_search",
+    extract_function: str = "tavily_extract",
 ) -> list:
     """Truncate search result in deep research agent"""
-    if search_func != "tavily-search" or extract_function != "tavily-extract":
+    if search_func != "tavily_search" or extract_function != "tavily_extract":
         raise NotImplementedError(
             "Specific implementation of truncation should be provided.",
         )

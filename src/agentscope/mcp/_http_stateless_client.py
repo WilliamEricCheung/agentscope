@@ -3,10 +3,11 @@
 from contextlib import _AsyncGeneratorContextManager
 from typing import Any, Callable, Awaitable, Literal, List
 
+import httpx
 import mcp.types
 from mcp import ClientSession
 from mcp.client.sse import sse_client
-from mcp.client.streamable_http import streamablehttp_client
+from mcp.client.streamable_http import streamable_http_client
 
 from . import MCPToolFunction
 from ._client_base import MCPClientBase
@@ -82,7 +83,33 @@ class HttpStatelessClient(MCPClientBase):
             return sse_client(**self.client_config)
 
         if self.transport == "streamable_http":
-            return streamablehttp_client(**self.client_config)
+            # MCP TypeScript SDK validates the Origin header to prevent
+            # DNS rebinding attacks. httpx does not set Origin automatically
+            # (unlike browsers), so we derive it from the URL when the caller
+            # has not provided one.
+            from urllib.parse import urlparse
+
+            parsed = urlparse(self.client_config["url"])
+            derived_origin = f"{parsed.scheme}://{parsed.netloc}"
+            headers = {
+                "Origin": derived_origin,
+                **self.client_config.get("headers", {}),
+            }
+            http_client = httpx.AsyncClient(
+                headers=headers,
+                timeout=self.client_config.get("timeout", 30),
+            )
+
+            # New MCP Python SDK expects streamable_http_client(url, http_client)
+            # and no longer accepts headers/timeout directly.
+            streamable_http_kwargs = {
+                key: value
+                for key, value in self.client_config.items()
+                if key not in {"headers", "timeout", "sse_read_timeout"}
+            }
+            streamable_http_kwargs["http_client"] = http_client
+
+            return streamable_http_client(**streamable_http_kwargs,)
 
         raise ValueError(
             f"Unsupported transport type: {self.transport}. "

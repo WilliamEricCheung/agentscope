@@ -10,10 +10,7 @@ from pydantic import BaseModel, Field
 
 from agentscope.agent import ReActAgent
 from agentscope.formatter import DashScopeChatFormatter
-from agentscope.mcp import (
-    _MCPServerConfigFactory,
-    _ensure_local_docker_mcp_server,
-)
+from agentscope.mcp import HttpStatelessClient
 from agentscope.message import Msg, TextBlock
 from agentscope.model import DashScopeChatModel
 from agentscope.pipeline import stream_printing_messages
@@ -79,41 +76,65 @@ async def create_worker(
     """
     toolkit = Toolkit()
 
+    # Gaode MCP client
+    if os.getenv("GAODE_API_KEY"):
+        toolkit.create_tool_group(
+            group_name="amap_tools",
+            description="Map-related tools, including geocoding, routing, and "
+            "place search.",
+        )
+        client = HttpStatelessClient(
+            name="amap_mcp",
+            transport="streamable_http",
+            url=f"https://mcp.amap.com/mcp?key={os.environ['GAODE_API_KEY']}",
+        )
+        await toolkit.register_mcp_client(client, group_name="amap_tools")
+    else:
+        print(
+            "Warning: GAODE_API_KEY not set in environment, skipping Gaode "
+            "MCP client registration.",
+        )
+
     # Browser MCP client
-    browser_registration = (
-        _MCPServerConfigFactory.build_playwright_registration_config()
-    )
     toolkit.create_tool_group(
-        group_name=browser_registration.group_name,
-        description=browser_registration.group_description,
+        group_name="browser_tools",
+        description="Web browsing related tools.",
     )
-    browser_client = await _ensure_local_docker_mcp_server(
-        config=browser_registration.server_config,
-        docker_run_command=browser_registration.docker_run_command,
-        headers=browser_registration.headers,
+    browser_mcp_url = os.getenv(
+        "PLAYWRIGHT_MCP_URL",
+        "http://localhost:8931/mcp",
+    )
+    browser_client = HttpStatelessClient(
+        name="playwright-mcp",
+        transport="streamable_http",
+        url=browser_mcp_url,
     )
     await toolkit.register_mcp_client(
         browser_client,
-        group_name=browser_registration.group_name,
+        group_name="browser_tools",
     )
 
     # GitHub MCP client
-    github_registration = (
-        _MCPServerConfigFactory.build_github_registration_config()
+    github_mcp_url = os.getenv(
+        "GITHUB_MCP_URL",
+        "http://localhost:8932/mcp",
     )
-    if github_registration:
+    github_mcp_token = os.getenv("GITHUB_PERSONAL_ACCESS_TOKEN")
+    if github_mcp_token:
         toolkit.create_tool_group(
-            group_name=github_registration.group_name,
-            description=github_registration.group_description,
+            group_name="github_tools",
+            description="GitHub related tools, including repository "
+            "search and code file retrieval.",
         )
-        github_client = await _ensure_local_docker_mcp_server(
-            config=github_registration.server_config,
-            docker_run_command=github_registration.docker_run_command,
-            headers=github_registration.headers,
+        github_client = HttpStatelessClient(
+            name="github",
+            transport="streamable_http",
+            url=github_mcp_url,
+            headers={"Authorization": f"Bearer {github_mcp_token}"},
         )
         await toolkit.register_mcp_client(
             github_client,
-            group_name=github_registration.group_name,
+            group_name="github_tools",
         )
     else:
         print(
