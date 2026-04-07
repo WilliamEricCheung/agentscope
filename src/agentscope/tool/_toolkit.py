@@ -848,9 +848,63 @@ Check "{dir}/SKILL.md" for how to use this skill"""
             if task_id in self._async_tasks:
                 self._async_tasks.pop(task_id)
 
+    async def call_tool_function(
+        self,
+        tool_call: ToolUseBlock,
+    ) -> AsyncGenerator[ToolResponse, None]:
+        """Execute tool function with optional MCP lifecycle outer spans.
+
+        For MCP tools, this method orchestrates lifecycle enter/exit outside
+        the execute_tool tracing span, while the actual tool execution remains
+        in `_call_tool_function_core`.
+        """
+        tool_name = tool_call["name"]
+        mcp_client_name = None
+        if tool_name in self.tools:
+            mcp_client_name = self.tools[tool_name].mcp_name
+
+        if not mcp_client_name:
+            return await self._call_tool_function_core(tool_call)
+
+        # Lazy import to avoid module import cycles.
+        from ..mcp._mcp_server_helper import (
+            _enter_container_usage_by_client,
+            _exit_container_usage_by_client,
+        )
+
+        container_name, entered_at_s = await _enter_container_usage_by_client(
+            client_name=mcp_client_name,
+            tool_name=tool_name,
+        )
+
+        try:
+            res = await self._call_tool_function_core(tool_call)
+        except Exception:
+            await _exit_container_usage_by_client(
+                client_name=mcp_client_name,
+                container_name=container_name,
+                tool_name=tool_name,
+                entered_at_s=entered_at_s,
+            )
+            raise
+
+        async def _wrapped() -> AsyncGenerator[ToolResponse, None]:
+            try:
+                async for chunk in res:
+                    yield chunk
+            finally:
+                await _exit_container_usage_by_client(
+                    client_name=mcp_client_name,
+                    container_name=container_name,
+                    tool_name=tool_name,
+                    entered_at_s=entered_at_s,
+                )
+
+        return _wrapped()
+
     @trace_toolkit
     @_apply_middlewares
-    async def call_tool_function(
+    async def _call_tool_function_core(
         self,
         tool_call: ToolUseBlock,
     ) -> AsyncGenerator[ToolResponse, None]:

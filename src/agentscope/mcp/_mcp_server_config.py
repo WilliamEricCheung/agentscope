@@ -18,9 +18,13 @@ class _DockerMCPRegistrationConfig:
         group_name (`str`):
             The toolkit group name.
         group_description (`str`):
-            The toolkit group description.
+            A concise description shown to the agent before activation.
         headers (`dict[str, str] | None`, optional):
             Optional client headers for MCP requests.
+        tool_names (`tuple[str, ...]`, optional):
+            Representative MCP tool names exposed by this server.
+        group_notes (`str | None`, optional):
+            Extra usage guidance shown to the agent after activation.
 
     Returns:
         `None`:
@@ -32,6 +36,8 @@ class _DockerMCPRegistrationConfig:
     group_name: str
     group_description: str
     headers: dict[str, str] | None = None
+    tool_names: tuple[str, ...] = ()
+    group_notes: str | None = None
 
 
 class _MCPServerConfigFactory:
@@ -91,12 +97,47 @@ class _MCPServerConfigFactory:
             "--host",
             "0.0.0.0",
         ]
+        tool_names = (
+            "browser_click",
+            "browser_close",
+            "browser_console_messages",
+            "browser_drag",
+            "browser_evaluate",
+            "browser_file_upload",
+            "browser_fill_form",
+            "browser_handle_dialog",
+            "browser_hover",
+            "browser_navigate",
+            "browser_navigate_back",
+            "browser_network_requests",
+            "browser_press_key",
+            "browser_resize",
+            "browser_run_code",
+            "browser_select_option",
+            "browser_snapshot",
+            "browser_tabs",
+            "browser_take_screenshot",
+            "browser_type",
+            "browser_wait_for",
+        )
 
         return _DockerMCPRegistrationConfig(
             server_config=server_config,
             docker_run_command=docker_run_command,
             group_name="browser_tools",
-            group_description="Web browsing related tools.",
+            group_description=(
+                "Web browsing and live Internet access tools. Activate this "
+                "group for weather, news, searching webpages, opening URLs, "
+                "or extracting online page content."
+            ),
+            tool_names=tool_names,
+            group_notes=(
+                "Use this group whenever the task needs current online "
+                "information or website interaction. Representative tools: "
+                + ", ".join(tool_names)
+                + ". Do not claim that web access is unavailable before "
+                "trying to activate `browser_tools`."
+            ),
         )
 
     @staticmethod
@@ -132,6 +173,9 @@ class _MCPServerConfigFactory:
         github_tools = os.getenv(
             "GITHUB_MCP_TOOLS",
             "get_file_contents,issue_read,create_pull_request",
+        )
+        tool_names = tuple(
+            _.strip() for _ in github_tools.split(",") if _.strip()
         )
 
         server_config = _DockerMCPServerConfig(
@@ -172,8 +216,17 @@ class _MCPServerConfigFactory:
             docker_run_command=docker_run_command,
             group_name="github_tools",
             group_description=(
-                "GitHub related tools, including repository search and "
-                "code file retrieval."
+                "GitHub repository tools. Activate this group for repository "
+                "files, issues, commits, branches, pull requests, or code "
+                "review tasks."
             ),
             headers={"Authorization": f"Bearer {github_token}"},
+            tool_names=tool_names,
+            group_notes=(
+                "Use this group for GitHub-related operations such as reading "
+                "repository files, checking issues, or creating pull requests. "
+                "Representative tools: "
+                + ", ".join(tool_names)
+                + "."
+            ),
         )

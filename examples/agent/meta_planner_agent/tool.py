@@ -11,8 +11,10 @@ from pydantic import BaseModel, Field
 from agentscope.agent import ReActAgent
 from agentscope.formatter import DashScopeChatFormatter
 from agentscope.mcp import (
+    MCPPrewarmRouter,
     _MCPServerConfigFactory,
     _ensure_local_docker_mcp_server,
+    build_mcp_speculative_executor,
 )
 from agentscope.message import Msg, TextBlock
 from agentscope.model import DashScopeChatModel
@@ -126,6 +128,19 @@ async def create_worker(
     toolkit.register_tool_function(insert_text_file)
     toolkit.register_tool_function(view_text_file)
 
+    # Build the list of valid registrations (github may be absent)
+    _registrations = [browser_registration]
+    if github_registration:
+        _registrations.append(github_registration)
+
+    # Default MCPPrewarmRouter() dispatches to keyword router and uses
+    # src/agentscope/mcp/prewarm_keyword_mapping.json.
+    # Use MCPPrewarmRouter(method="semantic") for future semantic routing.
+    _prewarm_router = MCPPrewarmRouter()
+
+    # Executor: maps matched candidate names to speculative ensure calls.
+    _prewarm_executor = build_mcp_speculative_executor(_registrations)
+
     # Create a new sub-agent to finish the given task
     sub_agent = ReActAgent(
         name="Worker",
@@ -145,6 +160,8 @@ You MUST use the `{ReActAgent.finish_function_name}` to generate the final answe
         formatter=DashScopeChatFormatter(),
         toolkit=toolkit,
         max_iters=20,
+        prompt_prewarm_router=_prewarm_router,
+        prompt_prewarm_executor=_prewarm_executor,
     )
 
     # disable the console output of the sub-agent

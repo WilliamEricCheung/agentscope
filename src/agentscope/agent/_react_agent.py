@@ -4,8 +4,9 @@
 # mypy: disable-error-code="list-item"
 """ReAct agent class in agentscope."""
 import asyncio
+import inspect
 from enum import Enum
-from typing import Type, Any, AsyncGenerator, Literal
+from typing import Type, Any, AsyncGenerator, Awaitable, Callable, Literal
 
 from pydantic import BaseModel, ValidationError, Field
 
@@ -174,6 +175,15 @@ class ReActAgent(ReActAgentBase):
     """The name of the function used to generate structured output. Only
     registered when structured output model is provided in the reply call."""
 
+    PromptPrewarmRouter = Callable[
+        [Msg | list[Msg] | None],
+        list[str] | tuple[str, ...] | set[str] | Awaitable[list[str] | tuple[str, ...] | set[str]],
+    ]
+    """Router type for prompt-level speculative pre-warming candidates."""
+
+    PromptPrewarmExecutor = Callable[[str], Any | Awaitable[Any]]
+    """Executor type for one pre-warming candidate."""
+
     def __init__(
         self,
         name: str,
@@ -197,6 +207,8 @@ class ReActAgent(ReActAgentBase):
         max_iters: int = 10,
         tts_model: TTSModelBase | None = None,
         compression_config: CompressionConfig | None = None,
+        prompt_prewarm_router: PromptPrewarmRouter | None = None,
+        prompt_prewarm_executor: PromptPrewarmExecutor | None = None,
     ) -> None:
         """Initialize the ReAct agent
 
@@ -259,6 +271,13 @@ class ReActAgent(ReActAgentBase):
             compression_config (`CompressionConfig | None`, optional):
                 The compression configuration. If provided, the auto
                 compression will be activated.
+            prompt_prewarm_router (`PromptPrewarmRouter | None`, optional):
+                Optional router for prompt-level speculative warming. It can
+                be implemented by keyword mapping or a lightweight semantic
+                router to output candidate tool/client names.
+            prompt_prewarm_executor (`PromptPrewarmExecutor | None`, optional):
+                Optional executor that performs pre-warming for each candidate
+                produced by `prompt_prewarm_router`.
         """
         super().__init__()
 
@@ -276,6 +295,9 @@ class ReActAgent(ReActAgentBase):
         self.formatter = formatter
         self.tts_model = tts_model
         self.compression_config = compression_config
+        self.prompt_prewarm_router = prompt_prewarm_router
+        self.prompt_prewarm_executor = prompt_prewarm_executor
+        self._prompt_prewarm_tasks: set[asyncio.Task] = set()
 
         # -------------- Memory management --------------
         # Record the dialogue history in the memory
@@ -394,6 +416,9 @@ class ReActAgent(ReActAgentBase):
         """
         # Record the input message(s) in the memory
         await self.memory.add(msg)
+
+        # Trigger prompt-level speculative pre-warming in fire-and-forget mode.
+        await self._trigger_prompt_prewarm(msg)
 
         # -------------- Retrieval process --------------
         # Retrieve relevant records from the long-term memory if activated
@@ -535,6 +560,60 @@ class ReActAgent(ReActAgentBase):
             )
 
         return reply_msg
+
+    async def _trigger_prompt_prewarm(
+        self,
+        msg: Msg | list[Msg] | None,
+    ) -> None:
+        """Route and schedule prompt-level speculative pre-warming.
+
+        Args:
+            msg (`Msg | list[Msg] | None`):
+                Input message(s) received by the agent.
+        """
+        router = self.prompt_prewarm_router
+        executor = self.prompt_prewarm_executor
+        if router is None or executor is None:
+            return
+
+        try:
+            candidates_or_awaitable = router(msg)
+            if inspect.isawaitable(candidates_or_awaitable):
+                candidates = await candidates_or_awaitable
+            else:
+                candidates = candidates_or_awaitable
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("Prompt prewarm router failed: %s", exc)
+            return
+
+        if not candidates:
+            return
+
+        for candidate in set(candidates):
+            self._schedule_prompt_prewarm_task(candidate)
+
+    def _schedule_prompt_prewarm_task(self, candidate: str) -> None:
+        """Schedule one prompt-level speculative pre-warming task."""
+        task = asyncio.create_task(self._run_prompt_prewarm_executor(candidate))
+        self._prompt_prewarm_tasks.add(task)
+        task.add_done_callback(self._prompt_prewarm_tasks.discard)
+
+    async def _run_prompt_prewarm_executor(self, candidate: str) -> None:
+        """Execute one prompt-level speculative pre-warming candidate."""
+        executor = self.prompt_prewarm_executor
+        if executor is None:
+            return
+
+        try:
+            result = executor(candidate)
+            if inspect.isawaitable(result):
+                await result
+        except Exception as exc:  # noqa: BLE001
+            logger.warning(
+                "Prompt prewarm executor failed for '%s': %s",
+                candidate,
+                exc,
+            )
 
     # pylint: disable=too-many-branches
     async def _reasoning(

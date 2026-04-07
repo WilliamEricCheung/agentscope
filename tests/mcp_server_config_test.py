@@ -26,6 +26,10 @@ class MCPServerConfigFactoryTest(TestCase):
             "http://localhost:8931/mcp",
         )
         self.assertIsNone(config.headers)
+        self.assertIn("browser_navigate", config.tool_names)
+        self.assertIn("browser_click", config.tool_names)
+        self.assertIn("weather", config.group_description)
+        self.assertIn("browser_tools", config.group_notes)
         self.assertEqual(config.docker_run_command[0:4], ["docker", "run", "-d", "-i"])
         self.assertIn("--entrypoint", config.docker_run_command)
         self.assertIn("node", config.docker_run_command)
@@ -86,6 +90,10 @@ class MCPServerConfigFactoryTest(TestCase):
             config.headers,
             {"Authorization": "Bearer token-123"},
         )
+        self.assertIn("get_file_contents", config.tool_names)
+        self.assertIn("create_pull_request", config.tool_names)
+        self.assertIn("pull requests", config.group_description)
+        self.assertIn("Representative tools", config.group_notes)
         self.assertIn(
             "GITHUB_PERSONAL_ACCESS_TOKEN=token-123",
             config.docker_run_command,
@@ -115,5 +123,6 @@ class MCPServerConfigFactoryTest(TestCase):
         self.assertEqual(config.server_config.container_name, "gh-mcp-x")
         self.assertEqual(config.server_config.image, "my/gh-mcp:dev")
         self.assertEqual(config.server_config.url, "http://localhost:9012/mcp")
+        self.assertEqual(config.tool_names, ("issue_read",))
         self.assertIn("9012:9012", config.docker_run_command)
         self.assertIn("GITHUB_TOOLS=issue_read", config.docker_run_command)

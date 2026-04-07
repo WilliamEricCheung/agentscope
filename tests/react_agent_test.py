@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """The ReAct agent unittests."""
+import asyncio
 from typing import Any
 from unittest import IsolatedAsyncioTestCase
 
@@ -189,3 +190,30 @@ class ReActAgentTest(IsolatedAsyncioTestCase):
             agent.finish_function_name in agent.toolkit.tools,
             "generate_response should be removed when no structured_model",
         )
+
+    async def test_prompt_level_prewarm_router_executor(self) -> None:
+        """Prompt-level prewarm router and executor should be pluggable."""
+        model = MyModel()
+        executed: list[str] = []
+
+        def router(_msg: Msg | list[Msg] | None) -> list[str]:
+            return ["playwright-mcp", "playwright-mcp", "github-mcp"]
+
+        async def executor(candidate: str) -> None:
+            executed.append(candidate)
+
+        agent = ReActAgent(
+            name="Friday",
+            sys_prompt="You are a helpful assistant named Friday.",
+            model=model,
+            formatter=DashScopeChatFormatter(),
+            memory=InMemoryMemory(),
+            toolkit=Toolkit(),
+            prompt_prewarm_router=router,
+            prompt_prewarm_executor=executor,
+        )
+
+        await agent(Msg("user", "Please browse the web", "user"))
+        await asyncio.sleep(0)
+
+        self.assertEqual(set(executed), {"playwright-mcp", "github-mcp"})

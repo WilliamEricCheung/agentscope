@@ -2,6 +2,7 @@
 """The unittests for toolkit middleware."""
 from typing import Callable, AsyncGenerator, Coroutine, Any
 from unittest.async_case import IsolatedAsyncioTestCase
+from unittest.mock import patch
 
 from agentscope.message import TextBlock, ToolUseBlock
 from agentscope.tool import Toolkit, ToolResponse
@@ -84,3 +85,61 @@ class ToolkitMiddlewareTest(IsolatedAsyncioTestCase):
                 chunk.content[0]["text"],
                 "[ori][pre1][pre2][post2][post1]",
             )
+
+    async def test_mcp_lifecycle_orchestration_order(self) -> None:
+        """Ensure MCP lifecycle enter/core/exit runs in order."""
+        order: list[str] = []
+
+        # Simulate MCP tool registration metadata on a normal tool.
+        self.toolkit.tools["tool"].mcp_name = "playwright-mcp"
+
+        original_core = self.toolkit._call_tool_function_core
+
+        async def tracked_core(
+            tool_call: ToolUseBlock,
+        ) -> AsyncGenerator[ToolResponse, None]:
+            order.append("core")
+            return await original_core(tool_call)
+
+        self.toolkit._call_tool_function_core = tracked_core
+
+        async def fake_enter(
+            client_name: str,
+            tool_name: str | None = None,
+        ) -> tuple[str | None, float | None]:
+            del client_name, tool_name
+            order.append("enter")
+            return "playwright-mcp", 1.0
+
+        async def fake_exit(
+            client_name: str,
+            container_name: str | None = None,
+            tool_name: str | None = None,
+            entered_at_s: float | None = None,
+        ) -> None:
+            del client_name, container_name, tool_name, entered_at_s
+            order.append("exit")
+
+        with (
+            patch(
+                "agentscope.mcp._mcp_server_helper._enter_container_usage_by_client",
+                side_effect=fake_enter,
+            ),
+            patch(
+                "agentscope.mcp._mcp_server_helper._exit_container_usage_by_client",
+                side_effect=fake_exit,
+            ),
+        ):
+            res = await self.toolkit.call_tool_function(
+                ToolUseBlock(
+                    type="tool_use",
+                    name="tool",
+                    input={"a": "[ori]"},
+                    id="123",
+                ),
+            )
+
+            async for _ in res:
+                pass
+
+        self.assertEqual(order, ["enter", "core", "exit"])

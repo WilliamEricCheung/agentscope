@@ -13,8 +13,8 @@ from ..tracing._setup import _get_tracer
 from .._logging import logger
 
 
-_DEFAULT_IDLE_STOP_SECONDS = 60.0 * 5
-_DEFAULT_IDLE_REMOVE_SECONDS = 60.0 * 10
+_DEFAULT_IDLE_STOP_SECONDS = 60.0 * 2
+_DEFAULT_IDLE_REMOVE_SECONDS = 60.0 * 5
 _LIFECYCLE_CHECK_INTERVAL_SECONDS = 30.0
 _MCP_LIFECYCLE_SPAN_NAME = "mcp.lifecycle.metrics"
 
@@ -84,47 +84,12 @@ class _ManagedMCPToolFunction(MCPToolFunction):
         self,
         **kwargs: Any,
     ) -> Any:
-        """Call the MCP tool while marking the container as in use."""
-        if not _config.trace_enabled:
-            entered_at_s = await _enter_container_usage(
-                self.container_name,
-                client_name=self.client_name,
-                tool_name=self.tool_name,
-            )
-            try:
-                return await super().__call__(**kwargs)
-            finally:
-                await _exit_container_usage(
-                    self.container_name,
-                    client_name=self.client_name,
-                    tool_name=self.tool_name,
-                    entered_at_s=entered_at_s,
-                )
+        """Call the MCP tool function directly.
 
-        tracer = _get_tracer()
-        with tracer.start_as_current_span(
-            name="mcp.lifecycle.usage_scope",
-            attributes={
-                "mcp.lifecycle.event": "usage_scope",
-                "mcp.lifecycle.container.name": self.container_name,
-                "mcp.lifecycle.usage.client_name": self.client_name,
-                "mcp.lifecycle.usage.tool_name": self.tool_name,
-            },
-        ):
-            entered_at_s = await _enter_container_usage(
-                self.container_name,
-                client_name=self.client_name,
-                tool_name=self.tool_name,
-            )
-            try:
-                return await super().__call__(**kwargs)
-            finally:
-                await _exit_container_usage(
-                    self.container_name,
-                    client_name=self.client_name,
-                    tool_name=self.tool_name,
-                    entered_at_s=entered_at_s,
-                )
+        .. note:: Lifecycle usage enter/exit is orchestrated by toolkit level
+         wrappers to ensure expected tracing order.
+        """
+        return await super().__call__(**kwargs)
 
 
 class _ManagedHttpStatelessClient(HttpStatelessClient):
@@ -370,6 +335,102 @@ def _ensure_lifecycle_state(
     )
     _CONTAINER_LIFECYCLE_STATES[container_name] = state
     return state
+
+
+async def _resolve_container_name_by_client(
+    client_name: str,
+) -> str | None:
+    """Resolve one container name by client name from lifecycle state.
+
+    Args:
+        client_name (`str`):
+            The MCP client name.
+
+    Returns:
+        `str | None`:
+            The resolved container name, or `None` if not found.
+    """
+    async with _CONTAINER_LIFECYCLE_LOCK:
+        matches = [
+            container_name
+            for container_name, state in _CONTAINER_LIFECYCLE_STATES.items()
+            if client_name in state.bound_clients
+        ]
+
+    if not matches:
+        return None
+
+    if len(matches) > 1:
+        logger.warning(
+            "Found multiple containers for client '%s': %s. "
+            "Using the first one.",
+            client_name,
+            matches,
+        )
+
+    return sorted(matches)[0]
+
+
+@trace(name="mcp.lifecycle.enter")
+async def _enter_container_usage_by_client(
+    client_name: str,
+    tool_name: str | None = None,
+) -> tuple[str | None, float | None]:
+    """Enter container usage by resolving container from client name.
+
+    Args:
+        client_name (`str`):
+            The MCP client name.
+        tool_name (`str | None`, optional):
+            The MCP tool name.
+
+    Returns:
+        `tuple[str | None, float | None]`:
+            The resolved container name and enter timestamp.
+    """
+    container_name = await _resolve_container_name_by_client(client_name)
+    if container_name is None:
+        return None, None
+
+    entered_at_s = await _enter_container_usage(
+        container_name=container_name,
+        client_name=client_name,
+        tool_name=tool_name,
+    )
+    return container_name, entered_at_s
+
+
+@trace(name="mcp.lifecycle.exit")
+async def _exit_container_usage_by_client(
+    client_name: str,
+    container_name: str | None = None,
+    tool_name: str | None = None,
+    entered_at_s: float | None = None,
+) -> None:
+    """Exit container usage by client name.
+
+    Args:
+        client_name (`str`):
+            The MCP client name.
+        container_name (`str | None`, optional):
+            The resolved container name from enter stage.
+        tool_name (`str | None`, optional):
+            The MCP tool name.
+        entered_at_s (`float | None`, optional):
+            The enter timestamp for duration calculation.
+    """
+    if container_name is None:
+        container_name = await _resolve_container_name_by_client(client_name)
+
+    if container_name is None:
+        return
+
+    await _exit_container_usage(
+        container_name=container_name,
+        client_name=client_name,
+        tool_name=tool_name,
+        entered_at_s=entered_at_s,
+    )
 
 
 async def _enter_container_usage(
@@ -789,6 +850,68 @@ async def _ensure_local_docker_mcp_server(
         `HttpStatelessClient`:
             The connected MCP client configuration ready to be registered.
     """
+    return await _ensure_local_docker_mcp_server_impl(
+        config=config,
+        docker_run_command=docker_run_command,
+        headers=headers,
+        track_usage=True,
+    )
+
+
+@trace(name="mcp.speculative_ensure_local_docker_server")
+async def _speculative_ensure_local_docker_mcp_server(
+    config: _DockerMCPServerConfig,
+    docker_run_command: list[str],
+    headers: dict[str, str] | None = None,
+) -> HttpStatelessClient:
+    """Warm up a local MCP Docker server without formal usage tracking.
+
+    This API is intended for prompt-level or stream-level speculative
+    pre-warming. It ensures the container is started/restarted and reachable,
+    but does not emit formal usage tracking events.
+
+    Args:
+        config (`_DockerMCPServerConfig`):
+            The MCP server configuration.
+        docker_run_command (`list[str]`):
+            The docker run command used for cold start.
+        headers (`dict[str, str] | None`, optional):
+            Extra HTTP headers for the MCP client.
+
+    Returns:
+        `HttpStatelessClient`:
+            A connected MCP client for the warmed server.
+    """
+    return await _ensure_local_docker_mcp_server_impl(
+        config=config,
+        docker_run_command=docker_run_command,
+        headers=headers,
+        track_usage=False,
+    )
+
+
+async def _ensure_local_docker_mcp_server_impl(
+    config: _DockerMCPServerConfig,
+    docker_run_command: list[str],
+    headers: dict[str, str] | None,
+    track_usage: bool,
+) -> HttpStatelessClient:
+    """Internal shared ensure implementation with optional usage tracking.
+
+    Args:
+        config (`_DockerMCPServerConfig`):
+            The MCP server configuration.
+        docker_run_command (`list[str]`):
+            The docker run command used for cold start.
+        headers (`dict[str, str] | None`):
+            Extra HTTP headers for the MCP client.
+        track_usage (`bool`):
+            Whether to update formal usage tracking timestamps.
+
+    Returns:
+        `HttpStatelessClient`:
+            The connected MCP client configuration ready to be registered.
+    """
     loop = asyncio.get_running_loop()
     startup_mode = "none"
     startup_started_at = None
@@ -834,7 +957,15 @@ async def _ensure_local_docker_mcp_server(
             startup_time_ms=startup_time_ms,
         )
 
-    await _track_container_usage(config.container_name)
+    if track_usage:
+        await _track_container_usage(config.container_name)
+    else:
+        _record_lifecycle_snapshot_to_span(
+            event="speculative_warmup_ready",
+            container_name=config.container_name,
+            usage_client_name=config.client_name,
+        )
+
     await _bind_container_client(
         container_name=config.container_name,
         client_name=config.client_name,

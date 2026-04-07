@@ -11,10 +11,17 @@ from ._http_stateful_client import HttpStatefulClient
 from ._mcp_server_helper import (
     _DockerMCPServerConfig,
     _ensure_local_docker_mcp_server,
+    _speculative_ensure_local_docker_mcp_server,
 )
 from ._mcp_server_config import (
     _DockerMCPRegistrationConfig,
     _MCPServerConfigFactory,
+)
+from ._prewarm_router import (
+    MCPPrewarmRouter,
+    MCPPrewarmKeywordRouter,
+    MCPPrewarmSemanticRouter,
+    build_mcp_speculative_executor,
 )
 
 
@@ -27,6 +34,11 @@ __all__ = [
     "HttpStatefulClient",
     "_DockerMCPServerConfig",
     "_ensure_local_docker_mcp_server",
+    "_speculative_ensure_local_docker_mcp_server",
     "_DockerMCPRegistrationConfig",
     "_MCPServerConfigFactory",
+    "MCPPrewarmRouter",
+    "MCPPrewarmKeywordRouter",
+    "MCPPrewarmSemanticRouter",
+    "build_mcp_speculative_executor",
 ]

@@ -169,8 +169,8 @@ class MCPServerHelperLifecycleTest(IsolatedAsyncioTestCase):
             1,
         )
 
-    async def test_managed_tool_function_tracks_in_use(self) -> None:
-        """Managed MCP tool function should balance in_use around calls."""
+    async def test_client_orchestrated_usage_tracks_in_use(self) -> None:
+        """Client orchestrated enter/exit should balance in_use around calls."""
         tool = mcp.types.Tool(
             name="browser_navigate",
             description="Navigate to a page.",
@@ -195,11 +195,26 @@ class MCPServerHelperLifecycleTest(IsolatedAsyncioTestCase):
         )
 
         await helper._track_container_usage("playwright-mcp")
+        await helper._bind_container_client(
+            container_name="playwright-mcp",
+            client_name="playwright-mcp",
+        )
+
         before_last_used_at = helper._CONTAINER_LIFECYCLE_STATES[
             "playwright-mcp"
         ].last_used_at
 
+        container_name, entered_at_s = await helper._enter_container_usage_by_client(
+            client_name="playwright-mcp",
+            tool_name="browser_navigate",
+        )
         res = await tool_func(url="https://example.com")
+        await helper._exit_container_usage_by_client(
+            client_name="playwright-mcp",
+            container_name=container_name,
+            tool_name="browser_navigate",
+            entered_at_s=entered_at_s,
+        )
 
         self.assertIs(res, result)
         self.assertEqual(
@@ -339,6 +354,104 @@ class MCPServerHelperLifecycleTest(IsolatedAsyncioTestCase):
             ) as mock_record_startup,
         ):
             await helper._ensure_local_docker_mcp_server(
+                config=config,
+                docker_run_command=["docker", "run", "-d", "github-mcp"],
+            )
+
+        self.assertEqual(mock_record_startup.call_count, 1)
+        call_kwargs = mock_record_startup.call_args.kwargs
+        self.assertEqual(call_kwargs["container_name"], "github-mcp")
+        self.assertEqual(call_kwargs["startup_mode"], "resume")
+        self.assertGreater(call_kwargs["startup_time_ms"], 0.0)
+
+    async def test_speculative_ensure_skips_formal_usage_tracking(self) -> None:
+        """Speculative ensure should not update formal usage tracking."""
+        config = _DockerMCPServerConfig(
+            container_name="playwright-mcp",
+            image="mcr.microsoft.com/playwright/mcp:latest",
+            transport="streamable_http",
+            url="http://localhost:8931/mcp",
+            client_name="playwright-mcp",
+        )
+
+        async def fake_run_command(
+            command: list[str],
+            env: dict[str, str] | None = None,
+        ) -> tuple[int, str, str]:
+            del env
+            if command[:2] == ["docker", "inspect"] and len(command) == 3:
+                return 1, "", ""
+            if command[:3] == ["docker", "run", "-d"]:
+                return 0, "started", ""
+            return 0, "", ""
+
+        with (
+            patch(
+                "agentscope.mcp._mcp_server_helper._run_command",
+                side_effect=fake_run_command,
+            ),
+            patch(
+                "agentscope.mcp._mcp_server_helper._wait_for_mcp_server",
+                return_value=None,
+            ),
+            patch(
+                "agentscope.mcp._mcp_server_helper._track_container_usage",
+                new_callable=AsyncMock,
+            ) as mock_track_usage,
+            patch(
+                "agentscope.mcp._mcp_server_helper._bind_container_client",
+                new_callable=AsyncMock,
+            ) as mock_bind_client,
+        ):
+            client = await helper._speculative_ensure_local_docker_mcp_server(
+                config=config,
+                docker_run_command=["docker", "run", "-d", "playwright-mcp"],
+            )
+
+        self.assertEqual(client.name, "playwright-mcp")
+        mock_track_usage.assert_not_called()
+        mock_bind_client.assert_awaited_once_with(
+            container_name="playwright-mcp",
+            client_name="playwright-mcp",
+        )
+
+    async def test_speculative_ensure_records_resume_startup_time(self) -> None:
+        """Speculative ensure should still record startup timing metrics."""
+        config = _DockerMCPServerConfig(
+            container_name="github-mcp",
+            image="ghcr.io/github/github-mcp-server:latest",
+            transport="streamable_http",
+            url="http://localhost:8932/mcp",
+            client_name="github",
+        )
+
+        async def fake_run_command(
+            command: list[str],
+            env: dict[str, str] | None = None,
+        ) -> tuple[int, str, str]:
+            del env
+            if command[:2] == ["docker", "inspect"] and len(command) == 3:
+                return 0, "", ""
+            if command[:3] == ["docker", "inspect", "-f"]:
+                return 0, "false", ""
+            if command[:2] == ["docker", "restart"]:
+                return 0, "", ""
+            return 0, "", ""
+
+        with (
+            patch(
+                "agentscope.mcp._mcp_server_helper._run_command",
+                side_effect=fake_run_command,
+            ),
+            patch(
+                "agentscope.mcp._mcp_server_helper._wait_for_mcp_server",
+                return_value=None,
+            ),
+            patch(
+                "agentscope.mcp._mcp_server_helper._record_startup_time_to_span",
+            ) as mock_record_startup,
+        ):
+            await helper._speculative_ensure_local_docker_mcp_server(
                 config=config,
                 docker_run_command=["docker", "run", "-d", "github-mcp"],
             )

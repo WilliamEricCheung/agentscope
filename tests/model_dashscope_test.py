@@ -396,6 +396,62 @@ class TestDashScopeChatModel(IsolatedAsyncioTestCase):
             ]
             self.assertEqual(final_response.content, expected_content)
 
+    async def test_stream_level_tool_speculation_hook_from_tool_name(self) -> None:
+        """Trigger stream-level speculation hook on explicit tool name."""
+        hook_calls: list[tuple[str, int, str | None]] = []
+
+        def hook(
+            tool_name: str,
+            tool_call_index: int,
+            response_id: str | None,
+        ) -> None:
+            hook_calls.append((tool_name, tool_call_index, response_id))
+
+        model = DashScopeChatModel(
+            model_name="qwen-turbo",
+            api_key="test_key",
+            stream=True,
+            stream_tool_speculation_hook=hook,
+        )
+
+        chunks = [
+            self._create_mock_chunk(
+                tool_calls=[
+                    {
+                        "index": 0,
+                        "id": "call_123",
+                        "function": {
+                            "name": "search_web",
+                            "arguments": '{"q": ',
+                        },
+                    },
+                ],
+            ),
+            self._create_mock_chunk(
+                tool_calls=[
+                    {
+                        "index": 0,
+                        "id": "call_123",
+                        "function": {
+                            "arguments": '"agentscope"}',
+                        },
+                    },
+                ],
+            ),
+        ]
+
+        with patch(
+            "dashscope.aigc.generation.AioGeneration.call",
+        ) as mock_call:
+            mock_call.return_value = self._create_async_generator(chunks)
+            res = await model([{"role": "user", "content": "Search"}])
+            async for _ in res:
+                pass
+
+        self.assertEqual(len(hook_calls), 1)
+        self.assertEqual(hook_calls[0][0], "search_web")
+        self.assertEqual(hook_calls[0][1], 0)
+
     def test_tools_schema_validation_through_api(self) -> None:
         """Test tools schema validation through API call."""
         model = DashScopeChatModel(

@@ -2,6 +2,7 @@
 """The dashscope API model classes."""
 import copy
 import collections
+import inspect
 import json
 import os
 import warnings
@@ -10,6 +11,8 @@ from http import HTTPStatus
 from typing import (
     Any,
     AsyncGenerator,
+    Awaitable,
+    Callable,
     Generator,
     Union,
     TYPE_CHECKING,
@@ -80,6 +83,9 @@ class DashScopeChatModel(ChatModelBase):
         generate_kwargs: dict[str, JSONSerializableObject] | None = None,
         base_http_api_url: str | None = None,
         stream_tool_parsing: bool = True,
+        stream_tool_speculation_hook: (
+            Callable[[str, int, str | None], Any | Awaitable[Any]] | None
+        ) = None,
         **_kwargs: Any,
     ) -> None:
         """Initialize the DashScope chat model.
@@ -117,6 +123,17 @@ class DashScopeChatModel(ChatModelBase):
                 is repaired to valid dicts (`{"a": "x"}`) in real-time for
                 immediate tool function input. Otherwise, the input field
                 remains {} until the final chunk arrives.
+            stream_tool_speculation_hook (
+                `Callable[[str, int, str | None], Any | Awaitable[Any]] | None`,
+                optional
+            ):
+                Optional non-blocking hook for stream-level speculative
+                warming. It is triggered once per tool call index as soon as
+                an explicit `tool_calls.function.name` fragment appears.
+
+                .. note:: Current implementation only uses explicit
+                    `tool_calls.name` signals. A future extension can add
+                    stream text/FSM based speculation on generated text.
             **_kwargs (`Any`):
                 Additional keyword arguments.
         """
@@ -134,6 +151,7 @@ class DashScopeChatModel(ChatModelBase):
         self.multimodality = multimodality
         self.generate_kwargs = generate_kwargs or {}
         self.stream_tool_parsing = stream_tool_parsing
+        self.stream_tool_speculation_hook = stream_tool_speculation_hook
 
         if base_http_api_url is not None:
             import dashscope
@@ -342,6 +360,7 @@ class DashScopeChatModel(ChatModelBase):
         last_content = None
         usage = None
         response_id: str | None = None
+        speculated_tool_indexes: set[int] = set()
 
         async for chunk in giter(response):
             if chunk.status_code != HTTPStatus.OK:
@@ -384,6 +403,17 @@ class DashScopeChatModel(ChatModelBase):
                             acc_tool_calls[index].get("name", "")
                             + func["name"]
                         )
+                        if (
+                            self.stream_tool_speculation_hook
+                            and index not in speculated_tool_indexes
+                            and acc_tool_calls[index].get("name")
+                        ):
+                            speculated_tool_indexes.add(index)
+                            self._dispatch_stream_tool_speculation_hook(
+                                tool_name=acc_tool_calls[index]["name"],
+                                tool_call_index=index,
+                                response_id=response_id,
+                            )
 
                     if "arguments" in func:
                         acc_tool_calls[index]["arguments"] = (
@@ -483,6 +513,55 @@ class DashScopeChatModel(ChatModelBase):
             if response_id:
                 _final_kwargs["id"] = response_id
             yield ChatResponse(**_final_kwargs)
+
+    def _dispatch_stream_tool_speculation_hook(
+        self,
+        tool_name: str,
+        tool_call_index: int,
+        response_id: str | None,
+    ) -> None:
+        """Dispatch stream-level speculative hook without blocking parsing.
+
+        Args:
+            tool_name (`str`):
+                Speculated tool name or its partial fragment.
+            tool_call_index (`int`):
+                The tool call index in the current streamed response.
+            response_id (`str | None`):
+                The model response request id when available.
+        """
+        hook = self.stream_tool_speculation_hook
+        if hook is None:
+            return
+
+        try:
+            result = hook(tool_name, tool_call_index, response_id)
+        except Exception as exc:  # noqa: BLE001
+            logger.warning(
+                "stream_tool_speculation_hook failed to start for tool "
+                "'%s' (index=%s): %s",
+                tool_name,
+                tool_call_index,
+                exc,
+            )
+            return
+
+        if inspect.isawaitable(result):
+            task = asyncio.create_task(result)
+
+            def _handle_done(spec_task: asyncio.Task) -> None:
+                try:
+                    spec_task.result()
+                except Exception as exc:  # noqa: BLE001
+                    logger.warning(
+                        "stream_tool_speculation_hook failed for tool "
+                        "'%s' (index=%s): %s",
+                        tool_name,
+                        tool_call_index,
+                        exc,
+                    )
+
+            task.add_done_callback(_handle_done)
 
     async def _parse_dashscope_generation_response(
         self,

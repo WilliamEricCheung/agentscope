@@ -1,0 +1,29 @@
+{
+  "_comment": "Prompt-level speculative pre-warming keyword mapping. Key: MCP client/container name. Value: list of lowercase keywords that trigger pre-warming.",
+  "playwright-mcp": [
+    "search",
+    "web",
+    "browser",
+    "url",
+    "html",
+    "screenshot",
+    "click",
+    "navigate",
+    "page",
+    "网页",
+    "搜索",
+    "浏览器"
+  ],
+  "github-mcp": [
+    "github",
+    "pull request",
+    "repository",
+    "repo",
+    "issue",
+    "commit",
+    "code review",
+    "branch",
+    "仓库",
+    "代码"
+  ]
+}
