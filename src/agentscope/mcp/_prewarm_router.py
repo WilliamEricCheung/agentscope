@@ -293,7 +293,7 @@ class MCPPrewarmSemanticRouter(MCPPrewarmRouter):
 
 def build_mcp_speculative_executor(
     registrations: "list[_DockerMCPRegistrationConfig]",
-) -> Callable[[str], Awaitable[None]]:
+) -> Callable[[str], Awaitable[object | None]]:
     """Build a speculative pre-warming executor from registration configs.
 
     The returned callable accepts a candidate key (either ``container_name``
@@ -308,8 +308,9 @@ def build_mcp_speculative_executor(
             are indexed so either can be used as a routing key.
 
     Returns:
-        `Callable[[str], Awaitable[None]]`:
-            An async executor that accepts one candidate key per call.
+        `Callable[[str], Awaitable[object | None]]`:
+            An async executor that accepts one candidate key per call and
+            returns the ensured MCP client when a registration is found.
 
     Example:
         .. code-block:: python
@@ -338,14 +339,14 @@ def build_mcp_speculative_executor(
         lookup[reg.server_config.container_name] = reg
         lookup[reg.server_config.client_name] = reg
 
-    async def _executor(candidate: str) -> None:
+    async def _executor(candidate: str) -> object | None:
         reg = lookup.get(candidate)
         if reg is None:
             logger.debug(
                 "[PrewarmExecutor] no registration found for '%s', skipping.",
                 candidate,
             )
-            return
+            return None
 
         # Lazy import to satisfy the lazy-loading convention.
         from ._mcp_server_helper import (
@@ -356,7 +357,7 @@ def build_mcp_speculative_executor(
             "[PrewarmExecutor] speculatively warming '%s' ...",
             candidate,
         )
-        await _speculative_ensure_local_docker_mcp_server(
+        return await _speculative_ensure_local_docker_mcp_server(
             config=reg.server_config,
             docker_run_command=reg.docker_run_command,
             headers=reg.headers,

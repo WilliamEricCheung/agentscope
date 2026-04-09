@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """Tool functions for on-demand meta planner example."""
 import asyncio
+import inspect
 import json
 import os
+import time
 from collections import OrderedDict
 from typing import Any, AsyncGenerator, Callable
 
@@ -14,7 +16,11 @@ from agentscope.mcp import (
     MCPPrewarmRouter,
     _DockerMCPRegistrationConfig,
     _MCPServerConfigFactory,
+    _build_mcp_timing_summary,
+    _create_mcp_timing_run,
     _ensure_local_docker_mcp_server,
+    _record_mcp_timing_event,
+    _save_mcp_timing_log,
     build_mcp_speculative_executor,
 )
 from agentscope.message import Msg, TextBlock
@@ -26,6 +32,12 @@ from agentscope.tool import (
     insert_text_file,
     view_text_file,
     write_text_file,
+)
+
+
+_TIMING_LOG_PATH = os.path.join(
+    os.path.dirname(__file__),
+    "on_demand_timing.log.jsonl",
 )
 
 
@@ -125,6 +137,7 @@ def _build_lazy_mcp_groups(
 def _make_lazy_mcp_postprocess(
     toolkit: Toolkit,
     registry: dict[str, _DockerMCPRegistrationConfig],
+    timing_run: dict[str, Any],
 ) -> Callable[[Any, ToolResponse], Any]:
     """Create a postprocess_func that lazily starts MCP servers on activation.
 
@@ -155,23 +168,169 @@ def _make_lazy_mcp_postprocess(
         for group_name, activate in input_kwargs.items():
             if not activate or group_name not in registry:
                 continue
+
+            _record_mcp_timing_event(
+                timing_run,
+                "tool_group_activation_requested",
+                group_name=group_name,
+            )
+
             # Skip if tools are already registered for this group
             if any(t.group == group_name for t in toolkit.tools.values()):
+                _record_mcp_timing_event(
+                    timing_run,
+                    "mcp_group_already_registered",
+                    group_name=group_name,
+                )
                 continue
+
             reg = registry[group_name]
             client = await _ensure_local_docker_mcp_server(
                 config=reg.server_config,
                 docker_run_command=reg.docker_run_command,
                 headers=reg.headers,
             )
+            _record_mcp_timing_event(
+                timing_run,
+                "mcp_server_ready",
+                group_name=group_name,
+                startup_mode=getattr(client, "startup_mode", None),
+            )
             await toolkit.register_mcp_client(client, group_name=group_name)
+            _record_mcp_timing_event(
+                timing_run,
+                "mcp_tools_registered",
+                group_name=group_name,
+                tool_count=sum(
+                    1
+                    for tool in toolkit.tools.values()
+                    if tool.group == group_name
+                ),
+            )
         return None
 
     return _postprocess
 
 
+def _build_logged_prewarm_router(
+    router: MCPPrewarmRouter,
+    timing_run: dict[str, Any],
+) -> Callable[[Msg | list[Msg] | None], Any]:
+    """Wrap a prewarm router so routing decisions are recorded.
+
+    Args:
+        router (`MCPPrewarmRouter`):
+            The underlying prewarm router.
+        timing_run (`dict[str, Any]`):
+            Mutable timing context for the current run.
+
+    Returns:
+        `Callable[[Msg | list[Msg] | None], Any]`:
+            A router wrapper that records method and matched candidates.
+    """
+    router_method = str(getattr(router, "method", "unknown"))
+    _record_mcp_timing_event(
+        timing_run,
+        "prewarm_router_enabled",
+        router_method=router_method,
+    )
+
+    async def _router(msg: Msg | list[Msg] | None) -> list[str]:
+        candidates_or_awaitable = router(msg)
+        if inspect.isawaitable(candidates_or_awaitable):
+            candidates = await candidates_or_awaitable
+        else:
+            candidates = candidates_or_awaitable
+
+        normalized_candidates = sorted(
+            {str(candidate).strip() for candidate in candidates or [] if candidate},
+        )
+        if normalized_candidates:
+            _record_mcp_timing_event(
+                timing_run,
+                "prewarm_router_matched",
+                router_method=router_method,
+                candidate_count=len(normalized_candidates),
+                candidates=",".join(normalized_candidates),
+            )
+        else:
+            _record_mcp_timing_event(
+                timing_run,
+                "prewarm_router_no_match",
+                router_method=router_method,
+                candidate_count=0,
+            )
+
+        return normalized_candidates
+
+    return _router
+
+
+def _build_logged_prewarm_executor(
+    registrations: list[_DockerMCPRegistrationConfig],
+    timing_run: dict[str, Any],
+    router_method: str,
+) -> Callable[[str], Any]:
+    """Wrap the speculative pre-warm executor with timing logs.
+
+    Args:
+        registrations (`list[_DockerMCPRegistrationConfig]`):
+            The MCP registrations that can be pre-warmed.
+        timing_run (`dict[str, Any]`):
+            Mutable timing context for the current run.
+        router_method (`str`):
+            The prewarm routing method used to select the candidate.
+
+    Returns:
+        `Callable[[str], Any]`:
+            An async executor that records candidate-level timings.
+    """
+    base_executor = build_mcp_speculative_executor(registrations)
+
+    async def _executor(candidate: str) -> None:
+        _record_mcp_timing_event(
+            timing_run,
+            "prewarm_candidate_started",
+            candidate=candidate,
+            router_method=router_method,
+        )
+        started_at = time.perf_counter()
+        try:
+            client = await base_executor(candidate)
+            startup_mode = getattr(client, "startup_mode", None)
+            effective = startup_mode in {"cold", "resume"}
+            _record_mcp_timing_event(
+                timing_run,
+                "prewarm_candidate_finished",
+                candidate=candidate,
+                router_method=router_method,
+                startup_mode=startup_mode,
+                effective=effective,
+                duration_ms=round(
+                    (time.perf_counter() - started_at) * 1000,
+                    3,
+                ),
+            )
+        except Exception as exc:
+            _record_mcp_timing_event(
+                timing_run,
+                "prewarm_candidate_failed",
+                candidate=candidate,
+                router_method=router_method,
+                duration_ms=round(
+                    (time.perf_counter() - started_at) * 1000,
+                    3,
+                ),
+                error=str(exc),
+            )
+            raise
+
+    return _executor
+
+
 async def create_worker(
     task_description: str,
+    prewarm: bool = True,
 ) -> AsyncGenerator[ToolResponse, None]:
     """Create a sub-worker and execute task with on-demand MCP strategy.
 
@@ -187,11 +346,21 @@ async def create_worker(
     Args:
         task_description (`str`):
             The sub-task assigned by planner.
+        prewarm (`bool`, defaults to `False`):
+            Whether to enable prompt-level speculative pre-warming before the
+            worker explicitly activates a tool group. Set this to `True` to
+            compare the latency difference between pure on-demand mode and
+            on-demand + prewarm mode.
 
     Returns:
         `AsyncGenerator[ToolResponse, None]`:
             Streamed tool response.
     """
+    timing_run = _create_mcp_timing_run(
+        task_description=task_description,
+        prewarm=prewarm,
+    )
+
     toolkit = Toolkit()
 
     # Phase 1: Pre-create all MCP tool groups as inactive (no tools yet).
@@ -209,16 +378,33 @@ async def create_worker(
     # register a plain reset_equipped_tools without the postprocess.
     toolkit.register_tool_function(
         toolkit.reset_equipped_tools,
-        postprocess_func=_make_lazy_mcp_postprocess(toolkit, lazy_registry),
+        postprocess_func=_make_lazy_mcp_postprocess(
+            toolkit,
+            lazy_registry,
+            timing_run,
+        ),
     )
 
-    # Phase 4: Build speculative executor covering ALL registrations so that
-    # any predicted container is pre-warmed in the background while the agent
-    # reasons.  This is purely an optimisation: even if pre-warming is skipped
-    # the lazy postprocess will start the container on first activation.
+    # Phase 4: Optionally enable speculative executor for comparison.
     all_registrations = list(lazy_registry.values())
-    prewarm_router = MCPPrewarmRouter()
-    prewarm_executor = build_mcp_speculative_executor(all_registrations)
+    if prewarm:
+        base_prewarm_router = MCPPrewarmRouter()
+        router_method = str(
+            getattr(base_prewarm_router, "method", "unknown"),
+        )
+        prewarm_router = _build_logged_prewarm_router(
+            base_prewarm_router,
+            timing_run,
+        )
+        prewarm_executor = _build_logged_prewarm_executor(
+            all_registrations,
+            timing_run,
+            router_method=router_method,
+        )
+    else:
+        prewarm_router = None
+        prewarm_executor = None
+
     available_groups = "\n".join(
         f"- {reg.group_name}: {_summarize_group_description(reg)}"
         for reg in all_registrations
@@ -236,6 +422,10 @@ Your target is to finish the given task with your tools.
 Some tool groups are available but initially inactive. You can activate them by calling `reset_equipped_tools`.
 
 {available_groups}
+
+## Current Mode
+- Prompt pre-warm enabled: {prewarm}
+- Even when pre-warm is disabled, you can still activate tool groups on demand.
 
 ## Activation Rules
 - If the task needs live or current online information (such as weather, news, prices, maps, or website content), activate `browser_tools` first.
@@ -275,21 +465,35 @@ You MUST use the {ReActAgent.finish_function_name} to generate the final answer 
         )
         result.append(msg_res)
 
-    async for msg, _ in stream_printing_messages(
-        agents=[sub_agent],
-        coroutine_task=call_sub_agent(),
-    ):
-        msgs[msg.id] = msg
-        yield ToolResponse(
-            content=_convert_to_text_block(list(msgs.values())),
-            stream=True,
-            is_last=False,
-        )
+    try:
+        async for msg, _ in stream_printing_messages(
+            agents=[sub_agent],
+            coroutine_task=call_sub_agent(),
+        ):
+            msgs[msg.id] = msg
 
-        if msg.metadata and msg.metadata.get("_is_interrupted", False):
-            raise asyncio.CancelledError()
+            yield ToolResponse(
+                content=_convert_to_text_block(list(msgs.values())),
+                stream=True,
+                is_last=False,
+            )
+
+            if msg.metadata and msg.metadata.get("_is_interrupted", False):
+                _record_mcp_timing_event(timing_run, "worker_interrupted")
+                raise asyncio.CancelledError()
+    except Exception as exc:
+        _record_mcp_timing_event(
+            timing_run,
+            "worker_failed",
+            error=str(exc),
+        )
+        _save_mcp_timing_log(timing_run, _TIMING_LOG_PATH)
+        raise
 
     if result:
+        timing_summary = _build_mcp_timing_summary(timing_run)
+        log_path = _save_mcp_timing_log(timing_run, _TIMING_LOG_PATH)
+
         # Report which MCP tool groups were actually activated (lazy-started).
         activated_groups = [
             group_name
@@ -305,6 +509,17 @@ You MUST use the {ReActAgent.finish_function_name} to generate the final answer 
                         "On-demand activated tool groups: "
                         f"{json.dumps(activated_groups, ensure_ascii=False)}"
                     ),
+                ),
+                TextBlock(
+                    type="text",
+                    text=(
+                        "MCP readiness summary (ms): "
+                        f"{json.dumps(timing_summary, ensure_ascii=False)}"
+                    ),
+                ),
+                TextBlock(
+                    type="text",
+                    text=f"Timing log saved to: {log_path}",
                 ),
                 TextBlock(
                     type="text",

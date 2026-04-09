@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 """Helpers for managing local MCP servers started by Docker."""
 import asyncio
+import json
 import os
+import subprocess
+import sys
+import time
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any
 
 from .. import _config
@@ -17,6 +22,7 @@ _DEFAULT_IDLE_STOP_SECONDS = 60.0 * 2
 _DEFAULT_IDLE_REMOVE_SECONDS = 60.0 * 5
 _LIFECYCLE_CHECK_INTERVAL_SECONDS = 30.0
 _MCP_LIFECYCLE_SPAN_NAME = "mcp.lifecycle.metrics"
+_MCP_TIMING_SPAN_NAME = "mcp.execution.timing"
 
 
 @dataclass
@@ -36,6 +42,10 @@ class _ContainerLifecycleState:
             Active tool call count that is currently using the container.
         bound_clients (`set[str]`):
             Distinct MCP client names associated with this container.
+        owner_pids (`set[int]`):
+            Process ids that recently touched this lifecycle state. This is
+            used by the external daemon to reclaim stale `in_use` counters
+            after an agent process exits unexpectedly.
 
     Returns:
         `None`:
@@ -48,6 +58,7 @@ class _ContainerLifecycleState:
     remove_after_seconds: float
     in_use: int = 0
     bound_clients: set[str] = field(default_factory=set)
+    owner_pids: set[int] = field(default_factory=set)
 
 
 class _ManagedMCPToolFunction(MCPToolFunction):
@@ -95,17 +106,26 @@ class _ManagedMCPToolFunction(MCPToolFunction):
 class _ManagedHttpStatelessClient(HttpStatelessClient):
     """HTTP stateless MCP client with active usage tracking."""
 
-    def __init__(self, container_name: str, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        container_name: str,
+        startup_mode: str | None = None,
+        **kwargs: Any,
+    ) -> None:
         """Initialize the managed HTTP stateless MCP client.
 
         Args:
             container_name (`str`):
                 The Docker container name associated with this client.
+            startup_mode (`str | None`, optional):
+                The startup mode observed when ensuring the container, such as
+                `cold`, `resume`, or `running`.
             **kwargs (`Any`):
                 Keyword arguments forwarded to `HttpStatelessClient`.
         """
         super().__init__(**kwargs)
         self.container_name = container_name
+        self.startup_mode = startup_mode
 
     async def get_callable_function(
         self,
@@ -143,6 +163,329 @@ class _ManagedHttpStatelessClient(HttpStatelessClient):
 _CONTAINER_LIFECYCLE_STATES: dict[str, _ContainerLifecycleState] = {}
 _CONTAINER_LIFECYCLE_LOCK = asyncio.Lock()
 _CONTAINER_LIFECYCLE_TASK: asyncio.Task | None = None
+_LIFECYCLE_STATE_DIR_NAME = "mcp_lifecycle"
+_DAEMON_PID_FILE_NAME = "daemon.pid"
+
+
+def _get_lifecycle_state_dir() -> str:
+    """Get the directory used for persisted MCP lifecycle state files.
+
+    The default location is the repository-local directory
+    ``laplace/mcp_lifecycle`` so users can inspect the daemon state directly.
+    Set ``AGENTSCOPE_MCP_LIFECYCLE_DIR`` to override this location.
+
+    Returns:
+        `str`:
+            The absolute state directory path.
+    """
+    configured_path = os.getenv("AGENTSCOPE_MCP_LIFECYCLE_DIR")
+    if configured_path:
+        path = Path(configured_path).expanduser().resolve()
+    else:
+        repo_root = Path(__file__).resolve().parents[3]
+        path = repo_root / "laplace" / _LIFECYCLE_STATE_DIR_NAME
+
+    path.mkdir(parents=True, exist_ok=True)
+    return str(path)
+
+
+def _get_container_state_path(container_name: str) -> str:
+    """Get the persisted JSON file path for one container state.
+
+    Args:
+        container_name (`str`):
+            The Docker container name.
+
+    Returns:
+        `str`:
+            The JSON state file path.
+    """
+    safe_name = container_name.replace(os.sep, "_").replace(":", "_")
+    return os.path.join(_get_lifecycle_state_dir(), f"{safe_name}.json")
+
+
+def _get_daemon_pid_file() -> str:
+    """Get the PID file path for the external MCP lifecycle daemon.
+
+    Returns:
+        `str`:
+            The daemon PID file path.
+    """
+    return os.path.join(_get_lifecycle_state_dir(), _DAEMON_PID_FILE_NAME)
+
+
+def _persist_container_lifecycle_state(
+    container_name: str,
+    state: _ContainerLifecycleState,
+) -> None:
+    """Persist one container lifecycle state for cross-process management.
+
+    Args:
+        container_name (`str`):
+            The Docker container name.
+        state (`_ContainerLifecycleState`):
+            The lifecycle state snapshot.
+
+    Returns:
+        `None`:
+            The state is written atomically to disk.
+    """
+    state_path = _get_container_state_path(container_name)
+    temp_path = f"{state_path}.tmp"
+    payload = {
+        "container_name": container_name,
+        "created_at": state.created_at,
+        "last_used_at": state.last_used_at,
+        "stop_after_seconds": state.stop_after_seconds,
+        "remove_after_seconds": state.remove_after_seconds,
+        "in_use": state.in_use,
+        "bound_clients": sorted(state.bound_clients),
+        "owner_pids": sorted(state.owner_pids),
+    }
+    with open(temp_path, "w", encoding="utf-8") as file:
+        json.dump(payload, file, ensure_ascii=False, indent=2)
+    os.replace(temp_path, state_path)
+
+
+def _remove_persisted_container_state(container_name: str) -> None:
+    """Remove one persisted lifecycle state file if it exists.
+
+    Args:
+        container_name (`str`):
+            The Docker container name.
+
+    Returns:
+        `None`:
+            The state file is removed when present.
+    """
+    state_path = _get_container_state_path(container_name)
+    if os.path.exists(state_path):
+        os.remove(state_path)
+
+
+def _load_persisted_lifecycle_states() -> dict[str, _ContainerLifecycleState]:
+    """Load all persisted lifecycle states from disk.
+
+    Returns:
+        `dict[str, _ContainerLifecycleState]`:
+            The loaded lifecycle states keyed by container name.
+    """
+    states: dict[str, _ContainerLifecycleState] = {}
+    state_dir = _get_lifecycle_state_dir()
+
+    for file_name in os.listdir(state_dir):
+        if not file_name.endswith(".json"):
+            continue
+
+        file_path = os.path.join(state_dir, file_name)
+        try:
+            with open(file_path, encoding="utf-8") as file:
+                payload = json.load(file)
+
+            container_name = str(payload["container_name"])
+            states[container_name] = _ContainerLifecycleState(
+                created_at=float(payload["created_at"]),
+                last_used_at=float(payload["last_used_at"]),
+                stop_after_seconds=float(payload["stop_after_seconds"]),
+                remove_after_seconds=float(payload["remove_after_seconds"]),
+                in_use=int(payload.get("in_use", 0)),
+                bound_clients=set(payload.get("bound_clients", [])),
+                owner_pids={int(_) for _ in payload.get("owner_pids", [])},
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.warning(
+                "Failed to load persisted MCP lifecycle state from '%s': %s",
+                file_path,
+                exc,
+            )
+
+    return states
+
+
+def _is_process_alive(pid: int) -> bool:
+    """Check whether a process id is still alive.
+
+    Args:
+        pid (`int`):
+            The process id to check.
+
+    Returns:
+        `bool`:
+            Whether the process appears to be alive.
+    """
+    if pid <= 0:
+        return False
+
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    except OSError:
+        return False
+    return True
+
+
+def _touch_state_owner(
+    state: _ContainerLifecycleState,
+    now: float,
+    owner_pid: int | None = None,
+) -> None:
+    """Record that a live agent process currently owns this lifecycle state.
+
+    Args:
+        state (`_ContainerLifecycleState`):
+            The lifecycle state to update.
+        now (`float`):
+            Current monotonic timestamp.
+        owner_pid (`int | None`, optional):
+            The process id to record. Defaults to the current process.
+
+    Returns:
+        `None`:
+            The state is updated in place.
+    """
+    owner_pid = owner_pid if owner_pid is not None else os.getpid()
+    state.owner_pids.add(owner_pid)
+    state.last_used_at = now
+
+
+async def _load_persisted_lifecycle_states_into_memory() -> None:
+    """Load persisted lifecycle states into the current process memory.
+
+    Returns:
+        `None`:
+            The in-memory lifecycle registry is refreshed from disk.
+    """
+    async with _CONTAINER_LIFECYCLE_LOCK:
+        _CONTAINER_LIFECYCLE_STATES.clear()
+        _CONTAINER_LIFECYCLE_STATES.update(_load_persisted_lifecycle_states())
+
+
+def _write_daemon_pid_file() -> None:
+    """Write the current process id to the MCP daemon PID file."""
+    with open(_get_daemon_pid_file(), "w", encoding="utf-8") as file:
+        file.write(str(os.getpid()))
+
+
+def _remove_daemon_pid_file() -> None:
+    """Remove the MCP daemon PID file if it exists."""
+    pid_file = _get_daemon_pid_file()
+    if os.path.exists(pid_file):
+        os.remove(pid_file)
+
+
+def _read_daemon_pid_file() -> int | None:
+    """Read the MCP daemon PID file if available.
+
+    Returns:
+        `int | None`:
+            The daemon pid, or `None` when unavailable.
+    """
+    pid_file = _get_daemon_pid_file()
+    if not os.path.exists(pid_file):
+        return None
+
+    try:
+        with open(pid_file, encoding="utf-8") as file:
+            return int(file.read().strip())
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _ensure_mcp_lifecycle_daemon() -> None:
+    """Ensure the external MCP lifecycle daemon is running in background.
+
+    Returns:
+        `None`:
+            A detached daemon process is started when needed.
+    """
+    if os.getenv("AGENTSCOPE_MCP_DAEMON_ENABLED", "true").lower() in {
+        "0",
+        "false",
+        "no",
+        "off",
+    }:
+        return
+
+    if os.getenv("AGENTSCOPE_MCP_DAEMON_PROCESS") == "1":
+        return
+
+    existing_pid = _read_daemon_pid_file()
+    if existing_pid is not None and _is_process_alive(existing_pid):
+        return
+
+    daemon_env = {
+        **os.environ,
+        "AGENTSCOPE_MCP_DAEMON_PROCESS": "1",
+    }
+    popen_kwargs: dict[str, Any] = {
+        "stdout": subprocess.DEVNULL,
+        "stderr": subprocess.DEVNULL,
+        "env": daemon_env,
+    }
+    if os.name == "nt":
+        popen_kwargs["creationflags"] = (
+            getattr(subprocess, "DETACHED_PROCESS", 0)
+            | getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
+        )
+    else:
+        popen_kwargs["start_new_session"] = True
+
+    subprocess.Popen(
+        [sys.executable, "-m", "agentscope.mcp._mcp_daemon"],
+        **popen_kwargs,
+    )
+
+
+@trace(name="mcp.lifecycle.run_daemon_once")
+async def _run_mcp_lifecycle_daemon_once(
+    current_time: float | None = None,
+) -> None:
+    """Run one external-daemon lifecycle tick using persisted state.
+
+    Args:
+        current_time (`float | None`, optional):
+            Optional current monotonic time for testing.
+
+    Returns:
+        `None`:
+            Persisted lifecycle states are loaded and processed once.
+    """
+    await _load_persisted_lifecycle_states_into_memory()
+    await _run_container_lifecycle_once(current_time=current_time)
+
+
+async def _run_mcp_lifecycle_daemon_forever(
+    poll_interval_seconds: float | None = None,
+) -> None:
+    """Run the MCP lifecycle daemon loop in a standalone process.
+
+    Args:
+        poll_interval_seconds (`float | None`, optional):
+            Poll interval override in seconds.
+
+    Returns:
+        `None`:
+            The daemon loop runs until the process exits.
+    """
+    poll_interval_seconds = (
+        poll_interval_seconds
+        if poll_interval_seconds is not None
+        else _LIFECYCLE_CHECK_INTERVAL_SECONDS
+    )
+    _write_daemon_pid_file()
+    logger.info(
+        "Started AgentScope MCP lifecycle daemon (pid=%s).",
+        os.getpid(),
+    )
+    try:
+        while True:
+            await _run_mcp_lifecycle_daemon_once()
+            await asyncio.sleep(poll_interval_seconds)
+    finally:
+        _remove_daemon_pid_file()
 
 
 def _get_idle_thresholds() -> tuple[float, float]:
@@ -234,12 +577,17 @@ def _build_lifecycle_attributes(
                     state.remove_after_seconds * 1000.0
                 ),
                 "mcp.lifecycle.binding.client_count": len(state.bound_clients),
+                "mcp.lifecycle.owner.pid_count": len(state.owner_pids),
             },
         )
 
         if state.bound_clients:
             attributes["mcp.lifecycle.binding.clients"] = ",".join(
                 sorted(state.bound_clients),
+            )
+        if state.owner_pids:
+            attributes["mcp.lifecycle.owner.pids"] = ",".join(
+                str(pid) for pid in sorted(state.owner_pids)
             )
 
     if startup_mode is not None:
@@ -295,6 +643,252 @@ def _record_lifecycle_snapshot_to_span(
         return
 
 
+def _create_mcp_timing_run(
+    task_description: str,
+    prewarm: bool,
+) -> dict[str, Any]:
+    """Create one timing context for an MCP-driven worker execution.
+
+    Args:
+        task_description (`str`):
+            The task passed into the worker.
+        prewarm (`bool`):
+            Whether prompt-level speculative pre-warming is enabled.
+
+    Returns:
+        `dict[str, Any]`:
+            Mutable timing context for recording step-level events.
+    """
+    return {
+        "run_id": f"worker-{int(time.time() * 1000)}",
+        "task_description": task_description,
+        "prewarm": prewarm,
+        "started_at": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+        "events": [],
+        "_started_perf": time.perf_counter(),
+    }
+
+
+def _record_mcp_timing_event(
+    timing_run: dict[str, Any],
+    step: str,
+    **metadata: Any,
+) -> None:
+    """Record one MCP timing event to in-memory context and tracing spans.
+
+    Args:
+        timing_run (`dict[str, Any]`):
+            The mutable timing context created by
+            :func:`_create_mcp_timing_run`.
+        step (`str`):
+            The step name to record.
+        **metadata (`Any`):
+            Optional structured fields such as `group_name`, `tool_name`, or
+            `candidate`.
+
+    Returns:
+        `None`:
+            The event is appended to the timing context in place.
+    """
+    elapsed_ms = round(
+        (time.perf_counter() - timing_run["_started_perf"]) * 1000,
+        3,
+    )
+    event = {
+        "step": step,
+        "elapsed_ms": elapsed_ms,
+        **metadata,
+    }
+    timing_run.setdefault("events", []).append(event)
+
+    if not _config.trace_enabled:
+        return
+
+    attributes: dict[str, str | bool | int | float] = {
+        "mcp.timing.event": step,
+        "mcp.timing.run_id": timing_run.get("run_id", "unknown"),
+        "mcp.timing.prewarm": bool(timing_run.get("prewarm", False)),
+        "mcp.timing.elapsed_ms": elapsed_ms,
+    }
+    for key, value in metadata.items():
+        if isinstance(value, (str, bool, int, float)):
+            attributes[f"mcp.timing.{key}"] = value
+
+    for key, value in _build_mcp_timing_summary(timing_run).items():
+        if value is not None:
+            attributes[f"mcp.timing.summary.{key}"] = value
+
+    tracer = _get_tracer()
+    with tracer.start_as_current_span(
+        name=_MCP_TIMING_SPAN_NAME,
+        attributes=attributes,
+    ):
+        return
+
+
+def _build_mcp_timing_summary(
+    timing_run: dict[str, Any],
+) -> dict[str, str | float | bool | int | None]:
+    """Summarize key MCP execution latencies from recorded timing events.
+
+    Args:
+        timing_run (`dict[str, Any]`):
+            The timing context with recorded events.
+
+    Returns:
+        `dict[str, str | float | bool | int | None]`:
+            A compact latency and effectiveness summary.
+    """
+
+    events = timing_run.get("events", [])
+
+    def _first_elapsed(step: str) -> float | None:
+        for event in events:
+            if event.get("step") == step:
+                return float(event["elapsed_ms"])
+        return None
+
+    def _normalize_startup_mode(value: Any) -> str | None:
+        if value is None:
+            return None
+        text = str(value).strip()
+        if text in {"", "None", "null"}:
+            return None
+        return text
+
+    activation_ms = _first_elapsed("tool_group_activation_requested")
+    ready_ms = _first_elapsed("mcp_server_ready")
+    prewarm_started_ms = _first_elapsed("prewarm_candidate_started")
+    prewarm_ready_ms = _first_elapsed("prewarm_candidate_finished")
+
+    startup_mode = None
+    for event in reversed(events):
+        if event.get("step") in {
+            "prewarm_candidate_finished",
+            "mcp_server_ready",
+        } and event.get("startup_mode") is not None:
+            startup_mode = _normalize_startup_mode(event.get("startup_mode"))
+            break
+
+    prewarm_router_method = None
+    for event in reversed(events):
+        router_method = event.get("router_method")
+        if router_method is not None:
+            prewarm_router_method = str(router_method).strip() or None
+            break
+
+    router_candidates: list[str] = []
+    for event in events:
+        if event.get("step") != "prewarm_router_matched":
+            continue
+        if event.get("candidates"):
+            router_candidates.extend(
+                [
+                    _.strip()
+                    for _ in str(event["candidates"]).split(",")
+                    if _.strip()
+                ],
+            )
+        elif event.get("candidate"):
+            router_candidates.append(str(event["candidate"]).strip())
+
+    router_candidates = list(dict.fromkeys(router_candidates))
+    prewarm_router_matched = None
+    prewarm_router_candidate_count = None
+    if prewarm_router_method is not None:
+        prewarm_router_matched = bool(router_candidates)
+        prewarm_router_candidate_count = len(router_candidates)
+
+    effective_candidates: list[str] = []
+    effective_modes: list[str] = []
+    for event in events:
+        if event.get("step") != "prewarm_candidate_finished":
+            continue
+        event_startup_mode = _normalize_startup_mode(event.get("startup_mode"))
+        effective = event.get("effective")
+        if effective is None:
+            effective = event_startup_mode in {"cold", "resume"}
+        if effective:
+            candidate = str(event.get("candidate", "")).strip()
+            if candidate:
+                effective_candidates.append(candidate)
+            if event_startup_mode is not None:
+                effective_modes.append(event_startup_mode)
+
+    effective_candidates = list(dict.fromkeys(effective_candidates))
+    effective_modes = list(dict.fromkeys(effective_modes))
+    prewarm_effective = None
+    prewarm_effective_candidate_count = None
+    if prewarm_router_method is not None:
+        prewarm_effective = bool(effective_candidates)
+        prewarm_effective_candidate_count = len(effective_candidates)
+
+    return {
+        "startup_mode": startup_mode,
+        "prewarm_router_method": prewarm_router_method,
+        "prewarm_router_matched": prewarm_router_matched,
+        "prewarm_router_candidate_count": prewarm_router_candidate_count,
+        "prewarm_router_candidates": (
+            ",".join(router_candidates) if router_candidates else None
+        ),
+        "prewarm_effective": prewarm_effective,
+        "prewarm_effective_candidate_count": (
+            prewarm_effective_candidate_count
+        ),
+        "prewarm_effective_candidates": (
+            ",".join(effective_candidates) if effective_candidates else None
+        ),
+        "prewarm_effective_startup_modes": (
+            ",".join(effective_modes) if effective_modes else None
+        ),
+        "time_to_prewarm_start_ms": prewarm_started_ms,
+        "prewarm_duration_ms": (
+            round(prewarm_ready_ms - prewarm_started_ms, 3)
+            if prewarm_started_ms is not None and prewarm_ready_ms is not None
+            else None
+        ),
+        "prewarm_ready_before_activation_ms": (
+            round(activation_ms - prewarm_ready_ms, 3)
+            if activation_ms is not None and prewarm_ready_ms is not None
+            else None
+        ),
+        "wait_for_mcp_ready_after_activation_ms": (
+            round(ready_ms - activation_ms, 3)
+            if activation_ms is not None and ready_ms is not None
+            else None
+        ),
+    }
+
+
+def _save_mcp_timing_log(
+    timing_run: dict[str, Any],
+    log_path: str,
+) -> str:
+    """Persist one timing record into a JSONL log file.
+
+    Args:
+        timing_run (`dict[str, Any]`):
+            The timing context with recorded events.
+        log_path (`str`):
+            The output JSONL file path.
+
+    Returns:
+        `str`:
+            The same log path for downstream reporting.
+    """
+    serializable = {
+        key: value
+        for key, value in timing_run.items()
+        if not key.startswith("_")
+    }
+    serializable["summary"] = _build_mcp_timing_summary(timing_run)
+
+    with open(log_path, "a", encoding="utf-8") as file:
+        file.write(json.dumps(serializable, ensure_ascii=False) + "\n")
+
+    return log_path
+
+
 @trace(name="mcp.bind_container_client")
 async def _bind_container_client(
     container_name: str,
@@ -305,8 +899,10 @@ async def _bind_container_client(
     now = loop.time()
     async with _CONTAINER_LIFECYCLE_LOCK:
         state = _ensure_lifecycle_state(container_name, now)
+        _touch_state_owner(state, now)
         if client_name is not None:
             state.bound_clients.add(client_name)
+        _persist_container_lifecycle_state(container_name, state)
         _record_lifecycle_snapshot_to_span(
             event="binding_update",
             container_name=container_name,
@@ -446,7 +1042,9 @@ async def _enter_container_usage(
 
     async with _CONTAINER_LIFECYCLE_LOCK:
         state = _ensure_lifecycle_state(container_name, now)
+        _touch_state_owner(state, now)
         state.in_use += 1
+        _persist_container_lifecycle_state(container_name, state)
         _record_lifecycle_snapshot_to_span(
             event="usage_enter",
             container_name=container_name,
@@ -478,6 +1076,7 @@ async def _exit_container_usage(
 
     async with _CONTAINER_LIFECYCLE_LOCK:
         state = _ensure_lifecycle_state(container_name, now)
+        _touch_state_owner(state, now)
         if state.in_use == 0:
             logger.warning(
                 "Container '%s' usage counter is already zero on exit.",
@@ -486,6 +1085,7 @@ async def _exit_container_usage(
         else:
             state.in_use -= 1
         state.last_used_at = now
+        _persist_container_lifecycle_state(container_name, state)
         _record_lifecycle_snapshot_to_span(
             event="usage_exit",
             container_name=container_name,
@@ -538,9 +1138,10 @@ async def _track_container_usage(container_name: str) -> None:
     async with _CONTAINER_LIFECYCLE_LOCK:
         existing_state = _ensure_lifecycle_state(container_name, now)
         stop_after, remove_after = _get_idle_thresholds()
-        existing_state.last_used_at = now
+        _touch_state_owner(existing_state, now)
         existing_state.stop_after_seconds = stop_after
         existing_state.remove_after_seconds = remove_after
+        _persist_container_lifecycle_state(container_name, existing_state)
         _record_lifecycle_snapshot_to_span(
             event="usage_track",
             container_name=container_name,
@@ -575,14 +1176,35 @@ async def _run_container_lifecycle_once(current_time: float | None = None) -> No
     to_untrack = set()
     for container_name, state in states:
         try:
+            live_owner_pids = {
+                pid for pid in state.owner_pids if _is_process_alive(pid)
+            }
+            if live_owner_pids != state.owner_pids:
+                state.owner_pids = live_owner_pids
+                if not live_owner_pids and state.in_use > 0:
+                    logger.info(
+                        "Recovered stale lifecycle ownership for MCP container '%s' "
+                        "after agent process exit.",
+                        container_name,
+                    )
+                    state.in_use = 0
+                    _record_lifecycle_snapshot_to_span(
+                        event="owner_process_missing",
+                        container_name=container_name,
+                        state=state,
+                    )
+                _persist_container_lifecycle_state(container_name, state)
+
             if state.in_use > 0:
                 continue
 
             idle_seconds = now - state.last_used_at
             age_seconds = now - state.created_at
 
-            if not await _container_exists(container_name):
+            exists, is_running = await _get_container_status(container_name)
+            if not exists:
                 to_untrack.add(container_name)
+                _remove_persisted_container_state(container_name)
                 continue
 
             if idle_seconds >= state.remove_after_seconds:
@@ -601,10 +1223,11 @@ async def _run_container_lifecycle_once(current_time: float | None = None) -> No
                     age_seconds,
                 )
                 to_untrack.add(container_name)
+                _remove_persisted_container_state(container_name)
                 continue
 
             if idle_seconds >= state.stop_after_seconds:
-                if await _is_container_running(container_name):
+                if is_running:
                     await _stop_container(container_name)
                     _record_lifecycle_snapshot_to_span(
                         event="container_stopped",
@@ -619,6 +1242,8 @@ async def _run_container_lifecycle_once(current_time: float | None = None) -> No
                         idle_seconds,
                         age_seconds,
                     )
+
+            _persist_container_lifecycle_state(container_name, state)
         except Exception as exc:  # noqa: BLE001
             logger.warning(
                 "Failed lifecycle management for MCP container '%s': %s",
@@ -630,6 +1255,7 @@ async def _run_container_lifecycle_once(current_time: float | None = None) -> No
         async with _CONTAINER_LIFECYCLE_LOCK:
             for container_name in to_untrack:
                 _CONTAINER_LIFECYCLE_STATES.pop(container_name, None)
+                _remove_persisted_container_state(container_name)
 
 
 @trace(name="mcp.lifecycle_daemon_loop")
@@ -720,6 +1346,28 @@ async def _run_command(
     )
 
 
+async def _get_container_status(container_name: str) -> tuple[bool, bool]:
+    """Inspect whether a Docker container exists and is running.
+
+    This helper intentionally uses a single ``docker inspect`` call so callers
+    that need both pieces of information can avoid duplicated subprocess work.
+
+    Args:
+        container_name (`str`):
+            The Docker container name.
+
+    Returns:
+        `tuple[bool, bool]`:
+            A tuple ``(exists, is_running)``.
+    """
+    return_code, stdout, _ = await _run_command(
+        ["docker", "inspect", "-f", "{{.State.Running}}", container_name],
+    )
+    if return_code != 0 or stdout not in {"true", "false"}:
+        return False, False
+    return True, stdout == "true"
+
+
 async def _container_exists(container_name: str) -> bool:
     """Check whether a Docker container exists.
 
@@ -731,10 +1379,8 @@ async def _container_exists(container_name: str) -> bool:
         `bool`:
             Whether the container exists.
     """
-    return_code, _, _ = await _run_command(
-        ["docker", "inspect", container_name],
-    )
-    return return_code == 0
+    exists, _ = await _get_container_status(container_name)
+    return exists
 
 
 async def _is_container_running(container_name: str) -> bool:
@@ -748,10 +1394,8 @@ async def _is_container_running(container_name: str) -> bool:
         `bool`:
             Whether the container is running.
     """
-    return_code, stdout, _ = await _run_command(
-        ["docker", "inspect", "-f", "{{.State.Running}}", container_name],
-    )
-    return return_code == 0 and stdout == "true"
+    _, is_running = await _get_container_status(container_name)
+    return is_running
 
 
 async def _restart_container(container_name: str) -> None:
@@ -913,15 +1557,24 @@ async def _ensure_local_docker_mcp_server_impl(
             The connected MCP client configuration ready to be registered.
     """
     loop = asyncio.get_running_loop()
-    startup_mode = "none"
+    startup_mode = "running"
     startup_started_at = None
 
-    container_exists = await _container_exists(config.container_name)
+    container_exists, is_running = await _get_container_status(
+        config.container_name,
+    )
     if container_exists:
-        if not await _is_container_running(config.container_name):
+        if not is_running:
             startup_mode = "resume"
             startup_started_at = loop.time()
             await _restart_container(config.container_name)
+        else:
+            _record_lifecycle_snapshot_to_span(
+                event="container_already_running",
+                container_name=config.container_name,
+                startup_mode=startup_mode,
+                usage_client_name=config.client_name,
+            )
     else:
         startup_mode = "cold"
         startup_started_at = loop.time()
@@ -935,7 +1588,10 @@ async def _ensure_local_docker_mcp_server_impl(
     try:
         await _wait_for_mcp_server(config, headers=headers)
     except Exception:  # noqa: BLE001
-        if await _container_exists(config.container_name):
+        exists_after_failure, _ = await _get_container_status(
+            config.container_name,
+        )
+        if exists_after_failure:
             await _remove_container_if_exists(config.container_name)
 
         # Container recreation behaves like a cold start from image.
@@ -956,6 +1612,14 @@ async def _ensure_local_docker_mcp_server_impl(
             startup_mode=startup_mode,
             startup_time_ms=startup_time_ms,
         )
+    else:
+        _record_lifecycle_snapshot_to_span(
+            event="container_startup",
+            container_name=config.container_name,
+            startup_mode=startup_mode,
+            startup_time_ms=0.0,
+            usage_client_name=config.client_name,
+        )
 
     if track_usage:
         await _track_container_usage(config.container_name)
@@ -970,9 +1634,11 @@ async def _ensure_local_docker_mcp_server_impl(
         container_name=config.container_name,
         client_name=config.client_name,
     )
+    _ensure_mcp_lifecycle_daemon()
 
     return _ManagedHttpStatelessClient(
         container_name=config.container_name,
+        startup_mode=startup_mode,
         name=config.client_name,
         transport=config.transport,
         url=config.url,

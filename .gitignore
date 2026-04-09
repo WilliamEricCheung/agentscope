@@ -149,3 +149,8 @@ package-lock.json
 .wireit/
 .angular/
 uv.lock
+
+# AgentScope MCP lifecycle runtime state
+laplace/mcp_lifecycle/*.json
+laplace/mcp_lifecycle/*.tmp
+laplace/mcp_lifecycle/daemon.pid
