@@ -10,6 +10,12 @@ from typing import Any, AsyncGenerator, Callable
 
 from pydantic import BaseModel, Field
 
+from config import (
+    ON_DEMAND_PREWARM_ENABLED,
+    ON_DEMAND_STREAM_TEXT_SPECULATION_INTERVAL_TOKENS,
+    normalize_stream_text_speculation_interval_tokens,
+)
+
 from agentscope.agent import ReActAgent
 from agentscope.formatter import DashScopeChatFormatter
 from agentscope.mcp import (
@@ -330,7 +336,10 @@ def _build_logged_prewarm_executor(
 
 async def create_worker(
     task_description: str,
-    prewarm: bool = True,
+    prewarm: bool = ON_DEMAND_PREWARM_ENABLED,
+    stream_text_speculation_interval_tokens: int | None = (
+        ON_DEMAND_STREAM_TEXT_SPECULATION_INTERVAL_TOKENS
+    ),
 ) -> AsyncGenerator[ToolResponse, None]:
     """Create a sub-worker and execute task with on-demand MCP strategy.
 
@@ -351,6 +360,11 @@ async def create_worker(
             worker explicitly activates a tool group. Set this to `True` to
             compare the latency difference between pure on-demand mode and
             on-demand + prewarm mode.
+        stream_text_speculation_interval_tokens (`int | None`, optional):
+            The example-level periodic speculation threshold used during token
+            streaming. Smaller values speculate earlier and more often; `None`
+            or non-positive values disable the periodic text-based path while
+            keeping explicit tool-name speculation available.
 
     Returns:
         `AsyncGenerator[ToolResponse, None]`:
@@ -359,6 +373,14 @@ async def create_worker(
     timing_run = _create_mcp_timing_run(
         task_description=task_description,
         prewarm=prewarm,
+    )
+    resolved_stream_text_speculation_interval_tokens = (
+        normalize_stream_text_speculation_interval_tokens(
+            stream_text_speculation_interval_tokens,
+        )
+    )
+    timing_run["stream_text_speculation_interval_tokens"] = (
+        resolved_stream_text_speculation_interval_tokens
     )
 
     toolkit = Toolkit()
@@ -401,6 +423,11 @@ async def create_worker(
             timing_run,
             router_method=router_method,
         )
+        _record_mcp_timing_event(
+            timing_run,
+            "stream_text_speculation_configured",
+            interval_tokens=resolved_stream_text_speculation_interval_tokens,
+        )
     else:
         prewarm_router = None
         prewarm_executor = None
@@ -425,6 +452,7 @@ Some tool groups are available but initially inactive. You can activate them by 
 
 ## Current Mode
 - Prompt pre-warm enabled: {prewarm}
+- Stream-level speculation interval (tokens): {resolved_stream_text_speculation_interval_tokens if prewarm else 'disabled'}
 - Even when pre-warm is disabled, you can still activate tool groups on demand.
 
 ## Activation Rules
@@ -440,6 +468,11 @@ You MUST use the {ReActAgent.finish_function_name} to generate the final answer 
         model=DashScopeChatModel(
             model_name="qwen3-max",
             api_key=os.environ["DASHSCOPE_API_KEY"],
+            stream_text_speculation_interval_tokens=(
+                resolved_stream_text_speculation_interval_tokens
+                if prewarm
+                else None
+            ),
         ),
         enable_meta_tool=False,
         formatter=DashScopeChatFormatter(),

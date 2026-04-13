@@ -100,9 +100,13 @@ class MCPPrewarmRouter:
 
     def __call__(
         self,
-        msg: "Msg | list[Msg] | None",
+        msg: "Msg | list[Msg] | str | None",
     ) -> list[str]:
-        """Return candidates to prewarm for the given message(s)."""
+        """Return candidates to prewarm for the given message(s).
+
+        .. note:: The same router can be used for both prompt-level inputs
+            and stream-level speculative fragments such as partial tool names.
+        """
         raise NotImplementedError
 
 
@@ -200,12 +204,12 @@ class MCPPrewarmKeywordRouter(MCPPrewarmRouter):
         }
 
     @staticmethod
-    def _extract_text(msg: "Msg | list[Msg] | None") -> str:
-        """Extract all text content from a message or list of messages.
+    def _extract_text(msg: "Msg | list[Msg] | str | None") -> str:
+        """Extract all text content from prompt or stream fragments.
 
         Args:
-            msg (`Msg | list[Msg] | None`):
-                Input message(s).
+            msg (`Msg | list[Msg] | str | None`):
+                Input message(s) or raw text fragments.
 
         Returns:
             `str`:
@@ -214,10 +218,16 @@ class MCPPrewarmKeywordRouter(MCPPrewarmRouter):
         if msg is None:
             return ""
 
+        if isinstance(msg, str):
+            return msg.lower()
+
         msgs = [msg] if isinstance(msg, Msg) else list(msg)
         parts: list[str] = []
         for m in msgs:
-            text = m.get_text_content()
+            if isinstance(m, Msg):
+                text = m.get_text_content()
+            else:
+                text = str(m)
             if text:
                 parts.append(text)
         return " ".join(parts).lower()

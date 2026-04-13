@@ -10,9 +10,13 @@
     "click",
     "navigate",
     "page",
+    "link",
+    "website",
     "网页",
     "搜索",
-    "浏览器"
+    "浏览器",
+    "访问",
+    "导航"
   ],
   "github-mcp": [
     "github",

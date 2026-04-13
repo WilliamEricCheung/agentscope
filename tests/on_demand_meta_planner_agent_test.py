@@ -2,6 +2,7 @@
 """Tests for the on-demand meta planner example helpers."""
 import importlib.util
 import inspect
+import sys
 from pathlib import Path
 from unittest import TestCase
 
@@ -15,9 +16,34 @@ def _load_module():
         / "on_demand_meta_planner_agent"
         / "tool.py"
     )
+    module_dir = str(module_path.parent)
+    if module_dir not in sys.path:
+        sys.path.insert(0, module_dir)
     spec = importlib.util.spec_from_file_location(
         "on_demand_meta_planner_tool",
         module_path,
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _load_config_module():
+    """Load the example config module from its file path."""
+    config_path = (
+        Path(__file__).resolve().parents[1]
+        / "examples"
+        / "agent"
+        / "on_demand_meta_planner_agent"
+        / "config.py"
+    )
+    module_dir = str(config_path.parent)
+    if module_dir not in sys.path:
+        sys.path.insert(0, module_dir)
+    spec = importlib.util.spec_from_file_location(
+        "on_demand_meta_planner_config",
+        config_path,
     )
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
@@ -32,13 +58,63 @@ class OnDemandMetaPlannerToolTest(TestCase):
     def setUpClass(cls) -> None:
         """Load the example module once for all tests."""
         cls.module = _load_module()
+        cls.config = _load_config_module()
 
     def test_create_worker_has_prewarm_flag_default_false(self) -> None:
-        """`create_worker` should expose a `prewarm=False` comparison flag."""
+        """`create_worker` prewarm default should come from shared config."""
         signature = inspect.signature(self.module.create_worker)
 
         self.assertIn("prewarm", signature.parameters)
-        self.assertFalse(signature.parameters["prewarm"].default)
+        self.assertEqual(
+            signature.parameters["prewarm"].default,
+            self.config.ON_DEMAND_PREWARM_ENABLED,
+        )
+
+    def test_create_worker_exposes_stream_speculation_interval(self) -> None:
+        """The example should expose the stream speculation threshold knob."""
+        signature = inspect.signature(self.module.create_worker)
+
+        self.assertIn(
+            "stream_text_speculation_interval_tokens",
+            signature.parameters,
+        )
+        self.assertEqual(
+            signature.parameters[
+                "stream_text_speculation_interval_tokens"
+            ].default,
+            self.config.ON_DEMAND_STREAM_TEXT_SPECULATION_INTERVAL_TOKENS,
+        )
+        self.assertEqual(
+            self.config.normalize_stream_text_speculation_interval_tokens(20),
+            20,
+        )
+        self.assertIsNone(
+            self.config.normalize_stream_text_speculation_interval_tokens(0),
+        )
+
+    def test_main_planner_enables_stream_level_prewarm_scan(self) -> None:
+        """Parent planner should wire stream-level scan from shared config."""
+        main_path = (
+            Path(__file__).resolve().parents[1]
+            / "examples"
+            / "agent"
+            / "on_demand_meta_planner_agent"
+            / "main.py"
+        )
+        source = main_path.read_text(encoding="utf-8")
+
+        self.assertIn(
+            "MCPPrewarmRouter() if ON_DEMAND_PREWARM_ENABLED else None",
+            source,
+        )
+        self.assertIn(
+            "if ON_DEMAND_PREWARM_ENABLED",
+            source,
+        )
+        self.assertIn(
+            "stream_text_speculation_interval_tokens=(",
+            source,
+        )
 
     def test_build_timing_summary_returns_expected_metrics(self) -> None:
         """Timing summary should compute key latencies from recorded events."""

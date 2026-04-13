@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 """The dashscope API model classes."""
+import asyncio
 import copy
 import collections
 import inspect
 import json
 import os
+import re
 import warnings
 from datetime import datetime
 from http import HTTPStatus
@@ -86,6 +88,7 @@ class DashScopeChatModel(ChatModelBase):
         stream_tool_speculation_hook: (
             Callable[[str, int, str | None], Any | Awaitable[Any]] | None
         ) = None,
+        stream_text_speculation_interval_tokens: int | None = None,
         **_kwargs: Any,
     ) -> None:
         """Initialize the DashScope chat model.
@@ -128,12 +131,15 @@ class DashScopeChatModel(ChatModelBase):
                 optional
             ):
                 Optional non-blocking hook for stream-level speculative
-                warming. It is triggered once per tool call index as soon as
-                an explicit `tool_calls.function.name` fragment appears.
-
-                .. note:: Current implementation only uses explicit
-                    `tool_calls.name` signals. A future extension can add
-                    stream text/FSM based speculation on generated text.
+                warming. It can be triggered by either an explicit
+                `tool_calls.function.name` fragment or periodic accumulated
+                reasoning/text snapshots during streaming.
+            stream_text_speculation_interval_tokens (`int | None`, optional):
+                Approximate token interval for periodic text-based stream
+                speculation. When set (for example `20`), the speculation hook
+                will also be triggered whenever the accumulated streamed text
+                grows by roughly this many tokens. Set to `None` to disable
+                periodic text-based speculation.
             **_kwargs (`Any`):
                 Additional keyword arguments.
         """
@@ -152,6 +158,12 @@ class DashScopeChatModel(ChatModelBase):
         self.generate_kwargs = generate_kwargs or {}
         self.stream_tool_parsing = stream_tool_parsing
         self.stream_tool_speculation_hook = stream_tool_speculation_hook
+        self.stream_text_speculation_interval_tokens = (
+            stream_text_speculation_interval_tokens
+            if stream_text_speculation_interval_tokens
+            and stream_text_speculation_interval_tokens > 0
+            else None
+        )
 
         if base_http_api_url is not None:
             import dashscope
@@ -361,6 +373,7 @@ class DashScopeChatModel(ChatModelBase):
         usage = None
         response_id: str | None = None
         speculated_tool_indexes: set[int] = set()
+        last_text_speculation_units = 0
 
         async for chunk in giter(response):
             if chunk.status_code != HTTPStatus.OK:
@@ -384,6 +397,18 @@ class DashScopeChatModel(ChatModelBase):
                 for item in message.content:
                     if isinstance(item, dict) and "text" in item:
                         acc_content += item["text"]
+
+            last_text_speculation_units = (
+                self._maybe_dispatch_periodic_stream_text_speculation(
+                    accumulated_text=" ".join(
+                        part
+                        for part in [acc_thinking_content, acc_content]
+                        if part
+                    ),
+                    last_dispatched_unit_count=last_text_speculation_units,
+                    response_id=response_id,
+                )
+            )
 
             # Update tool calls
             for tool_call in message.get("tool_calls", []):
@@ -514,6 +539,63 @@ class DashScopeChatModel(ChatModelBase):
                 _final_kwargs["id"] = response_id
             yield ChatResponse(**_final_kwargs)
 
+    @staticmethod
+    def _estimate_stream_text_units(text: str) -> int:
+        """Estimate lightweight token units from accumulated stream text.
+
+        Args:
+            text (`str`):
+                The accumulated streamed text.
+
+        Returns:
+            `int`:
+                Approximate token-like unit count, where CJK characters and
+                latin word groups each contribute one unit.
+        """
+        if not text:
+            return 0
+
+        return len(re.findall(r"[\u4e00-\u9fff]|[A-Za-z0-9_]+", text))
+
+    def _maybe_dispatch_periodic_stream_text_speculation(
+        self,
+        accumulated_text: str,
+        last_dispatched_unit_count: int,
+        response_id: str | None,
+    ) -> int:
+        """Dispatch periodic text-based stream speculation when enabled.
+
+        Args:
+            accumulated_text (`str`):
+                The accumulated streamed reasoning/text content.
+            last_dispatched_unit_count (`int`):
+                Approximate unit count already covered by prior speculation.
+            response_id (`str | None`):
+                The model response request id when available.
+
+        Returns:
+            `int`:
+                The updated unit count checkpoint for subsequent dispatches.
+        """
+        interval = self.stream_text_speculation_interval_tokens
+        if (
+            self.stream_tool_speculation_hook is None
+            or interval is None
+            or not accumulated_text
+        ):
+            return last_dispatched_unit_count
+
+        current_units = self._estimate_stream_text_units(accumulated_text)
+        if current_units < last_dispatched_unit_count + interval:
+            return last_dispatched_unit_count
+
+        self._dispatch_stream_tool_speculation_hook(
+            tool_name=accumulated_text,
+            tool_call_index=-1,
+            response_id=response_id,
+        )
+        return current_units
+
     def _dispatch_stream_tool_speculation_hook(
         self,
         tool_name: str,
@@ -524,9 +606,11 @@ class DashScopeChatModel(ChatModelBase):
 
         Args:
             tool_name (`str`):
-                Speculated tool name or its partial fragment.
+                Speculated tool name, accumulated text, or its partial
+                fragment.
             tool_call_index (`int`):
-                The tool call index in the current streamed response.
+                The tool call index in the current streamed response. `-1`
+                indicates periodic text-based speculation.
             response_id (`str | None`):
                 The model response request id when available.
         """

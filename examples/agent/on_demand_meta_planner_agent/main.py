@@ -3,10 +3,20 @@
 import asyncio
 import os
 
+from config import (
+    ON_DEMAND_PREWARM_ENABLED,
+    ON_DEMAND_STREAM_TEXT_SPECULATION_INTERVAL_TOKENS,
+    normalize_stream_text_speculation_interval_tokens,
+)
 from tool import create_worker
 
 from agentscope.agent import ReActAgent, UserAgent
 from agentscope.formatter import DashScopeChatFormatter
+from agentscope.mcp import (
+    MCPPrewarmRouter,
+    _MCPServerConfigFactory,
+    build_mcp_speculative_executor,
+)
 from agentscope.model import DashScopeChatModel
 from agentscope.plan import PlanNotebook
 from agentscope.tool import Toolkit
@@ -25,6 +35,18 @@ async def main() -> None:
     toolkit = Toolkit()
     toolkit.register_tool_function(create_worker)
 
+    planner_stream_text_interval = normalize_stream_text_speculation_interval_tokens(
+        ON_DEMAND_STREAM_TEXT_SPECULATION_INTERVAL_TOKENS,
+    )
+    planner_prewarm_registrations = [
+        _MCPServerConfigFactory.build_playwright_registration_config(),
+    ]
+    planner_github_registration = (
+        _MCPServerConfigFactory.build_github_registration_config()
+    )
+    if planner_github_registration is not None:
+        planner_prewarm_registrations.append(planner_github_registration)
+
     planner = ReActAgent(
         name="Friday",
         # pylint: disable=C0301
@@ -41,11 +63,24 @@ Your primary purpose is to break down complicated tasks into manageable subtasks
         model=DashScopeChatModel(
             model_name="qwen3-max",
             api_key=os.environ["DASHSCOPE_API_KEY"],
+            stream_text_speculation_interval_tokens=(
+                planner_stream_text_interval
+                if ON_DEMAND_PREWARM_ENABLED
+                else None
+            ),
         ),
         formatter=DashScopeChatFormatter(),
         plan_notebook=PlanNotebook(),
         toolkit=toolkit,
         max_iters=20,
+        prompt_prewarm_router=(
+            MCPPrewarmRouter() if ON_DEMAND_PREWARM_ENABLED else None
+        ),
+        prompt_prewarm_executor=(
+            build_mcp_speculative_executor(planner_prewarm_registrations)
+            if ON_DEMAND_PREWARM_ENABLED
+            else None
+        ),
     )
 
     user = UserAgent(name="user")

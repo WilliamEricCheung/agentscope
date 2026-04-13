@@ -43,6 +43,15 @@ Optional GitHub MCP (only when selected by task):
 export GITHUB_PERSONAL_ACCESS_TOKEN=your_token
 ```
 
+Unified experiment config now lives in `config.py` in this folder:
+
+- `ON_DEMAND_PREWARM_ENABLED`: one switch for both parent planner and sub-worker
+	agents.
+- `ON_DEMAND_STREAM_TEXT_SPECULATION_INTERVAL_TOKENS`: one threshold for both
+	planner and worker stream-level periodic speculation.
+
+Edit `config.py` directly before each experiment run.
+
 Run:
 
 ```bash

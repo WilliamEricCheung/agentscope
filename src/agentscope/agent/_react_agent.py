@@ -176,10 +176,13 @@ class ReActAgent(ReActAgentBase):
     registered when structured output model is provided in the reply call."""
 
     PromptPrewarmRouter = Callable[
-        [Msg | list[Msg] | None],
-        list[str] | tuple[str, ...] | set[str] | Awaitable[list[str] | tuple[str, ...] | set[str]],
+        [Msg | list[Msg] | str | None],
+        list[str]
+        | tuple[str, ...]
+        | set[str]
+        | Awaitable[list[str] | tuple[str, ...] | set[str]],
     ]
-    """Router type for prompt-level speculative pre-warming candidates."""
+    """Router type for prompt/stream speculative pre-warming candidates."""
 
     PromptPrewarmExecutor = Callable[[str], Any | Awaitable[Any]]
     """Executor type for one pre-warming candidate."""
@@ -298,6 +301,8 @@ class ReActAgent(ReActAgentBase):
         self.prompt_prewarm_router = prompt_prewarm_router
         self.prompt_prewarm_executor = prompt_prewarm_executor
         self._prompt_prewarm_tasks: set[asyncio.Task] = set()
+        self._prompt_prewarm_candidates: set[str] = set()
+        self._attach_stream_tool_speculation_hook_if_supported()
 
         # -------------- Memory management --------------
         # Record the dialogue history in the memory
@@ -417,7 +422,9 @@ class ReActAgent(ReActAgentBase):
         # Record the input message(s) in the memory
         await self.memory.add(msg)
 
-        # Trigger prompt-level speculative pre-warming in fire-and-forget mode.
+        # Reset per-reply speculative candidates and trigger prompt-level
+        # pre-warming in fire-and-forget mode.
+        self._prompt_prewarm_candidates.clear()
         await self._trigger_prompt_prewarm(msg)
 
         # -------------- Retrieval process --------------
@@ -561,6 +568,77 @@ class ReActAgent(ReActAgentBase):
 
         return reply_msg
 
+    def _attach_stream_tool_speculation_hook_if_supported(self) -> None:
+        """Attach a stream-level speculation hook when the model supports it.
+
+        The current implementation reuses ``prompt_prewarm_router`` on both
+        streamed ``tool_calls.function.name`` fragments and periodic
+        reasoning/text snapshots. This provides an L1 keyword-based dynamic
+        speculation path without blocking token parsing.
+        """
+        if self.prompt_prewarm_router is None or self.prompt_prewarm_executor is None:
+            return
+
+        if not hasattr(self.model, "stream_tool_speculation_hook"):
+            return
+
+        if getattr(self.model, "_agentscope_prewarm_stream_hook_installed", False):
+            return
+
+        original_hook = getattr(self.model, "stream_tool_speculation_hook", None)
+
+        async def _stream_hook(
+            tool_name: str,
+            tool_call_index: int,
+            response_id: str | None,
+        ) -> None:
+            if callable(original_hook):
+                try:
+                    original_result = original_hook(
+                        tool_name,
+                        tool_call_index,
+                        response_id,
+                    )
+                    if inspect.isawaitable(original_result):
+                        await original_result
+                except Exception as exc:  # noqa: BLE001
+                    logger.warning(
+                        "Existing stream_tool_speculation_hook failed for tool '%s' "
+                        "(index=%s): %s",
+                        tool_name,
+                        tool_call_index,
+                        exc,
+                    )
+
+            router = self.prompt_prewarm_router
+            executor = self.prompt_prewarm_executor
+            if router is None or executor is None or not tool_name:
+                return
+
+            try:
+                candidates_or_awaitable = router(tool_name)
+                if inspect.isawaitable(candidates_or_awaitable):
+                    candidates = await candidates_or_awaitable
+                else:
+                    candidates = candidates_or_awaitable
+            except Exception as exc:  # noqa: BLE001
+                logger.warning(
+                    "Stream prewarm router failed for tool '%s' (index=%s): %s",
+                    tool_name,
+                    tool_call_index,
+                    exc,
+                )
+                return
+
+            if not candidates:
+                return
+
+            for candidate in set(candidates):
+                self._schedule_prompt_prewarm_task(candidate)
+
+        self.model.stream_tool_speculation_hook = _stream_hook
+        self.model._agentscope_prewarm_stream_hook_installed = True
+
     async def _trigger_prompt_prewarm(
         self,
         msg: Msg | list[Msg] | None,
@@ -593,10 +671,31 @@ class ReActAgent(ReActAgentBase):
             self._schedule_prompt_prewarm_task(candidate)
 
     def _schedule_prompt_prewarm_task(self, candidate: str) -> None:
-        """Schedule one prompt-level speculative pre-warming task."""
+        """Schedule one prompt-level speculative pre-warming task.
+
+        Args:
+            candidate (`str`):
+                The MCP client/container candidate to pre-warm.
+        """
+        if candidate in self._prompt_prewarm_candidates:
+            return
+
+        self._prompt_prewarm_candidates.add(candidate)
         task = asyncio.create_task(self._run_prompt_prewarm_executor(candidate))
         self._prompt_prewarm_tasks.add(task)
-        task.add_done_callback(self._prompt_prewarm_tasks.discard)
+
+        def _handle_done(done_task: asyncio.Task) -> None:
+            self._prompt_prewarm_tasks.discard(done_task)
+            if done_task.cancelled():
+                self._prompt_prewarm_candidates.discard(candidate)
+                return
+
+            try:
+                done_task.result()
+            except Exception:  # noqa: BLE001
+                self._prompt_prewarm_candidates.discard(candidate)
+
+        task.add_done_callback(_handle_done)
 
     async def _run_prompt_prewarm_executor(self, candidate: str) -> None:
         """Execute one prompt-level speculative pre-warming candidate."""

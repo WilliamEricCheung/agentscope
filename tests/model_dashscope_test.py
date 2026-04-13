@@ -452,6 +452,45 @@ class TestDashScopeChatModel(IsolatedAsyncioTestCase):
         self.assertEqual(hook_calls[0][0], "search_web")
         self.assertEqual(hook_calls[0][1], 0)
 
+    async def test_stream_level_tool_speculation_hook_from_periodic_text(
+        self,
+    ) -> None:
+        """Trigger periodic stream-level speculation from accumulated text."""
+        hook_calls: list[tuple[str, int, str | None]] = []
+
+        def hook(
+            tool_name: str,
+            tool_call_index: int,
+            response_id: str | None,
+        ) -> None:
+            hook_calls.append((tool_name, tool_call_index, response_id))
+
+        model = DashScopeChatModel(
+            model_name="qwen-turbo",
+            api_key="test_key",
+            stream=True,
+            stream_tool_speculation_hook=hook,
+            stream_text_speculation_interval_tokens=5,
+        )
+
+        chunks = [
+            self._create_mock_chunk(content="Need search"),
+            self._create_mock_chunk(content=" web weather info"),
+        ]
+
+        with patch(
+            "dashscope.aigc.generation.AioGeneration.call",
+        ) as mock_call:
+            mock_call.return_value = self._create_async_generator(chunks)
+            res = await model([{"role": "user", "content": "Search"}])
+            async for _ in res:
+                pass
+
+        periodic_calls = [call for call in hook_calls if call[1] == -1]
+        self.assertEqual(len(periodic_calls), 1)
+        self.assertIsNotNone(periodic_calls[0][2])
+        self.assertIn("Need search web weather info", periodic_calls[0][0])
+
     def test_tools_schema_validation_through_api(self) -> None:
         """Test tools schema validation through API call."""
         model = DashScopeChatModel(

@@ -6,6 +6,7 @@ import tempfile
 from unittest import IsolatedAsyncioTestCase, TestCase
 from unittest.mock import AsyncMock, MagicMock, patch
 
+from agentscope.agent import ReActAgent
 from agentscope.mcp import (
     MCPPrewarmRouter,
     MCPPrewarmKeywordRouter,
@@ -153,6 +154,83 @@ class MCPPrewarmKeywordRouterTest(TestCase):
             self._make_msg("contains kw here"),
         ]
         self.assertEqual(router(msgs), ["svc"])
+
+    def test_string_fragment_can_drive_stream_level_match(self) -> None:
+        """Raw streamed tool-name fragments should also be routable."""
+        router = MCPPrewarmKeywordRouter(
+            mapping={"playwright-mcp": ["browser"]}
+        )
+        self.assertEqual(router("browser_navigate"), ["playwright-mcp"])
+
+
+class ReActAgentStreamPrewarmHookTest(IsolatedAsyncioTestCase):
+    """Tests for stream-level prewarm hook installation on ReActAgent."""
+
+    async def test_stream_tool_name_can_trigger_keyword_prewarm(self) -> None:
+        """Explicit streamed tool names should schedule dynamic prewarm."""
+
+        class DummyModel:
+            stream_tool_speculation_hook = None
+            stream_text_speculation_interval_tokens = None
+            stream = True
+
+        router = MCPPrewarmKeywordRouter(
+            mapping={"playwright-mcp": ["browser"]}
+        )
+        agent = ReActAgent(
+            name="worker",
+            sys_prompt="test",
+            model=DummyModel(),
+            formatter=MagicMock(),
+            prompt_prewarm_router=router,
+            prompt_prewarm_executor=AsyncMock(),
+        )
+        agent._schedule_prompt_prewarm_task = MagicMock()
+
+        self.assertIsNone(agent.model.stream_text_speculation_interval_tokens)
+
+        hook = agent.model.stream_tool_speculation_hook
+        self.assertIsNotNone(hook)
+        result = hook("browser_navigate", 0, "resp-1")
+        if hasattr(result, "__await__"):
+            await result
+
+        agent._schedule_prompt_prewarm_task.assert_called_once_with(
+            "playwright-mcp",
+        )
+
+    async def test_stream_reasoning_text_can_trigger_keyword_prewarm(
+        self,
+    ) -> None:
+        """Periodic reasoning-text snapshots should also schedule prewarm."""
+
+        class DummyModel:
+            stream_tool_speculation_hook = None
+            stream_text_speculation_interval_tokens = None
+            stream = True
+
+        router = MCPPrewarmKeywordRouter(
+            mapping={"playwright-mcp": ["搜索", "网页", "weather"]}
+        )
+        agent = ReActAgent(
+            name="worker",
+            sys_prompt="test",
+            model=DummyModel(),
+            formatter=MagicMock(),
+            prompt_prewarm_router=router,
+            prompt_prewarm_executor=AsyncMock(),
+        )
+        agent._schedule_prompt_prewarm_task = MagicMock()
+
+        hook = agent.model.stream_tool_speculation_hook
+        self.assertIsNotNone(hook)
+        result = hook("我需要搜索网页查询 weather", -1, "resp-2")
+        if hasattr(result, "__await__"):
+            await result
+
+        agent._schedule_prompt_prewarm_task.assert_called_once_with(
+            "playwright-mcp",
+        )
 
 
 class BuildMCPSpeculativeExecutorTest(IsolatedAsyncioTestCase):
