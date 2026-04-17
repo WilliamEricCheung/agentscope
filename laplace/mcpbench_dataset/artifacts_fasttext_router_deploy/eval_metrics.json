@@ -1,0 +1,10 @@
+{
+  "samples": 21,
+  "threshold": 0.35,
+  "top_k": 3,
+  "micro_precision": 0.0,
+  "micro_recall": 0.0,
+  "micro_f1": 0.0,
+  "hit_rate": 0.0,
+  "distraction_false_positive_count": 0
+}

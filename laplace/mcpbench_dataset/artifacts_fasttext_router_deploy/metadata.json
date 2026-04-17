@@ -1,0 +1,52 @@
+{
+  "primary_dataset": "mcpbench_tasks_single_runner_format.json",
+  "datasets": [
+    "mcpbench_tasks_single_runner_format.json",
+    "mcpbench_tasks_multi_2server_runner_format.json",
+    "mcpbench_tasks_multi_3server_runner_format.json"
+  ],
+  "joint_training": true,
+  "text_mode": "both",
+  "train_ratio": 0.8,
+  "seed": 42,
+  "hyperparameters": {
+    "epoch": 60,
+    "lr": 0.5,
+    "word_ngrams": 2,
+    "dim": 100,
+    "minn": 2,
+    "maxn": 5
+  },
+  "label_map": {
+    "Bibliomantic": "bibliomantic",
+    "BioMCP": "biomcp",
+    "Call for Papers": "call_for_papers",
+    "Car Price Evaluator": "car_price_evaluator",
+    "Context7": "context7",
+    "DEX Paprika": "dex_paprika",
+    "FruityVice": "fruityvice",
+    "Game Trends": "game_trends",
+    "Google Maps": "google_maps",
+    "Huge Icons": "huge_icons",
+    "Hugging Face": "hugging_face",
+    "Math MCP": "math_mcp",
+    "Medical Calculator": "medical_calculator",
+    "Metropolitan Museum": "metropolitan_museum",
+    "Movie Recommender": "movie_recommender",
+    "NASA Data": "nasa_data",
+    "National Parks": "national_parks",
+    "NixOS": "nixos",
+    "OKX Exchange": "okx_exchange",
+    "OSINT Intelligence": "osint_intelligence",
+    "OpenAPI Explorer": "openapi_explorer",
+    "Paper Search": "paper_search",
+    "Reddit": "reddit",
+    "Scientific Computing": "scientific_computing",
+    "Time MCP": "time_mcp",
+    "Unit Converter": "unit_converter",
+    "Weather Data": "weather_data",
+    "Wikipedia": "wikipedia"
+  },
+  "train_samples": 83,
+  "eval_samples": 21
+}

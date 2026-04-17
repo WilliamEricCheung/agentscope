@@ -3,6 +3,7 @@
 
 from .base import _DockerMCPRegistrationConfig
 from .github_mcp import build_github_registration_config
+from ._laplace_mcp import build_laplace_registration_config
 from .playwright_mcp import build_playwright_registration_config
 
 
@@ -34,3 +35,27 @@ class _MCPServerConfigFactory:
                 The registration config for GitHub MCP, or `None`.
         """
         return build_github_registration_config(github_token=github_token)
+
+    @staticmethod
+    def build_laplace_registration_config(
+        server_name: str,
+        manifest_path: str | None = None,
+    ) -> _DockerMCPRegistrationConfig:
+        """Build one Laplace Docker MCP registration config.
+
+        Args:
+            server_name (`str`):
+                Human-readable server name as it appears in the manifest.
+            manifest_path (`str | None`, optional):
+                Explicit path to the Laplace MCP manifest.  When omitted
+                the default manifest bundled inside the agentscope
+                repository is used.
+
+        Returns:
+            `_DockerMCPRegistrationConfig`:
+                The registration config for the requested server.
+        """
+        return build_laplace_registration_config(
+            server_name=server_name,
+            manifest_path=manifest_path,
+        )

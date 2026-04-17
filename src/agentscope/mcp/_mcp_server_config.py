@@ -9,6 +9,8 @@ from .server_config import (
     _DockerMCPRegistrationConfig,
     _MCPServerConfigFactory,
     build_github_registration_config,
+    build_laplace_registration_config,
+    load_laplace_registration_configs,
     build_playwright_registration_config,
 )
 
@@ -17,4 +19,6 @@ __all__ = [
     "_MCPServerConfigFactory",
     "build_playwright_registration_config",
     "build_github_registration_config",
+    "build_laplace_registration_config",
+    "load_laplace_registration_configs",
 ]
