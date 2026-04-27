@@ -11,7 +11,7 @@ The pipeline:
 - discovers tool schemas via AgentScope's `HttpStatelessClient`
 - uses DashScope through AgentScope's `DashScopeChatModel` to generate and
   quality-filter tasks
-- exports runner-format JSON consumable by the fastText router
+- exports runner-format JSON consumable by the router-model experiments under `laplace/mcpbench_dataset/router_model`
 
 ## Prerequisites
 

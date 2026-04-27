@@ -157,4 +157,4 @@ laplace/mcp_lifecycle/daemon.pid
 !src/agentscope/mcp/server_config/laplace_mcp_manifest.json
 
 # FastText semantic router model artifact
-laplace/mcpbench_dataset/artifacts_fasttext_router_deploy/semantic_router_fasttext.bin
+laplace/router_model/artifacts_fasttext_router_deploy/semantic_router_fasttext.bin

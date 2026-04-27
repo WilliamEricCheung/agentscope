@@ -11,7 +11,7 @@
 ## 1. 训练统一模型（部署主流程）
 
 ```bash
-cd laplace/mcpbench_dataset
+cd laplace/mcpbench_dataset/router_model
 python train_retrieval_semantic_router.py \
   --datasets mcpbench_tasks_single_runner_format.json,laplace_tasks_single_runner_format.json \
   --output-dir artifacts_retrieval_router_deploy \

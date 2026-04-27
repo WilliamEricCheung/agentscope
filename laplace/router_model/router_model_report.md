@@ -10,9 +10,9 @@
 
 | Rank | Model | Router Family | Text Mode | Objective | Best Score | Micro F1 | Hit Rate | Precision | Recall | Threshold | Top-K | Avg Latency (ms) | Distraction FP | Artifact |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | encoder | encoder_sentence_transformer | task | composite_score | 0.977273 | 0.977273 | 0.977273 | 0.977273 | 0.977273 | 0.050000 | 1 | 5.626751 | 0 | artifacts_encoder_router_deploy |
-| 2 | retrieval | retrieval_tfidf | task | composite_score | 0.970455 | 0.977273 | 0.977273 | 0.977273 | 0.977273 | 0.050000 | 1 | 1.230233 | 1 | artifacts_retrieval_router_deploy |
-| 3 | fasttext | fasttext | both | composite_score | -0.095455 | 0.000000 | 0.000000 | 0.000000 | 0.000000 | 0.050000 | 1 | 0.133352 | 14 | artifacts_fasttext_router_deploy |
+| 1 | encoder | encoder_sentence_transformer | task | composite_score | 0.977273 | 0.977273 | 0.977273 | 0.977273 | 0.977273 | 0.050000 | 1 | 5.626751 | 0 | /mnt/d/Project/agentscope/laplace/router_model/artifacts_encoder_router_deploy |
+| 2 | retrieval | retrieval_tfidf | task | composite_score | 0.970455 | 0.977273 | 0.977273 | 0.977273 | 0.977273 | 0.050000 | 1 | 1.230233 | 1 | /mnt/d/Project/agentscope/laplace/router_model/artifacts_retrieval_router_deploy |
+| 3 | fasttext | fasttext | both | composite_score | -0.095455 | 0.000000 | 0.000000 | 0.000000 | 0.000000 | 0.050000 | 1 | 0.133352 | 14 | /mnt/d/Project/agentscope/laplace/router_model/artifacts_fasttext_router_deploy |
 
 ## Inference Latency
 

@@ -7,9 +7,9 @@
     "generation_model": "qwen3-max",
     "status": "completed",
     "merged_from_files": [
-      "/mnt/d/Project/agentscope/laplace/mcpbench_dataset/benchmark_tasks_single_04231516_runner_format.json",
-      "/mnt/d/Project/agentscope/laplace/mcpbench_dataset/benchmark_tasks_single_20260420_runner_format.json",
-      "/mnt/d/Project/agentscope/laplace/mcpbench_dataset/benchmark_tasks_single_20260423_runner_format.json"
+      "/mnt/d/Project/agentscope/laplace/mcp_dataset/benchmark_tasks_single_04231516_runner_format.json",
+      "/mnt/d/Project/agentscope/laplace/mcp_dataset/benchmark_tasks_single_20260420_runner_format.json",
+      "/mnt/d/Project/agentscope/laplace/mcp_dataset/benchmark_tasks_single_20260423_runner_format.json"
     ],
     "source_file_count": 3
   },

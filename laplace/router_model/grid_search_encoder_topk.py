@@ -12,6 +12,14 @@ from typing import Any
 from _encoder_router import EncoderSemanticRouter, evaluate
 
 
+_SCRIPT_DIR = Path(__file__).resolve().parent
+
+
+def _resolve_local_path(path: Path) -> Path:
+    """Resolve relative paths against the router_model directory."""
+    return path if path.is_absolute() else (_SCRIPT_DIR / path)
+
+
 @dataclass
 class EvalSample:
     """One evaluation sample for threshold tuning.
@@ -165,6 +173,7 @@ def main() -> None:
     parser.add_argument("--composite-weight-distraction", type=float, default=0.3)
     parser.add_argument("--ensure-non-empty", action="store_true")
     args = parser.parse_args()
+    args.artifact_dir = _resolve_local_path(args.artifact_dir)
 
     metadata_path = args.artifact_dir / "metadata.json"
     eval_path = args.artifact_dir / "eval_samples.jsonl"

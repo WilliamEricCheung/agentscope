@@ -10,6 +10,14 @@ from pathlib import Path
 from typing import Any
 
 
+_SCRIPT_DIR = Path(__file__).resolve().parent
+
+
+def _resolve_local_path(path: Path) -> Path:
+    """Resolve relative paths against the router_model directory."""
+    return path if path.is_absolute() else (_SCRIPT_DIR / path)
+
+
 @dataclass
 class RouterArtifactSummary:
     """One router artifact summary row.
@@ -369,6 +377,10 @@ def main() -> None:
         help="Output Markdown report path",
     )
     args = parser.parse_args()
+    args.fasttext_artifact_dir = _resolve_local_path(args.fasttext_artifact_dir)
+    args.retrieval_artifact_dir = _resolve_local_path(args.retrieval_artifact_dir)
+    args.encoder_artifact_dir = _resolve_local_path(args.encoder_artifact_dir)
+    args.output = _resolve_local_path(args.output)
 
     summaries = [
         _load_summary(model_name="fasttext", artifact_dir=args.fasttext_artifact_dir),

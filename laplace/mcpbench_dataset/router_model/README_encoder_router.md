@@ -12,7 +12,7 @@
 ## 1. 安装依赖
 
 ```bash
-cd laplace/mcpbench_dataset
+cd laplace/mcpbench_dataset/router_model
 uv pip install -r requirements.txt
 ```
 

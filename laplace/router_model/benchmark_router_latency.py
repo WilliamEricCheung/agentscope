@@ -17,6 +17,14 @@ from grid_search_threshold_topk import _load_eval_samples as load_fasttext_eval_
 from grid_search_threshold_topk import _load_metadata as load_fasttext_metadata  # type: ignore
 
 
+_SCRIPT_DIR = Path(__file__).resolve().parent
+
+
+def _resolve_local_path(path: Path) -> Path:
+    """Resolve relative paths against the router_model directory."""
+    return path if path.is_absolute() else (_SCRIPT_DIR / path)
+
+
 @dataclass
 class LatencyBenchmarkResult:
     """Latency benchmark result for one model.
@@ -179,6 +187,10 @@ def main() -> None:
         help="Summary output path",
     )
     args = parser.parse_args()
+    args.fasttext_artifact_dir = _resolve_local_path(args.fasttext_artifact_dir)
+    args.retrieval_artifact_dir = _resolve_local_path(args.retrieval_artifact_dir)
+    args.encoder_artifact_dir = _resolve_local_path(args.encoder_artifact_dir)
+    args.summary_output = _resolve_local_path(args.summary_output)
 
     if args.repeats <= 0:
         raise ValueError("repeats must be positive")

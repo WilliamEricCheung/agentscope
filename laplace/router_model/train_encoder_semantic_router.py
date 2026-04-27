@@ -16,6 +16,15 @@ from _router_data import (
 )
 
 
+_SCRIPT_DIR = Path(__file__).resolve().parent
+_DATASET_DIR = _SCRIPT_DIR.parent / "mcp_dataset"
+
+
+def _resolve_local_path(path: Path) -> Path:
+    """Resolve relative paths against the router_model directory."""
+    return path if path.is_absolute() else (_SCRIPT_DIR / path)
+
+
 def main() -> None:
     """CLI entrypoint.
 
@@ -31,15 +40,15 @@ def main() -> None:
     parser.add_argument(
         "--dataset",
         type=Path,
-        default=Path("mcpbench_tasks_single_runner_format.json"),
+        default=_DATASET_DIR / "mcpbench_tasks_single_runner_format.json",
         help="Single-skill dataset path (used when --datasets is not provided)",
     )
     parser.add_argument(
         "--datasets",
         type=str,
         default=(
-            "mcpbench_tasks_single_runner_format.json,"
-            "laplace_tasks_single_runner_format.json"
+            f"{_DATASET_DIR / 'mcpbench_tasks_single_runner_format.json'},"
+            f"{_DATASET_DIR / 'laplace_tasks_single_runner_format.json'}"
         ),
         help="Comma-separated single-skill dataset paths",
     )
@@ -81,9 +90,11 @@ def main() -> None:
     )
 
     args = parser.parse_args()
+    args.output_dir = _resolve_local_path(args.output_dir)
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
     dataset_paths = parse_dataset_paths(args.dataset, args.datasets)
+    dataset_paths = [_resolve_local_path(path) for path in dataset_paths]
     all_samples = load_samples_from_datasets(
         dataset_paths=dataset_paths,
         text_mode=args.text_mode,
