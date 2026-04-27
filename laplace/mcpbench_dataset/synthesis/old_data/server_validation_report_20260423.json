@@ -1,0 +1,548 @@
+{
+  "summary": {
+    "manifest_path": "/mnt/wsl/docker-desktop-bind-mounts/Ubuntu/70330fca55b62ee15286e7e065a7808da43373482f67f8078d12663d9c01eae4/agentscope/laplace/mcp_lifecycle/laplace_mcp_manifest.json",
+    "total_servers": 28,
+    "passed": 28,
+    "failed": 0,
+    "partial": 0,
+    "request_timeout": 20.0,
+    "concurrency": 8,
+    "enable_smoke_call": false,
+    "docker_available": true,
+    "docker_error": null
+  },
+  "servers": [
+    {
+      "server_name": "BioMCP",
+      "container_name": "laplace-biomcp",
+      "url": "http://127.0.0.1:8830/mcp",
+      "transport": "streamable_http",
+      "container_running": true,
+      "port_mapping_ok": true,
+      "tcp_connect_ok": true,
+      "list_tools_ok": true,
+      "tool_count": 35,
+      "smoke_call_attempted": false,
+      "smoke_call_ok": null,
+      "status": "pass",
+      "elapsed_ms": 1238,
+      "diagnostics": {
+        "docker_container_name": "laplace-biomcp",
+        "docker_ports": "0.0.0.0:8830->8000/tcp, [::]:8830->8000/tcp"
+      }
+    },
+    {
+      "server_name": "Bibliomantic",
+      "container_name": "laplace-bibliomantic",
+      "url": "http://127.0.0.1:8801/mcp",
+      "transport": "streamable_http",
+      "container_running": true,
+      "port_mapping_ok": true,
+      "tcp_connect_ok": true,
+      "list_tools_ok": true,
+      "tool_count": 4,
+      "smoke_call_attempted": false,
+      "smoke_call_ok": null,
+      "status": "pass",
+      "elapsed_ms": 856,
+      "diagnostics": {
+        "docker_container_name": "laplace-bibliomantic",
+        "docker_ports": "0.0.0.0:8801->8000/tcp, [::]:8801->8000/tcp"
+      }
+    },
+    {
+      "server_name": "Call for Papers",
+      "container_name": "laplace-call-for-papers",
+      "url": "http://127.0.0.1:8802/mcp",
+      "transport": "streamable_http",
+      "container_running": true,
+      "port_mapping_ok": true,
+      "tcp_connect_ok": true,
+      "list_tools_ok": true,
+      "tool_count": 1,
+      "smoke_call_attempted": false,
+      "smoke_call_ok": null,
+      "status": "pass",
+      "elapsed_ms": 956,
+      "diagnostics": {
+        "docker_container_name": "laplace-call-for-papers",
+        "docker_ports": "0.0.0.0:8802->8000/tcp, [::]:8802->8000/tcp"
+      }
+    },
+    {
+      "server_name": "Car Price Evaluator",
+      "container_name": "laplace-car-price-evaluator",
+      "url": "http://127.0.0.1:8803/mcp",
+      "transport": "streamable_http",
+      "container_running": true,
+      "port_mapping_ok": true,
+      "tcp_connect_ok": true,
+      "list_tools_ok": true,
+      "tool_count": 3,
+      "smoke_call_attempted": false,
+      "smoke_call_ok": null,
+      "status": "pass",
+      "elapsed_ms": 926,
+      "diagnostics": {
+        "docker_container_name": "laplace-car-price-evaluator",
+        "docker_ports": "0.0.0.0:8803->8000/tcp, [::]:8803->8000/tcp"
+      }
+    },
+    {
+      "server_name": "Context7",
+      "container_name": "laplace-context7",
+      "url": "http://127.0.0.1:8804/mcp",
+      "transport": "streamable_http",
+      "container_running": true,
+      "port_mapping_ok": true,
+      "tcp_connect_ok": true,
+      "list_tools_ok": true,
+      "tool_count": 2,
+      "smoke_call_attempted": false,
+      "smoke_call_ok": null,
+      "status": "pass",
+      "elapsed_ms": 584,
+      "diagnostics": {
+        "docker_container_name": "laplace-context7",
+        "docker_ports": "0.0.0.0:8804->8812/tcp, [::]:8804->8812/tcp"
+      }
+    },
+    {
+      "server_name": "DEX Paprika",
+      "container_name": "laplace-dex-paprika",
+      "url": "http://127.0.0.1:8805/mcp",
+      "transport": "streamable_http",
+      "container_running": true,
+      "port_mapping_ok": true,
+      "tcp_connect_ok": true,
+      "list_tools_ok": true,
+      "tool_count": 11,
+      "smoke_call_attempted": false,
+      "smoke_call_ok": null,
+      "status": "pass",
+      "elapsed_ms": 629,
+      "diagnostics": {
+        "docker_container_name": "laplace-dex-paprika",
+        "docker_ports": "0.0.0.0:8805->8000/tcp, [::]:8805->8000/tcp"
+      }
+    },
+    {
+      "server_name": "FruityVice",
+      "container_name": "laplace-fruityvice",
+      "url": "http://127.0.0.1:8806/mcp",
+      "transport": "streamable_http",
+      "container_running": true,
+      "port_mapping_ok": true,
+      "tcp_connect_ok": true,
+      "list_tools_ok": true,
+      "tool_count": 1,
+      "smoke_call_attempted": false,
+      "smoke_call_ok": null,
+      "status": "pass",
+      "elapsed_ms": 893,
+      "diagnostics": {
+        "docker_container_name": "laplace-fruityvice",
+        "docker_ports": "0.0.0.0:8806->8000/tcp, [::]:8806->8000/tcp"
+      }
+    },
+    {
+      "server_name": "Game Trends",
+      "container_name": "laplace-game-trends",
+      "url": "http://127.0.0.1:8807/mcp",
+      "transport": "streamable_http",
+      "container_running": true,
+      "port_mapping_ok": true,
+      "tcp_connect_ok": true,
+      "list_tools_ok": true,
+      "tool_count": 8,
+      "smoke_call_attempted": false,
+      "smoke_call_ok": null,
+      "status": "pass",
+      "elapsed_ms": 780,
+      "diagnostics": {
+        "docker_container_name": "laplace-game-trends",
+        "docker_ports": "0.0.0.0:8807->8000/tcp, [::]:8807->8000/tcp"
+      }
+    },
+    {
+      "server_name": "Google Maps",
+      "container_name": "laplace-google-maps",
+      "url": "http://127.0.0.1:8808/mcp",
+      "transport": "streamable_http",
+      "container_running": true,
+      "port_mapping_ok": true,
+      "tcp_connect_ok": true,
+      "list_tools_ok": true,
+      "tool_count": 9,
+      "smoke_call_attempted": false,
+      "smoke_call_ok": null,
+      "status": "pass",
+      "elapsed_ms": 106,
+      "diagnostics": {
+        "docker_container_name": "laplace-google-maps",
+        "docker_ports": "0.0.0.0:8808->3000/tcp, [::]:8808->3000/tcp"
+      }
+    },
+    {
+      "server_name": "Huge Icons",
+      "container_name": "laplace-huge-icons",
+      "url": "http://127.0.0.1:8809/mcp",
+      "transport": "streamable_http",
+      "container_running": true,
+      "port_mapping_ok": true,
+      "tcp_connect_ok": true,
+      "list_tools_ok": true,
+      "tool_count": 3,
+      "smoke_call_attempted": false,
+      "smoke_call_ok": null,
+      "status": "pass",
+      "elapsed_ms": 184,
+      "diagnostics": {
+        "docker_container_name": "laplace-huge-icons",
+        "docker_ports": "0.0.0.0:8809->8000/tcp, [::]:8809->8000/tcp"
+      }
+    },
+    {
+      "server_name": "Hugging Face",
+      "container_name": "laplace-huggingface",
+      "url": "http://127.0.0.1:8810/mcp",
+      "transport": "streamable_http",
+      "container_running": true,
+      "port_mapping_ok": true,
+      "tcp_connect_ok": true,
+      "list_tools_ok": true,
+      "tool_count": 10,
+      "smoke_call_attempted": false,
+      "smoke_call_ok": null,
+      "status": "pass",
+      "elapsed_ms": 363,
+      "diagnostics": {
+        "docker_container_name": "laplace-huggingface",
+        "docker_ports": "0.0.0.0:8810->8000/tcp, [::]:8810->8000/tcp"
+      }
+    },
+    {
+      "server_name": "Math MCP",
+      "container_name": "laplace-math-mcp",
+      "url": "http://127.0.0.1:8811/mcp",
+      "transport": "streamable_http",
+      "container_running": true,
+      "port_mapping_ok": true,
+      "tcp_connect_ok": true,
+      "list_tools_ok": true,
+      "tool_count": 13,
+      "smoke_call_attempted": false,
+      "smoke_call_ok": null,
+      "status": "pass",
+      "elapsed_ms": 209,
+      "diagnostics": {
+        "docker_container_name": "laplace-math-mcp",
+        "docker_ports": "0.0.0.0:8811->8000/tcp, [::]:8811->8000/tcp"
+      }
+    },
+    {
+      "server_name": "Medical Calculator",
+      "container_name": "laplace-medical-calculator",
+      "url": "http://127.0.0.1:18812/mcp",
+      "transport": "streamable_http",
+      "container_running": true,
+      "port_mapping_ok": true,
+      "tcp_connect_ok": true,
+      "list_tools_ok": true,
+      "tool_count": 22,
+      "smoke_call_attempted": false,
+      "smoke_call_ok": null,
+      "status": "pass",
+      "elapsed_ms": 485,
+      "diagnostics": {
+        "docker_container_name": "laplace-medical-calculator",
+        "docker_ports": "0.0.0.0:18812->8000/tcp, [::]:18812->8000/tcp"
+      }
+    },
+    {
+      "server_name": "Metropolitan Museum",
+      "container_name": "laplace-metmuseum",
+      "url": "http://127.0.0.1:8813/mcp",
+      "transport": "streamable_http",
+      "container_running": true,
+      "port_mapping_ok": true,
+      "tcp_connect_ok": true,
+      "list_tools_ok": true,
+      "tool_count": 3,
+      "smoke_call_attempted": false,
+      "smoke_call_ok": null,
+      "status": "pass",
+      "elapsed_ms": 167,
+      "diagnostics": {
+        "docker_container_name": "laplace-metmuseum",
+        "docker_ports": "0.0.0.0:8813->8000/tcp, [::]:8813->8000/tcp"
+      }
+    },
+    {
+      "server_name": "Movie Recommender",
+      "container_name": "laplace-movie-recommender",
+      "url": "http://127.0.0.1:8814/mcp",
+      "transport": "streamable_http",
+      "container_running": true,
+      "port_mapping_ok": true,
+      "tcp_connect_ok": true,
+      "list_tools_ok": true,
+      "tool_count": 1,
+      "smoke_call_attempted": false,
+      "smoke_call_ok": null,
+      "status": "pass",
+      "elapsed_ms": 493,
+      "diagnostics": {
+        "docker_container_name": "laplace-movie-recommender",
+        "docker_ports": "0.0.0.0:8814->8000/tcp, [::]:8814->8000/tcp"
+      }
+    },
+    {
+      "server_name": "NASA Data",
+      "container_name": "laplace-nasa-data",
+      "url": "http://127.0.0.1:8815/mcp",
+      "transport": "streamable_http",
+      "container_running": true,
+      "port_mapping_ok": true,
+      "tcp_connect_ok": true,
+      "list_tools_ok": true,
+      "tool_count": 21,
+      "smoke_call_attempted": false,
+      "smoke_call_ok": null,
+      "status": "pass",
+      "elapsed_ms": 414,
+      "diagnostics": {
+        "docker_container_name": "laplace-nasa-data",
+        "docker_ports": "0.0.0.0:8815->8000/tcp, [::]:8815->8000/tcp"
+      }
+    },
+    {
+      "server_name": "National Parks",
+      "container_name": "laplace-national-parks",
+      "url": "http://127.0.0.1:8816/mcp",
+      "transport": "streamable_http",
+      "container_running": true,
+      "port_mapping_ok": true,
+      "tcp_connect_ok": true,
+      "list_tools_ok": true,
+      "tool_count": 6,
+      "smoke_call_attempted": false,
+      "smoke_call_ok": null,
+      "status": "pass",
+      "elapsed_ms": 164,
+      "diagnostics": {
+        "docker_container_name": "laplace-national-parks",
+        "docker_ports": "0.0.0.0:8816->8000/tcp, [::]:8816->8000/tcp"
+      }
+    },
+    {
+      "server_name": "NixOS",
+      "container_name": "laplace-nixos",
+      "url": "http://127.0.0.1:8817/mcp",
+      "transport": "streamable_http",
+      "container_running": true,
+      "port_mapping_ok": true,
+      "tcp_connect_ok": true,
+      "list_tools_ok": true,
+      "tool_count": 18,
+      "smoke_call_attempted": false,
+      "smoke_call_ok": null,
+      "status": "pass",
+      "elapsed_ms": 493,
+      "diagnostics": {
+        "docker_container_name": "laplace-nixos",
+        "docker_ports": "0.0.0.0:8817->8000/tcp, [::]:8817->8000/tcp"
+      }
+    },
+    {
+      "server_name": "OKX Exchange",
+      "container_name": "laplace-okx-exchange",
+      "url": "http://127.0.0.1:8818/mcp",
+      "transport": "streamable_http",
+      "container_running": true,
+      "port_mapping_ok": true,
+      "tcp_connect_ok": true,
+      "list_tools_ok": true,
+      "tool_count": 3,
+      "smoke_call_attempted": false,
+      "smoke_call_ok": null,
+      "status": "pass",
+      "elapsed_ms": 169,
+      "diagnostics": {
+        "docker_container_name": "laplace-okx-exchange",
+        "docker_ports": "0.0.0.0:8818->8000/tcp, [::]:8818->8000/tcp"
+      }
+    },
+    {
+      "server_name": "OpenAPI Explorer",
+      "container_name": "laplace-openapi-explorer",
+      "url": "http://127.0.0.1:8819/mcp",
+      "transport": "streamable_http",
+      "container_running": true,
+      "port_mapping_ok": true,
+      "tcp_connect_ok": true,
+      "list_tools_ok": true,
+      "tool_count": 2,
+      "smoke_call_attempted": false,
+      "smoke_call_ok": null,
+      "status": "pass",
+      "elapsed_ms": 1463,
+      "diagnostics": {
+        "docker_container_name": "laplace-openapi-explorer",
+        "docker_ports": "0.0.0.0:8819->8000/tcp, [::]:8819->8000/tcp"
+      }
+    },
+    {
+      "server_name": "OSINT Intelligence",
+      "container_name": "laplace-osint-intelligence",
+      "url": "http://127.0.0.1:8820/mcp",
+      "transport": "streamable_http",
+      "container_running": true,
+      "port_mapping_ok": true,
+      "tcp_connect_ok": true,
+      "list_tools_ok": true,
+      "tool_count": 7,
+      "smoke_call_attempted": false,
+      "smoke_call_ok": null,
+      "status": "pass",
+      "elapsed_ms": 402,
+      "diagnostics": {
+        "docker_container_name": "laplace-osint-intelligence",
+        "docker_ports": "0.0.0.0:8820->8000/tcp, [::]:8820->8000/tcp"
+      }
+    },
+    {
+      "server_name": "Paper Search",
+      "container_name": "laplace-paper-search",
+      "url": "http://127.0.0.1:8831/mcp",
+      "transport": "streamable_http",
+      "container_running": true,
+      "port_mapping_ok": true,
+      "tcp_connect_ok": true,
+      "list_tools_ok": true,
+      "tool_count": 19,
+      "smoke_call_attempted": false,
+      "smoke_call_ok": null,
+      "status": "pass",
+      "elapsed_ms": 453,
+      "diagnostics": {
+        "docker_container_name": "laplace-paper-search",
+        "docker_ports": "0.0.0.0:8831->8000/tcp, [::]:8831->8000/tcp"
+      }
+    },
+    {
+      "server_name": "Reddit",
+      "container_name": "laplace-reddit",
+      "url": "http://127.0.0.1:8822/mcp",
+      "transport": "streamable_http",
+      "container_running": true,
+      "port_mapping_ok": true,
+      "tcp_connect_ok": true,
+      "list_tools_ok": true,
+      "tool_count": 2,
+      "smoke_call_attempted": false,
+      "smoke_call_ok": null,
+      "status": "pass",
+      "elapsed_ms": 437,
+      "diagnostics": {
+        "docker_container_name": "laplace-reddit",
+        "docker_ports": "0.0.0.0:8822->8000/tcp, [::]:8822->8000/tcp"
+      }
+    },
+    {
+      "server_name": "Scientific Computing",
+      "container_name": "laplace-scientific-computing",
+      "url": "http://127.0.0.1:8823/mcp",
+      "transport": "streamable_http",
+      "container_running": true,
+      "port_mapping_ok": true,
+      "tcp_connect_ok": true,
+      "list_tools_ok": true,
+      "tool_count": 26,
+      "smoke_call_attempted": false,
+      "smoke_call_ok": null,
+      "status": "pass",
+      "elapsed_ms": 674,
+      "diagnostics": {
+        "docker_container_name": "laplace-scientific-computing",
+        "docker_ports": "0.0.0.0:8823->8000/tcp, [::]:8823->8000/tcp"
+      }
+    },
+    {
+      "server_name": "Time MCP",
+      "container_name": "laplace-time-mcp",
+      "url": "http://127.0.0.1:8824/mcp",
+      "transport": "streamable_http",
+      "container_running": true,
+      "port_mapping_ok": true,
+      "tcp_connect_ok": true,
+      "list_tools_ok": true,
+      "tool_count": 2,
+      "smoke_call_attempted": false,
+      "smoke_call_ok": null,
+      "status": "pass",
+      "elapsed_ms": 409,
+      "diagnostics": {
+        "docker_container_name": "laplace-time-mcp",
+        "docker_ports": "0.0.0.0:8824->8000/tcp, [::]:8824->8000/tcp"
+      }
+    },
+    {
+      "server_name": "Unit Converter",
+      "container_name": "laplace-unit-converter",
+      "url": "http://127.0.0.1:8825/mcp",
+      "transport": "streamable_http",
+      "container_running": true,
+      "port_mapping_ok": true,
+      "tcp_connect_ok": true,
+      "list_tools_ok": true,
+      "tool_count": 16,
+      "smoke_call_attempted": false,
+      "smoke_call_ok": null,
+      "status": "pass",
+      "elapsed_ms": 355,
+      "diagnostics": {
+        "docker_container_name": "laplace-unit-converter",
+        "docker_ports": "0.0.0.0:8825->8000/tcp, [::]:8825->8000/tcp"
+      }
+    },
+    {
+      "server_name": "Weather Data",
+      "container_name": "laplace-weather-data",
+      "url": "http://127.0.0.1:8826/mcp",
+      "transport": "streamable_http",
+      "container_running": true,
+      "port_mapping_ok": true,
+      "tcp_connect_ok": true,
+      "list_tools_ok": true,
+      "tool_count": 4,
+      "smoke_call_attempted": false,
+      "smoke_call_ok": null,
+      "status": "pass",
+      "elapsed_ms": 466,
+      "diagnostics": {
+        "docker_container_name": "laplace-weather-data",
+        "docker_ports": "0.0.0.0:8826->8000/tcp, [::]:8826->8000/tcp"
+      }
+    },
+    {
+      "server_name": "Wikipedia",
+      "container_name": "laplace-wikipedia",
+      "url": "http://127.0.0.1:8827/mcp",
+      "transport": "streamable_http",
+      "container_running": true,
+      "port_mapping_ok": true,
+      "tcp_connect_ok": true,
+      "list_tools_ok": true,
+      "tool_count": 9,
+      "smoke_call_attempted": false,
+      "smoke_call_ok": null,
+      "status": "pass",
+      "elapsed_ms": 432,
+      "diagnostics": {
+        "docker_container_name": "laplace-wikipedia",
+        "docker_ports": "0.0.0.0:8827->8000/tcp, [::]:8827->8000/tcp"
+      }
+    }
+  ]
+}

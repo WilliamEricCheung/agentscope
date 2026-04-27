@@ -1,8 +1,13 @@
 # FastText Semantic Router (MCP-Bench Dataset)
 
+说明：FastText 仍保留为历史分类基线，但当前更推荐优先使用 [README_retrieval_router.md](README_retrieval_router.md) 里的 retrieval baseline。
+
 目标：训练一个统一 FastText 路由模型（单个 `.bin`），并通过阈值 + Top-K 网格搜索得到部署参数。
 
-当前实现约定：`text_mode` 固定使用 `both`。
+当前实现约定：
+- FastText 训练只做 `single-only`
+- 当前训练数据使用 `mcpbench_tasks_single_runner_format.json` 和 `laplace_tasks_single_runner_format.json`
+- 训练与部署默认使用 `text_mode=both`
 
 ## 1. 安装依赖
 
@@ -15,7 +20,7 @@ pip install fasttext
 ```bash
 cd laplace/mcpbench_dataset
 python train_fasttext_semantic_router.py \
-  --datasets mcpbench_tasks_single_runner_format.json,mcpbench_tasks_multi_2server_runner_format.json,mcpbench_tasks_multi_3server_runner_format.json \
+  --datasets mcpbench_tasks_single_runner_format.json,laplace_tasks_single_runner_format.json \
   --output-dir artifacts_fasttext_router_deploy \
   --text-mode both \
   --train-ratio 0.8 \
@@ -29,6 +34,10 @@ python train_fasttext_semantic_router.py \
 - `artifacts_fasttext_router_deploy/semantic_router_fasttext.bin`
 - `artifacts_fasttext_router_deploy/metadata.json`
 - `artifacts_fasttext_router_deploy/eval_samples.jsonl`
+
+注意：
+- 训练脚本现在会在加载阶段校验数据集是否为单技能标注
+- 如果误传 `multi_2` 或 `multi_3` 数据集，会直接报错而不是继续训练
 
 ## 3. 部署参数搜索（阈值 + Top-K）
 

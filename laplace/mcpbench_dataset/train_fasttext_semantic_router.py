@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-"""Train a FastText semantic router on MCP-Bench formatted task data.
+"""Train a single-skill FastText semantic router on MCP-Bench task data.
 
 This script supports:
-1) training from MCP-Bench runner-format JSON
+1) training from single-skill MCP-Bench runner-format JSON
 2) confidence-threshold + Top-K prediction
 3) optional quick evaluation on a held-out split
 4) exporting eval samples for threshold grid search
@@ -62,13 +62,19 @@ def _extract_text(task: dict[str, Any], text_mode: str) -> str:
 
 
 def load_samples(dataset_path: Path, text_mode: str) -> list[Sample]:
-    """Load samples from MCP-Bench runner-format json file."""
+    """Load single-skill samples from MCP-Bench runner-format json file."""
     with dataset_path.open("r", encoding="utf-8") as f:
         data = json.load(f)
 
     samples: list[Sample] = []
     for block in data.get("server_tasks", []):
         block_servers = [str(s) for s in block.get("servers", []) if str(s).strip()]
+        if len(block_servers) != 1:
+            raise ValueError(
+                "Single-skill training requires exactly one server per block: "
+                f"{dataset_path.name} -> {block.get('server_name', '<unknown>')} "
+                f"has {len(block_servers)} servers"
+            )
         for task in block.get("tasks", []):
             text = _extract_text(task, text_mode)
             text = _normalize_text(text)
@@ -177,15 +183,12 @@ def _write_fasttext_train_file(
     server_to_label: dict[str, str],
     output_path: Path,
 ) -> None:
-    """Write fastText supervised training lines.
-
-    For multi-label routing, one sample contributes one line per positive label.
-    """
+    """Write fastText supervised training lines for single-skill routing."""
     with output_path.open("w", encoding="utf-8") as f:
         for sample in train_samples:
-            for server in sample.positive_servers:
-                label = server_to_label[server]
-                f.write(f"{_LABEL_PREFIX}{label} {sample.text}\n")
+            server = sample.positive_servers[0]
+            label = server_to_label[server]
+            f.write(f"{_LABEL_PREFIX}{label} {sample.text}\n")
 
 
 def train_fasttext_model(
@@ -355,16 +358,19 @@ def main() -> None:
     parser.add_argument(
         "--dataset",
         type=Path,
-        default=Path("mcpbench_tasks_multi_2server_runner_format.json"),
-        help="Single dataset path (used when --datasets is not provided)",
+        default=Path("mcpbench_tasks_single_runner_format.json"),
+        help="Single-skill dataset path (used when --datasets is not provided)",
     )
     parser.add_argument(
         "--datasets",
         type=str,
-        default="",
+        default=(
+            "mcpbench_tasks_single_runner_format.json,"
+            "laplace_tasks_single_runner_format.json"
+        ),
         help=(
-            "Comma-separated dataset paths for joint training into one model, "
-            "e.g. single.json,multi2.json,multi3.json"
+            "Comma-separated single-skill dataset paths for joint training into "
+            "one model"
         ),
     )
     parser.add_argument(
@@ -433,9 +439,9 @@ def main() -> None:
         )
 
     metadata = {
-        "primary_dataset": str(dataset_paths[0]),
         "datasets": [str(path) for path in dataset_paths],
         "joint_training": len(dataset_paths) > 1,
+        "training_mode": "single_only",
         "text_mode": args.text_mode,
         "train_ratio": args.train_ratio,
         "seed": args.seed,

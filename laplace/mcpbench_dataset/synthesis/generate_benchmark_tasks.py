@@ -17,6 +17,21 @@ from .validate_mcp_servers import MCPServerValidator
 _logger = logging.getLogger(__name__)
 
 
+def _build_run_stamp(now: datetime | None = None) -> str:
+    """Build the default timestamp suffix for generated artifacts.
+
+    Args:
+        now (`datetime | None`, optional):
+            Datetime value to format. Uses current local time when omitted.
+
+    Returns:
+        `str`:
+            Timestamp string formatted as ``MMDDHHMM``.
+    """
+    moment = now or datetime.now()
+    return moment.strftime("%m%d%H%M")
+
+
 async def _generate_single(
     generator: BenchmarkTaskGenerator,
     output_file: str,
@@ -214,7 +229,7 @@ def _save_server_whitelist(
 async def _resolve_allowed_servers(
     args: argparse.Namespace,
     output_dir: Path,
-    date_str: str,
+    run_stamp: str,
 ) -> list[str] | None:
     """Resolve effective allowed-server list from validation or file input.
 
@@ -223,8 +238,8 @@ async def _resolve_allowed_servers(
             Parsed CLI arguments.
         output_dir (`Path`):
             Output directory.
-        date_str (`str`):
-            Date string used in generated filenames.
+        run_stamp (`str`):
+            Timestamp suffix used in generated filenames.
 
     Returns:
         `list[str] | None`:
@@ -251,7 +266,7 @@ async def _resolve_allowed_servers(
         validation_output = (
             Path(args.validation_output)
             if args.validation_output
-            else output_dir / f"server_validation_report_{date_str}.json"
+            else output_dir / f"server_validation_report_{run_stamp}.json"
         )
         validation_output.parent.mkdir(parents=True, exist_ok=True)
         validation_output.write_text(
@@ -292,7 +307,7 @@ async def _resolve_allowed_servers(
         whitelist_output = (
             Path(args.whitelist_output)
             if args.whitelist_output
-            else output_dir / f"server_whitelist_{date_str}.json"
+            else output_dir / f"server_whitelist_{run_stamp}.json"
         )
         _save_server_whitelist(effective, str(whitelist_output))
         _logger.info("[whitelist] saved to %s", whitelist_output)
@@ -429,7 +444,7 @@ async def main() -> int:
         ),
     )
 
-    date_str = datetime.now().strftime("%Y%m%d")
+    run_stamp = _build_run_stamp()
     output_arg = Path(args.output) if args.output else None
     if output_arg and output_arg.suffix:
         output_dir = output_arg.parent
@@ -440,7 +455,7 @@ async def main() -> int:
     allowed_servers = await _resolve_allowed_servers(
         args=args,
         output_dir=output_dir,
-        date_str=date_str,
+        run_stamp=run_stamp,
     )
 
     try:
@@ -449,7 +464,10 @@ async def main() -> int:
                 raise RuntimeError(
                     f"Requested server is not in effective whitelist: {args.server}",
                 )
-            output_file = str(output_dir / f"benchmark_tasks_{args.server.replace(' ', '_')}_{date_str}.json")
+            output_file = str(
+                output_dir
+                / f"benchmark_tasks_{args.server.replace(' ', '_')}_{run_stamp}.json"
+            )
             results = await _generate_single(
                 generator,
                 output_file,
@@ -459,7 +477,7 @@ async def main() -> int:
             return 0
 
         if args.mode == "single":
-            output_file = str(output_dir / f"benchmark_tasks_single_{date_str}.json")
+            output_file = str(output_dir / f"benchmark_tasks_single_{run_stamp}.json")
             results = await _generate_single(
                 generator,
                 output_file,
@@ -469,7 +487,7 @@ async def main() -> int:
             return 0
 
         if args.mode == "multi":
-            output_file = str(output_dir / f"benchmark_tasks_multi_{date_str}.json")
+            output_file = str(output_dir / f"benchmark_tasks_multi_{run_stamp}.json")
             results = await _generate_multi(
                 generator,
                 output_file,
@@ -479,8 +497,8 @@ async def main() -> int:
             print(json.dumps(results.get("generation_info", {}), indent=2, ensure_ascii=False))
             return 0
 
-        single_file = str(output_dir / f"benchmark_tasks_single_{date_str}.json")
-        multi_file = str(output_dir / f"benchmark_tasks_multi_{date_str}.json")
+        single_file = str(output_dir / f"benchmark_tasks_single_{run_stamp}.json")
+        multi_file = str(output_dir / f"benchmark_tasks_multi_{run_stamp}.json")
         single_results = await _generate_single(
             generator,
             single_file,
@@ -497,7 +515,7 @@ async def main() -> int:
             "single_server": single_results.get("generation_info", {}),
             "multi_server": multi_results.get("generation_info", {}),
         }
-        summary_file = output_dir / f"benchmark_generation_summary_{date_str}.json"
+        summary_file = output_dir / f"benchmark_generation_summary_{run_stamp}.json"
         summary_file.write_text(
             json.dumps(summary, indent=2, ensure_ascii=False),
             encoding="utf-8",

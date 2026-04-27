@@ -5,7 +5,7 @@ synthesis pipeline.
 
 The pipeline:
 
-- loads server definitions from `laplace/mcp_lifecycle/laplace_mcp_manifest.json`
+- loads server definitions from `src/agentscope/mcp/server_config/laplace_mcp_manifest.json`
 - starts each Docker container in the foreground for the duration of tool
   discovery, then stops it
 - discovers tool schemas via AgentScope's `HttpStatelessClient`
@@ -44,7 +44,6 @@ Tasks that fail the quality threshold (solvability ≥ 8.5, utility ≥ 5.0) are
 retried up to `--max-retries` times.  The actual yield is typically 80-95 % of
 the maximum.
 
-bash start_all_mcp_servers.sh
 ### Start/Stop All MCP Servers (WSL/Linux)
 
 在数据合成前，推荐先批量启动所有 MCP server 容器，避免 retry 时容器未启动导致任务失败。
@@ -61,7 +60,10 @@ bash stop_all_mcp_servers.sh
 
 依赖 jq 工具（`sudo apt install jq`）。
 
-脚本会自动读取 laplace_mcp_manifest.json，按配置批量启动/停止所有 server。
+脚本会自动读取 `src/agentscope/mcp/server_config/laplace_mcp_manifest.json`，
+按配置批量启动/停止所有 server。
+已经在运行且端口映射正常的容器会被自动跳过；如果启动后端口未成功发布，
+脚本会自动重试，默认重试 3 次。可通过环境变量 `START_RETRIES` 调整重试次数。
 
 如需在 Windows 下运行，请在 WSL 环境中执行。
 
@@ -71,6 +73,7 @@ bash stop_all_mcp_servers.sh
 能成功完成 MCP `list_tools`（可选再做一次 tool call 冒烟调用）：
 
 ```bash
+cd ../..
 # Validate all servers and write a JSON report
 python -m laplace.mcpbench_dataset.synthesis.validate_mcp_servers \
   --output laplace/mcpbench_dataset/server_validation_report.json \
@@ -103,6 +106,7 @@ python -m laplace.mcpbench_dataset.synthesis.validate_mcp_servers \
 现在可以直接在生成脚本里启用“先验证，再白名单合成”的一体化流程：
 
 ```bash
+cd ../..
 # Validate all servers -> generate whitelist -> run single-server synthesis on pass servers only
 python -m laplace.mcpbench_dataset.synthesis.generate_benchmark_tasks \
   --mode single \
@@ -165,7 +169,39 @@ python -m laplace.mcpbench_dataset.synthesis.generate_benchmark_tasks \
 python -m laplace.mcpbench_dataset.synthesis.generate_benchmark_tasks \
   --server "Wikipedia" \
   --tasks-per-combination 2
+
+# Merge multiple single-server runner-format outputs into one dataset
+python -m laplace.mcpbench_dataset.synthesis.merge_single_runner_format \
+  laplace/mcpbench_dataset/benchmark_tasks_single_20260420_runner_format.json \
+  laplace/mcpbench_dataset/benchmark_tasks_single_20260423_runner_format.json \
+  laplace/mcpbench_dataset/benchmark_tasks_single_04231516_runner_format.json \
+  --output laplace/mcpbench_dataset/laplace_tasks_single_runner_format.json
+
+# Auto-discover all matching single runner-format outputs under the mcpbench_dataset directory
+python -m laplace.mcpbench_dataset.synthesis.merge_single_runner_format \
+  --search-root laplace/mcpbench_dataset \
+  --glob 'benchmark_tasks_single_*_runner_format.json' \
+  --output laplace/mcpbench_dataset/laplace_tasks_single_runner_format.json
+
+# Incremental update: if laplace_tasks_single_runner_format.json already exists,
+# it is reused as the baseline and only newly discovered benchmark_tasks_single_* files are appended
+python -m laplace.mcpbench_dataset.synthesis.merge_single_runner_format \
+  --search-root laplace/mcpbench_dataset \
+  --output laplace/mcpbench_dataset/laplace_tasks_single_runner_format.json
+
+# Auto-discover all matching multi runner-format outputs and merge into one file
+python -m laplace.mcpbench_dataset.synthesis.merge_multi_runner_format \
+  --search-root laplace/mcpbench_dataset \
+  --glob 'benchmark_tasks_multi_*_runner_format.json' \
+  --output laplace/mcpbench_dataset/laplace_tasks_multi_runner_format.json
 ```
+
+合并时会按文件顺序聚合同一 server 的任务，并自动将 `task_id` 重编号为
+连续的 incremental 形式，例如 `biomcp_000`, `biomcp_001`, `biomcp_002`。
+这样即使不同批次里原始 `task_id` 重名，也会在最终合并文件中变成唯一值。
+
+当输出文件已经存在时，脚本会优先把该 merged 文件作为基线输入，读取其中
+记录的 `merged_from_files`，然后只追加此前尚未并入的新 raw runner-format 文件。
 
 ## CLI Reference
 
@@ -178,7 +214,7 @@ python -m laplace.mcpbench_dataset.synthesis.generate_benchmark_tasks \
 | `--combinations-file` | `split_combinations/mcp_2server_combinations.json` | JSON file with server combos |
 | `--server` | — | Generate for one named server only |
 | `--output` | `laplace/mcpbench_dataset/` | Output directory |
-| `--manifest-path` | auto-detected | Override path to `laplace_mcp_manifest.json` |
+| `--manifest-path` | auto-detected | Override path to `src/agentscope/mcp/server_config/laplace_mcp_manifest.json` |
 | `--disable-filter-problematic` | off | Skip quality filtering |
 
 DashScope authentication uses `DASHSCOPE_API_KEY` from the environment.
@@ -187,10 +223,14 @@ DashScope authentication uses `DASHSCOPE_API_KEY` from the environment.
 
 Each run saves two files per mode:
 
-- `benchmark_tasks_{mode}_{date}.json` — raw synthesis result
-- `benchmark_tasks_{mode}_{date}_runner_format.json` — runner-format JSON with
+- `benchmark_tasks_{mode}_{timestamp}.json` — raw synthesis result
+- `benchmark_tasks_{mode}_{timestamp}_runner_format.json` — runner-format JSON with
   `server_tasks`, `task_description`, `fuzzy_description`,
   `dependency_analysis`, and `distraction_servers`
+
+The default `timestamp` format is `MMDDHHMM` (for example, `04231645`). This
+prevents repeated runs on the same day from overwriting earlier artifacts unless
+they start within the same minute.
 
 The runner-format files are compatible with the fastText training scripts in
 `laplace/mcpbench_dataset`.

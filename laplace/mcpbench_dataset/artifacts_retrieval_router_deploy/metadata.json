@@ -1,0 +1,52 @@
+{
+  "router_family": "retrieval_tfidf",
+  "datasets": [
+    "mcpbench_tasks_single_runner_format.json",
+    "laplace_tasks_single_runner_format.json"
+  ],
+  "joint_training": true,
+  "training_mode": "single_only",
+  "text_mode": "task",
+  "train_ratio": 0.8,
+  "seed": 42,
+  "hyperparameters": {
+    "max_features": 20000,
+    "min_df": 1,
+    "char_ngram_min": 3,
+    "char_ngram_max": 5,
+    "use_word_bigrams": true,
+    "top_neighbors": 16
+  },
+  "label_map": {
+    "Bibliomantic": "Bibliomantic",
+    "BioMCP": "BioMCP",
+    "Call for Papers": "Call for Papers",
+    "Car Price Evaluator": "Car Price Evaluator",
+    "Context7": "Context7",
+    "DEX Paprika": "DEX Paprika",
+    "FruityVice": "FruityVice",
+    "Game Trends": "Game Trends",
+    "Google Maps": "Google Maps",
+    "Huge Icons": "Huge Icons",
+    "Hugging Face": "Hugging Face",
+    "Math MCP": "Math MCP",
+    "Medical Calculator": "Medical Calculator",
+    "Metropolitan Museum": "Metropolitan Museum",
+    "Movie Recommender": "Movie Recommender",
+    "NASA Data": "NASA Data",
+    "National Parks": "National Parks",
+    "NixOS": "NixOS",
+    "OKX Exchange": "OKX Exchange",
+    "OSINT Intelligence": "OSINT Intelligence",
+    "OpenAPI Explorer": "OpenAPI Explorer",
+    "Paper Search": "Paper Search",
+    "Reddit": "Reddit",
+    "Scientific Computing": "Scientific Computing",
+    "Time MCP": "Time MCP",
+    "Unit Converter": "Unit Converter",
+    "Weather Data": "Weather Data",
+    "Wikipedia": "Wikipedia"
+  },
+  "train_samples": 173,
+  "eval_samples": 44
+}

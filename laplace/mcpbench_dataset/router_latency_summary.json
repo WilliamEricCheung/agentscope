@@ -1,0 +1,39 @@
+{
+  "repeats": 20,
+  "query_source": "artifacts_retrieval_router_deploy/eval_samples.jsonl:dex_paprika_000",
+  "results": [
+    {
+      "model_name": "fasttext",
+      "artifact_dir": "artifacts_fasttext_router_deploy",
+      "repeats": 20,
+      "query_source": "artifacts_retrieval_router_deploy/eval_samples.jsonl:dex_paprika_000",
+      "min_latency_ms": 0.111456,
+      "avg_latency_ms": 0.133352,
+      "max_latency_ms": 0.169775,
+      "threshold": 0.05,
+      "top_k": 1
+    },
+    {
+      "model_name": "retrieval",
+      "artifact_dir": "artifacts_retrieval_router_deploy",
+      "repeats": 20,
+      "query_source": "artifacts_retrieval_router_deploy/eval_samples.jsonl:dex_paprika_000",
+      "min_latency_ms": 0.627934,
+      "avg_latency_ms": 1.230233,
+      "max_latency_ms": 5.030044,
+      "threshold": 0.05,
+      "top_k": 1
+    },
+    {
+      "model_name": "encoder",
+      "artifact_dir": "artifacts_encoder_router_deploy",
+      "repeats": 20,
+      "query_source": "artifacts_retrieval_router_deploy/eval_samples.jsonl:dex_paprika_000",
+      "min_latency_ms": 2.767544,
+      "avg_latency_ms": 5.626751,
+      "max_latency_ms": 16.121036,
+      "threshold": 0.05,
+      "top_k": 1
+    }
+  ]
+}

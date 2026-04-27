@@ -98,20 +98,90 @@ Return exactly this JSON shape:
         evaluation["utility_score"] = float(evaluation.get("utility_score", 0.0))
         return evaluation
 
-    def meets_quality_threshold(self, evaluation: dict[str, Any]) -> bool:
+    def _resolve_thresholds(self, tool_count: int) -> tuple[float, float]:
+        """Resolve effective quality thresholds for current tool availability.
+
+        Args:
+            tool_count (`int`):
+                Number of available tools for the active server scope.
+
+        Returns:
+            `tuple[float, float]`:
+                Effective ``(solvability_threshold, utility_threshold)``.
+        """
+        if tool_count <= 1:
+            # Single-tool servers cannot form multi-step dependency chains.
+            return (min(self.solvability_threshold, 6.0), self.utility_threshold)
+        return (self.solvability_threshold, self.utility_threshold)
+
+    @staticmethod
+    def _is_search_only_toolset(tools: dict[str, dict[str, Any]]) -> bool:
+        """Check whether the active toolset only supports search-style queries.
+
+        Args:
+            tools (`dict[str, dict[str, Any]]`):
+                Available MCP tool metadata.
+
+        Returns:
+            `bool`:
+                Whether every tool name indicates a search-only capability.
+        """
+        if not tools:
+            return False
+
+        return all(
+            tool_name.rsplit(":", maxsplit=1)[-1].startswith("search_")
+            for tool_name in tools
+        )
+
+    def resolve_thresholds(
+        self,
+        tools: dict[str, dict[str, Any]],
+    ) -> tuple[float, float]:
+        """Resolve quality thresholds for the active toolset.
+
+        Args:
+            tools (`dict[str, dict[str, Any]]`):
+                Available MCP tool metadata.
+
+        Returns:
+            `tuple[float, float]`:
+                Effective ``(solvability_threshold, utility_threshold)``.
+        """
+        tool_count = len(tools)
+        solvability_threshold, utility_threshold = self._resolve_thresholds(
+            tool_count=tool_count,
+        )
+        if self._is_search_only_toolset(tools):
+            # Search-only servers can still support useful benchmark tasks,
+            # but they rarely satisfy the same dependency depth as richer
+            # read/download toolchains.
+            solvability_threshold = min(solvability_threshold, 7.0)
+        return (solvability_threshold, utility_threshold)
+
+    def meets_quality_threshold(
+        self,
+        evaluation: dict[str, Any],
+        tools: dict[str, dict[str, Any]],
+    ) -> bool:
         """Check whether one evaluation passes quality thresholds.
 
         Args:
             evaluation (`dict[str, Any]`):
                 Parsed evaluation result.
+            tools (`dict[str, dict[str, Any]]`):
+                Available MCP tool metadata.
 
         Returns:
             `bool`:
                 Whether the task should be kept.
         """
+        solvability_threshold, utility_threshold = self.resolve_thresholds(
+            tools=tools,
+        )
         return (
-            float(evaluation.get("solvability_score", 0.0)) >= self.solvability_threshold
-            and float(evaluation.get("utility_score", 0.0)) >= self.utility_threshold
+            float(evaluation.get("solvability_score", 0.0)) >= solvability_threshold
+            and float(evaluation.get("utility_score", 0.0)) >= utility_threshold
         )
 
 
@@ -188,7 +258,10 @@ class TaskSynthesizer:
                     task=candidate,
                     tools=tools,
                 )
-                if self.quality_evaluator.meets_quality_threshold(evaluation):
+                if self.quality_evaluator.meets_quality_threshold(
+                    evaluation=evaluation,
+                    tools=tools,
+                ):
                     generated.append(candidate)
                     accepted = True
                 attempt += 1
@@ -225,6 +298,11 @@ class TaskSynthesizer:
                 "For OpenAPI-related tasks, only synthesize tasks about "
                 "analyzing API specifications rather than calling external APIs."
             )
+        dependency_requirement = (
+            "- has clear dependency chains between tools;"
+            if len(tools) > 1
+            else "- can be solved coherently with the single available tool;"
+        )
 
         prompt = f"""You are designing an MCP benchmark task.
 
@@ -236,7 +314,7 @@ Available tools:
 
 Create one complex, self-contained task that:
 - must use tools from all active servers when multiple servers are present;
-- has clear dependency chains between tools;
+{dependency_requirement}
 - does not rely on local files, external URLs, hidden databases, or user follow-up;
 - uses relative dates such as "past 7 days" or "next 3 months" when dates matter;
 - includes all concrete values needed for execution;

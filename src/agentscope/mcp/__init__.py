@@ -22,6 +22,9 @@ from ._mcp_server_helper import (
 from ._mcp_server_config import (
     _DockerMCPRegistrationConfig,
     _MCPServerConfigFactory,
+    build_laplace_speculative_executor,
+    load_laplace_registration_bundle,
+    load_laplace_registration_configs,
 )
 from ._prewarm_router import (
     MCPPrewarmRouter,
@@ -49,6 +52,9 @@ __all__ = [
     "_speculative_ensure_local_docker_mcp_server",
     "_DockerMCPRegistrationConfig",
     "_MCPServerConfigFactory",
+    "build_laplace_speculative_executor",
+    "load_laplace_registration_bundle",
+    "load_laplace_registration_configs",
     "MCPPrewarmRouter",
     "MCPPrewarmKeywordRouter",
     "MCPPrewarmSemanticRouter",

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """The MCP streamable HTTP server."""
+import asyncio
 from contextlib import _AsyncGeneratorContextManager
 from typing import Any, Callable, Awaitable, Literal, List
 
@@ -36,6 +37,8 @@ class HttpStatelessClient(MCPClientBase):
         headers: dict[str, str] | None = None,
         timeout: float = 30,
         sse_read_timeout: float = 60 * 5,
+        list_tools_retry_attempts: int = 2,
+        list_tools_retry_delay: float = 0.5,
         **client_kwargs: Any,
     ) -> None:
         """Initialize the streamable HTTP MCP server.
@@ -57,6 +60,11 @@ class HttpStatelessClient(MCPClientBase):
             sse_read_timeout (`float`, optional):
                 The timeout for reading Server-Sent Events (SSE) in seconds.
                 Defaults to 300 (5 minutes).
+            list_tools_retry_attempts (`int`, optional):
+                Maximum attempts for `list_tools` when the HTTP transport hits
+                a transient fetch failure. Defaults to 2.
+            list_tools_retry_delay (`float`, optional):
+                Delay in seconds between `list_tools` retries. Defaults to 0.5.
             **client_kwargs (`Any`):
                 The additional keyword arguments to pass to the streamable
                 HTTP client.
@@ -66,6 +74,8 @@ class HttpStatelessClient(MCPClientBase):
         assert transport in ["streamable_http", "sse"]
 
         self.transport = transport
+        self.list_tools_retry_attempts = max(1, list_tools_retry_attempts)
+        self.list_tools_retry_delay = max(0.0, list_tools_retry_delay)
 
         self.client_config = {
             "url": url,
@@ -76,6 +86,26 @@ class HttpStatelessClient(MCPClientBase):
         }
 
         self._tools = None
+
+    @staticmethod
+    def _is_transient_list_tools_error(exc: BaseException) -> bool:
+        """Check whether a `list_tools` failure looks transient.
+
+        Args:
+            exc (`BaseException`):
+                The raised exception.
+
+        Returns:
+            `bool`:
+                Whether the failure should be retried.
+        """
+        if isinstance(exc, BaseExceptionGroup):
+            return any(
+                HttpStatelessClient._is_transient_list_tools_error(sub_exc)
+                for sub_exc in exc.exceptions
+            )
+
+        return "fetch failed" in str(exc).lower()
 
     def get_client(self) -> _AsyncGeneratorContextManager[Any]:
         """The disposable MCP client object, which is a context manager."""
@@ -170,10 +200,26 @@ class HttpStatelessClient(MCPClientBase):
             `mcp.types.ListToolsResult`:
                 The result containing the list of tools.
         """
-        async with self.get_client() as cli:
-            read_stream, write_stream = cli[0], cli[1]
-            async with ClientSession(read_stream, write_stream) as session:
-                await session.initialize()
-                res = await session.list_tools()
-                self._tools = res.tools
-                return res.tools
+        last_exception: Exception | None = None
+
+        for attempt in range(1, self.list_tools_retry_attempts + 1):
+            try:
+                async with self.get_client() as cli:
+                    read_stream, write_stream = cli[0], cli[1]
+                    async with ClientSession(read_stream, write_stream) as session:
+                        await session.initialize()
+                        res = await session.list_tools()
+                        self._tools = res.tools
+                        return res.tools
+            except Exception as exc:
+                last_exception = exc
+                if (
+                    attempt >= self.list_tools_retry_attempts
+                    or not self._is_transient_list_tools_error(exc)
+                ):
+                    raise
+                await asyncio.sleep(self.list_tools_retry_delay)
+
+        if last_exception is not None:
+            raise last_exception
+        raise RuntimeError("list_tools failed without an exception")

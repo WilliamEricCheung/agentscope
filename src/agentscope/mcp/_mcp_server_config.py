@@ -10,6 +10,8 @@ from .server_config import (
     _MCPServerConfigFactory,
     build_github_registration_config,
     build_laplace_registration_config,
+    build_laplace_speculative_executor,
+    load_laplace_registration_bundle,
     load_laplace_registration_configs,
     build_playwright_registration_config,
 )
@@ -20,5 +22,7 @@ __all__ = [
     "build_playwright_registration_config",
     "build_github_registration_config",
     "build_laplace_registration_config",
+    "build_laplace_speculative_executor",
+    "load_laplace_registration_bundle",
     "load_laplace_registration_configs",
 ]

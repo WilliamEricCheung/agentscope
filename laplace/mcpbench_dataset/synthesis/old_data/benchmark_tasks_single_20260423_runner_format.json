@@ -1,0 +1,1257 @@
+{
+  "generation_info": {
+    "timestamp": "2026-04-23T13:46:06.650614",
+    "successful_servers": 27,
+    "failed_servers": 1,
+    "runtime_unhealthy_servers": [],
+    "generation_model": "qwen3-max",
+    "tasks_per_server": 2,
+    "duration": "3:00:20.349692",
+    "status": "completed"
+  },
+  "server_tasks": [
+    {
+      "server_name": "BioMCP",
+      "servers": [
+        "BioMCP"
+      ],
+      "combination_name": "Single Server: BioMCP",
+      "combination_type": "single_server",
+      "tasks": [
+        {
+          "task_id": "biomcp_000",
+          "task_description": "A clinician reports a patient with metastatic melanoma harboring a rare BRAF p.D277Y (c.830G>T) variant who is not responding to standard BRAF/MEK inhibitor therapy. Investigate this variant’s clinical significance, population frequency, functional impact, and any published evidence or ongoing trials that might inform alternative treatment strategies. Begin by using the 'think' tool to structure a comprehensive analysis plan. Then: (1) fetch detailed gene information for BRAF; (2) retrieve full variant data for BRAF p.D277Y using its HGVS notation; (3) search PubMed for articles discussing this specific variant in melanoma; (4) identify any active phase 2 or 3 clinical trials for melanoma patients with non-V600 BRAF mutations; (5) if AlphaGenome API key is available, predict the regulatory impact of c.830G>T on BRAF expression in skin tissue. Synthesize all findings into a structured clinical decision support summary including: variant classification, therapeutic implications, relevant literature, trial options, and predicted functional consequences.",
+          "fuzzy_description": "A patient with metastatic melanoma has a rare BRAF variant, p.D277Y (c.830G>T), and isn’t responding to standard BRAF/MEK inhibitor therapy. Can you help me understand the clinical significance of this specific mutation? I need a thorough assessment that includes: its classification (e.g., pathogenic, benign, VUS), how common it is in population databases, and any evidence of its functional impact on BRAF activity. Also, please look for published studies—especially in melanoma—that discuss this exact variant, and check if there are any active phase 2 or 3 clinical trials enrolling melanoma patients with non-V600 BRAF mutations like this one. If possible, include predictions about how the c.830G>T change might affect BRAF expression specifically in skin tissue. Please synthesize all this into a clear, evidence-based summary to guide potential next steps in treatment.",
+          "dependency_analysis": "This task requires sequential tool usage with clear dependencies. First, the 'think' tool must be invoked to formulate a research strategy. Gene context from 'gene_getter' informs variant interpretation. The 'variant_getter' call depends on knowing the correct HGVS identifier (NM_004333.6:c.830G>T). Article search requires the specific variant and disease as inputs, which are established during planning. Trial search depends on understanding that non-V600 BRAF mutations constitute a distinct therapeutic category. AlphaGenome prediction (if executed) requires genomic coordinates derived from the variant record. All data streams converge in the final synthesis, making each step dependent on prior outputs.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "FruityVice",
+            "Google Maps",
+            "Huge Icons",
+            "Hugging Face",
+            "NixOS",
+            "OpenAPI Explorer",
+            "Paper Search",
+            "Reddit",
+            "Wikipedia"
+          ]
+        },
+        {
+          "task_id": "biomcp_001",
+          "task_description": "A researcher is investigating the clinical relevance of the BRAF V600E mutation in metastatic melanoma and wants to understand current standard-of-care therapies, ongoing late-phase trials, and real-world safety profiles of key drugs. Begin by using the 'think' tool to structure a multi-step analysis plan. Then: (1) Confirm the official gene symbol and disease definition for BRAF and melanoma using gene_getter and disease_getter; (2) Retrieve comprehensive variant data for BRAF V600E (HGVS: NM_004333.6:c.1799T>A) using variant_getter; (3) Search for Phase 3 or Phase 4 interventional clinical trials in the past 2 years testing BRAF/MEK inhibitors in metastatic melanoma using trial_searcher with appropriate filters; (4) For the most recently completed Phase 3 trial, fetch its full protocol, outcomes, and associated publications using trial_protocol_getter, trial_outcomes_getter, and trial_references_getter; (5) Identify the primary drug used in that trial and retrieve its FDA label using openfda_label_searcher and openfda_label_getter; (6) Search FDA adverse event reports for that drug in melanoma patients over the past 3 years using openfda_adverse_searcher; and (7) Synthesize all findings into a structured clinical summary including mutation significance, trial evidence, approved indications, dosing, and key safety concerns.",
+          "fuzzy_description": "I'm researching the clinical significance of the BRAF V600E mutation (HGVS: NM_004333.6:c.1799T>A) in metastatic melanoma and need a comprehensive, evidence-based overview to inform treatment decisions. Can you provide a structured summary that includes:  \n\n1. Confirmation of the official gene symbol for BRAF and the precise disease definition for melanoma;  \n2. Detailed molecular and clinical data on the BRAF V600E variant itself;  \n3. A list of Phase 3 or Phase 4 interventional clinical trials from the past two years that evaluated BRAF/MEK inhibitor combinations specifically in metastatic melanoma;  \n4. For the most recently completed Phase 3 trial, the full protocol details, primary and secondary outcomes, and any associated peer-reviewed publications;  \n5. The name of the primary drug used in that trial, along with its current FDA-approved label—including dosing, indications, and warnings;  \n6. Real-world safety data from FDA adverse event reports for that drug in melanoma patients over the last three years, including frequency and severity of key side effects;  \n\nPlease synthesize all this into a clear clinical summary covering the mutation’s relevance, supporting trial evidence, approved uses, recommended dosing, and major safety concerns—with specific references to data sources, numbers, and verifiable findings.",
+          "dependency_analysis": "This task requires strict sequential execution with clear dependencies: The 'think' tool must be used first to plan the research strategy. Gene and disease definitions (steps 1) provide foundational context before interpreting variant data (step 2). Variant confirmation enables precise trial searching (step 3), which depends on correctly identifying metastatic melanoma as the condition and BRAF/MEK inhibitors as interventions. Trial selection (step 3) directly determines which trial details to fetch (step 4). Drug identification from the trial protocol (step 4) is required before retrieving its FDA label (step 5) and adverse event profile (step 6). Finally, all prior steps feed into the synthesis (step 7). Each tool call relies on outputs from previous steps, creating a linear dependency chain across all active BioMCP tool categories (gene/disease/variant data, clinical trials, FDA regulatory information).",
+          "distraction_servers": [
+            "Call for Papers",
+            "Context7",
+            "FruityVice",
+            "Game Trends",
+            "Hugging Face",
+            "Math MCP",
+            "Metropolitan Museum",
+            "NixOS",
+            "Scientific Computing",
+            "Wikipedia"
+          ]
+        }
+      ]
+    },
+    {
+      "server_name": "Bibliomantic",
+      "servers": [
+        "Bibliomantic"
+      ],
+      "combination_name": "Single Server: Bibliomantic",
+      "combination_type": "single_server",
+      "tasks": [
+        {
+          "task_id": "bibliomantic_000",
+          "task_description": "Perform a bibliomantic consultation using Philip K. Dick's method on the question: 'Should I accept a new job offer in the next 3 months?' Then, use the I Ching divination tool to generate a hexagram for the same question. Extract the hexagram number from the result and retrieve its full traditional interpretation. Finally, compile a comparative guidance report that includes: (1) the bibliomantic insight, (2) the generated hexagram number and its name, and (3) the detailed traditional interpretation of that hexagram.",
+          "fuzzy_description": "I’m trying to decide whether I should accept a new job offer in the next three months. I’d like some guidance using two specific approaches: first, a bibliomantic reading done exactly as Philip K. Dick practiced it, applied to this question; and second, an I Ching divination that gives me a hexagram for the same question. From the I Ching result, I need the actual hexagram number (like 1 through 64), its traditional name, and the full classical interpretation of that hexagram. Please put together a clear comparison that includes: (1) the insight from the bibliomancy, (2) the hexagram number and name, and (3) the complete traditional meaning of that hexagram—so I can thoughtfully weigh both perspectives.",
+          "dependency_analysis": "The task begins with a required call to Bibliomantic:bibliomantic_consultation with the specified query. Concurrently or subsequently, Bibliomantic:i_ching_divination must be called with the same query to produce a hexagram; this output must include a hexagram number (1–64). That number is then used as input to Bibliomantic:get_hexagram_details to fetch the authoritative interpretation. All three tools from the Bibliomantic server are thus used in a chain: bibliomantic_consultation (independent), i_ching_divination (independent but needed for hexagram number), and get_hexagram_details (dependent on output of i_ching_divination). The final structured report depends on outputs from all three tool calls.",
+          "distraction_servers": [
+            "FruityVice",
+            "Huge Icons",
+            "Hugging Face",
+            "Math MCP",
+            "Medical Calculator",
+            "OSINT Intelligence",
+            "OpenAPI Explorer",
+            "Reddit",
+            "Scientific Computing",
+            "Unit Converter"
+          ]
+        },
+        {
+          "task_id": "bibliomantic_001",
+          "task_description": "Perform a bibliomantic consultation using Philip K. Dick's method on the question: 'Should I accept the job offer in Berlin starting next month?' First, use the I Ching divination tool with this question to generate a hexagram. Then, retrieve the full details of the resulting hexagram using its number. Finally, feed the original question into the bibliomantic consultation tool to synthesize I Ching wisdom with the query. Return a structured report containing: (1) the hexagram number and name, (2) its traditional interpretation, and (3) the augmented bibliomantic guidance.",
+          "fuzzy_description": "I’m trying to decide whether to accept a job offer in Berlin that starts next month, and I’d like to consult the I Ching using Philip K. Dick’s bibliomantic approach for guidance. Could you please:  \n\n1. Cast a hexagram based on my question—“Should I accept the job offer in Berlin starting next month?”  \n2. Give me the hexagram number and its traditional name, along with the full classical interpretation of that hexagram.  \n3. Then combine that I Ching insight with a bibliomantic reading tied directly to my original question, offering synthesized advice.  \n\nI’d appreciate a clear, structured response that includes the hexagram number, its standard meaning, and the augmented guidance—so I can reflect on it thoughtfully before making my decision.",
+          "dependency_analysis": "The task requires three sequential tool calls from the single active server 'Bibliomantic'. First, Bibliomantic:i_ching_divination must be called with the provided query to obtain a hexagram number. Second, Bibliomantic:get_hexagram_details uses that hexagram number as input to fetch its name and interpretation. Third, Bibliomantic:bibliomantic_consultation is invoked with the same original query to produce synthesized guidance. All tools are from the only active server, satisfying the requirement to use tools from all active servers. The dependencies are strict: step 2 depends on the output of step 1, and step 3 depends on the original query but runs after step 1 for contextual coherence. No external data or user follow-up is needed.",
+          "distraction_servers": [
+            "BioMCP",
+            "Context7",
+            "DEX Paprika",
+            "FruityVice",
+            "Google Maps",
+            "Huge Icons",
+            "Medical Calculator",
+            "Movie Recommender",
+            "OpenAPI Explorer",
+            "Scientific Computing"
+          ]
+        }
+      ]
+    },
+    {
+      "server_name": "Call for Papers",
+      "servers": [
+        "Call for Papers"
+      ],
+      "combination_name": "Single Server: Call for Papers",
+      "combination_type": "single_server",
+      "tasks": [
+        {
+          "task_id": "call_for_papers_000",
+          "task_description": "Find up to 5 academic conferences in the next 3 months that have issued a call for papers related to 'large language models' and are relevant to artificial intelligence research. Return a structured list containing each conference's name, submission deadline (if available in the tool response), and a brief description.",
+          "fuzzy_description": "Can you find up to five academic conferences happening in the next three months that are currently accepting paper submissions on large language models and are relevant to artificial intelligence research? For each one, please provide the conference name, the submission deadline (if it’s been announced), and a short description of the event.\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "This task requires the use of the 'Call for Papers:get_events' tool with the keywords 'large language models' and a limit of 5. Although the tool does not natively filter by date, the instruction implies selecting only events occurring in the next 3 months; however, since the tool output may include temporal metadata, the agent must interpret and filter results accordingly based on relative timeframes. As there is only one active server ('Call for Papers'), the requirement to use all active servers is satisfied by using this single tool.",
+          "distraction_servers": [
+            "Car Price Evaluator",
+            "Game Trends",
+            "Huge Icons",
+            "Medical Calculator",
+            "Metropolitan Museum",
+            "NASA Data",
+            "National Parks",
+            "NixOS",
+            "OSINT Intelligence",
+            "OpenAPI Explorer"
+          ]
+        },
+        {
+          "task_id": "call_for_papers_001",
+          "task_description": "Find up to 5 academic conferences in the 'machine learning' domain that have issued calls for papers in the past 7 days. Return a JSON list of these conferences, including their titles and submission deadlines if available.",
+          "fuzzy_description": "Can you find up to five academic conferences in the machine learning field that have posted calls for papers in the last seven days? Please provide their titles and, if available, their paper submission deadlines, formatted as a JSON list.\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "This task requires the 'Call for Papers:get_events' tool to search for recent conferences using the keyword 'machine learning' and a limit of 5. The tool is sufficient to complete the task as it provides access to current call-for-paper events, and the time constraint ('past 7 days') is implicitly handled by the freshness of the data returned by the tool. No other servers or tools are active, so the requirement to use all active servers is satisfied.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "Car Price Evaluator",
+            "Context7",
+            "DEX Paprika",
+            "Google Maps",
+            "NixOS",
+            "OpenAPI Explorer",
+            "Reddit",
+            "Scientific Computing",
+            "Unit Converter"
+          ]
+        }
+      ]
+    },
+    {
+      "server_name": "Car Price Evaluator",
+      "servers": [
+        "Car Price Evaluator"
+      ],
+      "combination_name": "Single Server: Car Price Evaluator",
+      "combination_type": "single_server",
+      "tasks": [
+        {
+          "task_id": "car_price_evaluator_000",
+          "task_description": "Determine the average price of all car models from the brand 'Toyota' by first retrieving the full list of available car brands to confirm 'Toyota' is present, then using that confirmation to fetch all Toyota car models and their prices. Finally, compute and return the average price across all retrieved Toyota models as a single numeric value rounded to two decimal places.",
+          "fuzzy_description": "Can you find the average price of all Toyota car models? First, check that Toyota is actually listed among the available car brands, then get the prices for every Toyota model they offer, and finally calculate the average—rounded to two decimal places.\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "The task requires a sequential dependency chain: (1) Call get_car_brands to verify that 'Toyota' exists in the list of supported brands; (2) Only if 'Toyota' is confirmed, invoke search_car_price with brand_name='Toyota' to retrieve all models and their prices; (3) Aggregate the returned price data to calculate the average. All steps must use tools from the single active server 'Car Price Evaluator', satisfying the requirement to use all active servers. No external data or user input is needed beyond the specified brand name 'Toyota'.",
+          "distraction_servers": [
+            "Call for Papers",
+            "Game Trends",
+            "Google Maps",
+            "Math MCP",
+            "Medical Calculator",
+            "Movie Recommender",
+            "OKX Exchange",
+            "OpenAPI Explorer",
+            "Paper Search",
+            "Wikipedia"
+          ]
+        },
+        {
+          "task_id": "car_price_evaluator_003",
+          "task_description": "Determine the average price of all Toyota car models listed in the FIPE database by first retrieving the full list of available car brands to confirm Toyota's presence, then using the brand name to fetch all Toyota car models and their prices, and finally computing the average price across those models. Return the result as a JSON object with the keys 'brand', 'model_count', and 'average_price_brl'.",
+          "fuzzy_description": "Can you find the average price of all Toyota car models listed in the FIPE database? I’d like the result to include the brand name, the total number of Toyota models listed, and the average price in Brazilian reais (BRL), formatted as a JSON object. Please make sure the data is accurate and based on the full list of models currently in the database.",
+          "dependency_analysis": "The task requires a sequential dependency chain: (1) Call get_car_brands to verify that 'Toyota' exists as a valid brand and obtain its canonical name; (2) Use the confirmed brand name 'Toyota' as input to search_car_price to retrieve all associated car models and their current FIPE prices; (3) Aggregate the returned price data to compute the average. The tool get_vehicles_by_type is not directly used because the task focuses specifically on cars from a known brand, and search_car_price already operates within the car category. However, since only one server ('Car Price Evaluator') is active, the requirement to use tools from all active servers is satisfied by using at least one tool from it—though for completeness and complexity, the task leverages two distinct tools from the same server in a dependent sequence.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "Call for Papers",
+            "Huge Icons",
+            "Medical Calculator",
+            "Movie Recommender",
+            "National Parks",
+            "OKX Exchange",
+            "OpenAPI Explorer",
+            "Paper Search",
+            "Reddit"
+          ]
+        }
+      ]
+    },
+    {
+      "server_name": "Context7",
+      "servers": [
+        "Context7"
+      ],
+      "combination_name": "Single Server: Context7",
+      "combination_type": "single_server",
+      "tasks": [
+        {
+          "task_id": "context7_000",
+          "task_description": "A developer is building a Next.js application and needs up-to-date documentation on server-side rendering (SSR) patterns, specifically focusing on data fetching with getServerSideProps. They referred to the library simply as 'Next.js'. First, resolve the ambiguous name 'Next.js' to a Context7-compatible library ID using the resolve-library-id tool. Then, use the retrieved library ID to fetch detailed documentation about SSR and getServerSideProps, limiting the response to 8000 tokens. Return a structured summary containing: (1) the resolved library ID, (2) a 3-sentence overview of SSR in Next.js based on the documentation, and (3) two verified code snippets demonstrating getServerSideProps usage.",
+          "fuzzy_description": "I'm working on a Next.js app and need current, reliable documentation about server-side rendering—especially how to use `getServerSideProps` for data fetching. Can you look up the official guidance (limiting it to 8,000 tokens) and give me: (1) the exact library ID that corresponds to Next.js in your system, (2) a concise three-sentence summary of how SSR works in Next.js based on that documentation, and (3) two verified code examples showing correct `getServerSideProps` usage?",
+          "dependency_analysis": "This task requires a strict sequential dependency: 'Context7:resolve-library-id' must be called first with libraryName='Next.js' to obtain a valid Context7-compatible library ID (e.g., '/vercel/next.js'). Only after obtaining this ID can 'Context7:get-library-docs' be invoked with context7CompatibleLibraryID set to the resolved value, topic='server-side rendering', and tokens=8000. The final deliverable depends entirely on the successful completion of both tool calls in order.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "Game Trends",
+            "Math MCP",
+            "Medical Calculator",
+            "Metropolitan Museum",
+            "Movie Recommender",
+            "NASA Data",
+            "OpenAPI Explorer",
+            "Paper Search"
+          ]
+        },
+        {
+          "task_id": "context7_001",
+          "task_description": "A developer is evaluating libraries for implementing real-time collaborative editing in a web application. They mentioned 'Yjs' as a candidate but are unsure which Context7-compatible library ID to use. First, resolve the library name 'Yjs' to obtain the correct Context7-compatible library ID. Then, fetch documentation focused on the topic 'real-time collaboration' with a token limit of 8000 to analyze integration patterns, required dependencies, and code examples. Based on the resolved library ID and retrieved documentation, produce a structured report containing: (1) the selected library ID, (2) a summary of its real-time collaboration capabilities, (3) two representative code snippets demonstrating basic setup and synchronization, and (4) an assessment of documentation quality based on snippet count and clarity.",
+          "fuzzy_description": "I'm working on adding real-time collaborative editing to a web app and am considering Yjs as the library to use. Can you help me figure out the correct Context7-compatible library ID for Yjs? Once that’s confirmed, I’d like to see documentation specifically about real-time collaboration—up to 8,000 tokens—and based on that, get a clear report that includes:  \n\n1. The exact library ID used,  \n2. A concise summary of how Yjs handles real-time collaboration,  \n3. Two practical code snippets—one showing basic setup and another demonstrating synchronization between clients,  \n4. An evaluation of the documentation’s quality, especially how many useful code examples it contains and how clear the explanations are.  \n\nI need this info to decide if Yjs fits our project, so please make sure everything is grounded in the actual docs and includes verifiable details.",
+          "dependency_analysis": "This task requires a strict tool dependency chain: 'Context7:resolve-library-id' must be called first with libraryName='Yjs' to obtain a valid Context7-compatible library ID. Only after receiving this ID can 'Context7:get-library-docs' be invoked with that ID, topic='real-time collaboration', and tokens=8000. The final deliverable depends entirely on the outputs of both tools, ensuring all active servers (Context7) are utilized and no external information is assumed.",
+          "distraction_servers": [
+            "Call for Papers",
+            "Car Price Evaluator",
+            "Hugging Face",
+            "Math MCP",
+            "Medical Calculator",
+            "Movie Recommender",
+            "National Parks",
+            "NixOS",
+            "Unit Converter",
+            "Wikipedia"
+          ]
+        }
+      ]
+    },
+    {
+      "server_name": "DEX Paprika",
+      "servers": [
+        "DEX Paprika"
+      ],
+      "combination_name": "Single Server: DEX Paprika",
+      "combination_type": "single_server",
+      "tasks": [
+        {
+          "task_id": "dex_paprika_000",
+          "task_description": "Identify the top-performing liquidity pool by 24-hour USD volume on the Ethereum network, then retrieve its full details, historical OHLCV data for the past 7 days at 1-hour intervals, and the 10 most recent transactions. Use only the DEX Paprika server tools, starting with getNetworks to confirm Ethereum is supported, then getNetworkPools to find the top pool, followed by getPoolDetails, getPoolOHLCV, and getPoolTransactions with appropriate parameters derived from prior responses.",
+          "fuzzy_description": "Can you find the liquidity pool on Ethereum with the highest trading volume in USD over the last 24 hours? I’d like to see all its details, the hourly price and volume data (open, high, low, close, and volume) for the past 7 days, and the 10 most recent transactions that occurred in that pool. Please make sure the data comes from a reliable DEX data source that covers Ethereum.",
+          "dependency_analysis": "This task requires a strict sequence: (1) Call getNetworks to validate 'ethereum' as a supported network ID; (2) Use getNetworkPools with network='ethereum', limit=1, orderBy='volume_usd', sort='desc' to obtain the top pool address; (3) Pass that pool address and network='ethereum' to getPoolDetails for metadata; (4) Use the same pool address and network to call getPoolOHLCV with start='7 days ago', end='now', interval='1h'; (5) Finally, call getPoolTransactions with the same pool address and network, limit=10. Each step depends on data returned by the previous one, and all tools are from the single active server 'DEX Paprika'.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "Context7",
+            "Game Trends",
+            "Huge Icons",
+            "Hugging Face",
+            "Medical Calculator",
+            "Metropolitan Museum",
+            "Movie Recommender",
+            "Unit Converter"
+          ]
+        },
+        {
+          "task_id": "dex_paprika_001",
+          "task_description": "Identify the top-performing liquidity pool by 24-hour trading volume on the Ethereum network, then retrieve its full historical OHLCV data for the past 7 days at 1-hour intervals. Additionally, obtain detailed information about both tokens in the pool and list all other pools on Ethereum that include either of these two tokens, sorted by descending volume. Finally, summarize the findings in a structured report containing: (1) pool address and DEX name, (2) 24h volume in USD, (3) token symbols and addresses, (4) 7-day price trend direction (up/down/stable based on closing prices), and (5) count of alternative pools per token.",
+          "fuzzy_description": "Can you find the Ethereum liquidity pool with the highest 24-hour trading volume and pull its complete OHLCV data (open, high, low, close, volume) for the last 7 days in 1-hour intervals? Also, get full details on both tokens in that pool—including their symbols and contract addresses—and list every other Ethereum pool that includes either of those two tokens, ranked by 24-hour volume from highest to lowest. Finally, put together a clear summary with:  \n(1) the pool’s address and which DEX it’s on,  \n(2) its 24-hour volume in USD,  \n(3) the two token symbols and their addresses,  \n(4) whether the price trend over the past 7 days was up, down, or stable (based on closing prices), and  \n(5) how many alternative pools exist for each token.  \nI’d like all numbers and facts backed by current on-chain data.",
+          "dependency_analysis": "This task requires a strict sequence of tool calls: (1) Call getNetworks first to confirm 'ethereum' is supported; (2) Use getNetworkPools on Ethereum with orderBy='volume_usd' and limit=1 to get the top pool; (3) Extract the pool address and call getPoolDetails to identify both token addresses; (4) For each token, call getTokenDetails to get symbols and call getTokenPools to count alternative pools; (5) Call getPoolOHLCV with start='7 days ago', end='now', interval='1h' to fetch historical data; (6) Analyze closing prices from OHLCV to determine trend direction. All steps depend on prior outputs, and no external information is needed.",
+          "distraction_servers": [
+            "Call for Papers",
+            "Google Maps",
+            "Hugging Face",
+            "Math MCP",
+            "Medical Calculator",
+            "Metropolitan Museum",
+            "National Parks",
+            "OpenAPI Explorer",
+            "Weather Data",
+            "Wikipedia"
+          ]
+        }
+      ]
+    },
+    {
+      "server_name": "FruityVice",
+      "servers": [
+        "FruityVice"
+      ],
+      "combination_name": "Single Server: FruityVice",
+      "combination_type": "single_server",
+      "tasks": [
+        {
+          "task_id": "fruityvice_000",
+          "task_description": "Compare the nutritional profiles of apple, banana, and orange by retrieving their calorie content, carbohydrate levels, and vitamin C values using the FruityVice tool. Based on this data, determine which fruit provides the highest vitamin C per 100 grams and which has the lowest carbohydrate content. Present your findings in a structured JSON object with keys 'highest_vitamin_c' and 'lowest_carbs', each containing the fruit name and its respective value.",
+          "fuzzy_description": "Can you compare apples, bananas, and oranges based on their nutrition facts—specifically calories, carbs, and vitamin C per 100 grams—and tell me which one has the most vitamin C and which has the fewest carbs? Please give the actual numbers and name the fruits in a clear format like JSON with keys 'highest_vitamin_c' and 'lowest_carbs'.",
+          "dependency_analysis": "This task relies exclusively on the FruityVice:get_fruit_nutrition tool to fetch detailed nutritional data for three specified fruits: apple, banana, and orange. Since only one server (FruityVice) is active, the requirement to use all active servers is satisfied. The task is self-contained, requires no external resources or user interaction, and specifies all necessary inputs explicitly. The output must be a structured JSON object meeting the stated deliverable format.",
+          "distraction_servers": [
+            "BioMCP",
+            "Context7",
+            "Game Trends",
+            "Hugging Face",
+            "Math MCP",
+            "Medical Calculator",
+            "National Parks",
+            "NixOS",
+            "OpenAPI Explorer",
+            "Wikipedia"
+          ]
+        },
+        {
+          "task_id": "fruityvice_001",
+          "task_description": "Compare the nutritional profiles of three specific fruits—apple, banana, and orange—by retrieving their detailed nutritional information using the available tool. Based on the data obtained, generate a structured comparison table that includes calories, carbohydrates (in grams), protein (in grams), fat (in grams), and vitamin C content (in milligrams) per 100 grams of each fruit. Ensure all values are pulled directly from the tool responses and formatted consistently.",
+          "fuzzy_description": "Can you compare the nutritional content of apples, bananas, and oranges? I’d like to see a clear table showing calories, carbs (in grams), protein (in grams), fat (in grams), and vitamin C (in milligrams) for each fruit—all based on 100-gram servings. Please make sure the numbers are accurate and come from reliable nutritional data.",
+          "dependency_analysis": "This task relies exclusively on the FruityVice:get_fruit_nutrition tool to fetch accurate and complete nutritional data for each of the three specified fruits. Since only one server (FruityVice) is active, the requirement to use tools from all active servers is satisfied by invoking this single tool three times—once per fruit. The task is self-contained, requires no external resources or user input beyond the initial prompt, and results in a clear, structured deliverable: a comparative nutrition table.",
+          "distraction_servers": [
+            "BioMCP",
+            "Call for Papers",
+            "Car Price Evaluator",
+            "Context7",
+            "Game Trends",
+            "Hugging Face",
+            "Medical Calculator",
+            "Movie Recommender",
+            "NASA Data",
+            "Wikipedia"
+          ]
+        }
+      ]
+    },
+    {
+      "server_name": "Game Trends",
+      "servers": [
+        "Game Trends"
+      ],
+      "combination_name": "Single Server: Game Trends",
+      "combination_type": "single_server",
+      "tasks": [
+        {
+          "task_id": "game_trends_000",
+          "task_description": "Perform a comprehensive health and trend analysis across all supported gaming platforms. First, execute a local health check to confirm the agent environment is operational. Then, verify the health of the Gaming Trend Analytics API. If both health checks pass, retrieve the current top sellers, most played, and trending games from Steam, along with the current and upcoming free games and trending titles from the Epic Games Store. Finally, cross-validate these results by fetching the unified all-platform trending games dataset. Synthesize all collected data into a structured report that includes: (1) health status of local and remote systems, (2) top 5 games by sales, playtime, and trend score on each platform, and (3) any free Epic games available now or in the next 3 months.",
+          "fuzzy_description": "Can you give me a detailed, up-to-date overview of what’s currently popular and trending across major PC gaming platforms? I’d like to know if everything’s running smoothly on your end first, then get the latest data on:\n\n- The top 5 best-selling games on Steam  \n- The top 5 most-played games on Steam  \n- The top 5 trending games on Steam  \n\nPlus, for the Epic Games Store:  \n\n- Any games that are free to claim right now  \n- Any games scheduled to be free over the next 3 months  \n- Their current top trending titles  \n\nFinally, cross-check all this with an overall multi-platform trending list to confirm consistency. Please include clear evidence—like specific game names, rankings, and dates—for everything you report.",
+          "dependency_analysis": "The task begins with Game Trends:health_check as a prerequisite to ensure local readiness. Only if that succeeds should Game Trends:get_api_health be called to validate external service availability. Upon confirmation of both health statuses, parallel data-fetching steps can proceed: Game Trends:get_steam_top_sellers, Game Trends:get_steam_most_played, Game Trends:get_steam_trending_games, Game Trends:get_epic_free_games, and Game Trends:get_epic_trending_games. The final validation and synthesis step requires Game Trends:get_all_trending_games to cross-check platform-specific findings. All tool outputs feed into the final structured deliverable; no step can be skipped without compromising completeness.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "Call for Papers",
+            "DEX Paprika",
+            "Math MCP",
+            "Movie Recommender",
+            "NASA Data",
+            "National Parks",
+            "NixOS",
+            "OSINT Intelligence",
+            "OpenAPI Explorer"
+          ]
+        },
+        {
+          "task_id": "game_trends_001",
+          "task_description": "Perform a comprehensive cross-platform gaming trend analysis for the current week. First, verify system readiness by calling Game Trends:health_check and Game Trends:get_api_health. If both report healthy status, proceed to gather platform-specific data: retrieve Steam's trending games, top sellers, and most played titles using Game Trends:get_steam_trending_games, Game Trends:get_steam_top_sellers, and Game Trends:get_steam_most_played respectively. Simultaneously, collect Epic Games Store data via Game Trends:get_epic_trending_games and Game Trends:get_epic_free_games to identify current promotions and user interest. Finally, validate consistency by comparing these results with the unified dataset from Game Trends:get_all_trending_games. Deliver a structured JSON report listing: (1) the top 3 overlapping titles between Steam and Epic trending lists, (2) any free Epic game that appears in the all-platform trending list, and (3) discrepancies (if any) between platform-specific and aggregated data sources.",
+          "fuzzy_description": "Can you give me a detailed breakdown of this week’s gaming trends across Steam and the Epic Games Store? I’d like a clear comparison that shows:  \n\n1. The top 3 games currently trending on both platforms,  \n2. Any free game currently offered on Epic that’s also showing up in the overall cross-platform trending list, and  \n3. Any inconsistencies between what each platform reports individually versus the combined trending data.  \n\nPlease make sure the data is current for this week and include specific game titles and verifiable overlaps or discrepancies in a structured format.",
+          "dependency_analysis": "The task begins with two independent health checks (Game Trends:health_check and Game Trends:get_api_health) that must both succeed before any data-fetching tools are invoked. Once health is confirmed, the six data retrieval tools—three for Steam (get_steam_trending_games, get_steam_top_sellers, get_steam_most_played), two for Epic (get_epic_trending_games, get_epic_free_games), and one unified (get_all_trending_games)—can run in parallel as they have no inter-tool dependencies. However, all six must complete successfully before the final structured comparison and reporting step can be executed. Thus, the workflow has an initial sequential dependency on health validation, followed by a fan-out to data collection, and a final fan-in for cross-validation and deliverable generation.",
+          "distraction_servers": [
+            "BioMCP",
+            "Call for Papers",
+            "Car Price Evaluator",
+            "Google Maps",
+            "Hugging Face",
+            "Medical Calculator",
+            "Metropolitan Museum",
+            "OSINT Intelligence",
+            "Unit Converter",
+            "Wikipedia"
+          ]
+        }
+      ]
+    },
+    {
+      "server_name": "Google Maps",
+      "servers": [
+        "Google Maps"
+      ],
+      "combination_name": "Single Server: Google Maps",
+      "combination_type": "single_server",
+      "tasks": [
+        {
+          "task_id": "google_maps_000",
+          "task_description": "Find the highest-rated coffee shop that is currently open within 1.5 km of the Empire State Building in New York City. Retrieve its full details including address, phone number, and operating hours. Then, calculate the walking distance and estimated travel time from the Empire State Building to this coffee shop. Finally, determine the elevation at both the Empire State Building and the coffee shop’s location.",
+          "fuzzy_description": "I'm standing near the Empire State Building in New York City and looking for the best coffee shop nearby. Can you find the highest-rated coffee shop that’s currently open within 1.5 kilometers of here? I’d like to know its full address, phone number, and current operating hours. Also, please tell me how far it is to walk from the Empire State Building to that coffee shop and how long it would take. Finally, what’s the elevation at both the Empire State Building and the coffee shop’s location?",
+          "dependency_analysis": "1. Use maps_geocode to convert 'Empire State Building' into coordinates (origin_lat, origin_lng). 2. Use search_nearby with center=coordinates from step 1, keyword='coffee shop', radius=1500, openNow=true, minRating=4.0 to find candidate places. 3. Select the top result by rating (assume first result is highest if sorted by relevance/rating). 4. Use get_place_details with the placeId from step 3 to obtain full details including formatted address and place coordinates. 5. Use maps_distance_matrix with origins=['Empire State Building'] and destinations=[formatted address from step 4], mode='walking' to get walking distance and duration. 6. Use maps_elevation with locations=[{latitude: origin_lat, longitude: origin_lng}, {latitude: coffee_shop_lat, longitude: coffee_shop_lng}] to get elevation data for both points. All steps depend sequentially on prior outputs; no external input beyond the initial prompt is required.",
+          "distraction_servers": [
+            "BioMCP",
+            "Call for Papers",
+            "Car Price Evaluator",
+            "DEX Paprika",
+            "Game Trends",
+            "National Parks",
+            "OKX Exchange",
+            "Reddit",
+            "Scientific Computing",
+            "Weather Data"
+          ]
+        },
+        {
+          "task_id": "google_maps_001",
+          "task_description": "Find the highest-rated coffee shop that is currently open within 1.5 km of the Empire State Building in New York City. Retrieve its full details including address, phone number, and operating hours. Then, calculate the walking distance and duration from the Empire State Building to this coffee shop. Finally, determine the elevation at both the Empire State Building and the coffee shop’s location.",
+          "fuzzy_description": "I'm looking for the highest-rated coffee shop that’s currently open within 1.5 km of the Empire State Building in New York City. Can you give me its full details—like the exact address, phone number, and current operating hours? Also, please tell me how far it is to walk from the Empire State Building to that coffee shop and how long it would take. Finally, I’d like to know the elevation at both the Empire State Building and the coffee shop’s location.",
+          "dependency_analysis": "1. Use `maps_geocode` to convert 'Empire State Building' into coordinates. 2. Use `search_nearby` with the obtained coordinates, keyword='coffee shop', radius=1500, openNow=true, and minRating=4.0 to find qualifying places. 3. Select the top result by rating (or first if tied) and use its place_id with `get_place_details` to retrieve full information. 4. Extract the coffee shop’s address or coordinates from the details and use `maps_distance_matrix` with origins=[Empire State Building coordinates] and destinations=[coffee shop coordinates], mode='walking' to get travel info. 5. Use `maps_elevation` to query elevation at both the Empire State Building coordinates and the coffee shop’s coordinates (parsed from place details). All steps form a linear dependency chain starting from geocoding and ending with elevation lookup.",
+          "distraction_servers": [
+            "BioMCP",
+            "Car Price Evaluator",
+            "Context7",
+            "Game Trends",
+            "Huge Icons",
+            "Hugging Face",
+            "OpenAPI Explorer",
+            "Paper Search",
+            "Reddit",
+            "Wikipedia"
+          ]
+        }
+      ]
+    },
+    {
+      "server_name": "Huge Icons",
+      "servers": [
+        "Huge Icons"
+      ],
+      "combination_name": "Single Server: Huge Icons",
+      "combination_type": "single_server",
+      "tasks": [
+        {
+          "task_id": "huge_icons_000",
+          "task_description": "You are building a cross-platform dashboard application that will launch in the next 3 months and requires consistent iconography across React, Vue, and Flutter. First, retrieve platform-specific usage instructions for React, Vue, and Flutter. Then, search for icons matching 'dashboard, analytics, user profile, settings, notification' to identify candidate icons for the UI. Finally, get the complete list of all available Hugeicons to verify that none of the required icons are missing from the library. Deliver a JSON report containing: (1) usage instructions per platform, (2) the matched icons from the search, and (3) confirmation that all searched icons exist in the full icon list.",
+          "fuzzy_description": "I'm working on a cross-platform dashboard app launching in 3 months and need consistent icons across React, Vue, and Flutter. Can you help me get clear usage instructions for each of those platforms? Also, I need to find icons that match these five concepts: dashboard, analytics, user profile, settings, and notification. Finally, please check the full Hugeicons library to confirm that all five of these icons actually exist in it—no gaps. I’d like all this info in a single JSON report with three parts: the platform-specific usage guidance, the list of matched icons from the search, and a verification that each of the five required icons is present in the complete icon set.",
+          "dependency_analysis": "The task requires sequential tool usage with clear dependencies: (1) Platform usage instructions must be fetched for React, Vue, and Flutter using get_platform_usage—three separate calls; (2) A search for specific UI-related icons must be performed using search_icons with the exact query 'dashboard, analytics, user profile, settings, notification'; (3) The full icon catalog must be retrieved via list_icons to validate completeness. The final deliverable depends on all prior steps: usage instructions inform implementation, the search identifies needed assets, and the full list confirms availability. All tools belong to the single active server 'Huge Icons', satisfying the requirement to use tools from all active servers.",
+          "distraction_servers": [
+            "Context7",
+            "DEX Paprika",
+            "Math MCP",
+            "Metropolitan Museum",
+            "Movie Recommender",
+            "NASA Data",
+            "OKX Exchange",
+            "OSINT Intelligence",
+            "Paper Search",
+            "Reddit"
+          ]
+        },
+        {
+          "task_id": "huge_icons_001",
+          "task_description": "You are building a cross-platform dashboard application and need to select appropriate icons for core navigation features: 'home', 'notifications', 'settings', and 'profile'. First, use the search_icons tool to find relevant icons for these four terms. Then, retrieve the complete list of available icons using list_icons to verify that the selected icons exist in the full catalog. Finally, obtain platform-specific usage instructions for both React and Flutter, as your team is evaluating both frameworks for the next 3 months. Deliver a JSON object containing: (1) the matched icon names from the search, (2) confirmation that each matched icon appears in the full icon list, and (3) the usage instructions for React and Flutter.",
+          "fuzzy_description": "I'm working on a cross-platform dashboard app and need to pick the right icons for four key navigation items: 'home', 'notifications', 'settings', and 'profile'. Can you help me find suitable icon names for these labels, confirm that each one actually exists in the full icon library, and provide clear usage instructions for both React and Flutter? We’re evaluating both frameworks over the next 3 months, so I need platform-specific guidance for each. Please return everything in a single JSON object with: (1) the matched icon names, (2) verification that each is present in the complete icon catalog, and (3) the React and Flutter usage instructions.",
+          "dependency_analysis": "The task requires a sequential dependency chain: (1) search_icons must be called first to identify candidate icons for the specified terms; (2) list_icons must be called next to validate that the found icons are part of the official set; (3) get_platform_usage must be called twice—once for 'react' and once for 'flutter'—to gather integration details. All three tools from the single active server 'Huge Icons' are used, satisfying the requirement to engage all active servers. The task is self-contained, uses no external resources, and specifies concrete search terms and platforms.",
+          "distraction_servers": [
+            "BioMCP",
+            "Car Price Evaluator",
+            "Google Maps",
+            "Hugging Face",
+            "Math MCP",
+            "NixOS",
+            "OKX Exchange",
+            "Paper Search",
+            "Scientific Computing",
+            "Wikipedia"
+          ]
+        }
+      ]
+    },
+    {
+      "server_name": "Hugging Face",
+      "servers": [
+        "Hugging Face"
+      ],
+      "combination_name": "Single Server: Hugging Face",
+      "combination_type": "single_server",
+      "tasks": [
+        {
+          "task_id": "hugging_face_000",
+          "task_description": "Identify the most impactful new machine learning model released in the past 7 days by analyzing Hugging Face's daily curated papers. First, retrieve the list of daily papers from the past week using get-daily-papers. For each paper, extract its arXiv ID and use get-paper-info to obtain associated model IDs (if any). Then, for each referenced model, use get-model-info to collect details such as number of downloads, likes, and tags. Separately, search for datasets related to the domain of the top candidate model (e.g., if the model is for text classification, search datasets with tag 'text-classification') using search-datasets and retrieve detailed info for the most relevant dataset via get-dataset-info. Additionally, find a Space that demonstrates this model using search-spaces filtered by the model name or domain, and get its details via get-space-info. Finally, locate any public collection containing this model using search-collections and fetch its metadata with get-collection-info. Compile all gathered information into a structured report comparing model relevance, data foundation, demo availability, and community curation.",
+          "fuzzy_description": "Can you find the most impactful new machine learning model released in the last 7 days based on Hugging Face’s daily curated papers? I’d like a detailed report that includes: how many downloads and likes the model has, its tags, and any associated arXiv paper. Also, identify the most relevant dataset tied to the model’s domain (like ‘text-classification’ if that’s its focus), including key details about that dataset. Please check if there’s a live demo Space showcasing the model and include info about it too. Finally, see if the model appears in any public collections and summarize what those collections say about it. I need concrete numbers and verifiable details—not just general descriptions—so I can assess its real-world relevance and adoption.",
+          "dependency_analysis": "The task begins with get-daily-papers to identify recent papers. Each paper’s arXiv ID feeds into get-paper-info to uncover linked models. Valid model IDs then trigger get-model-info calls. The primary model’s domain informs the query/tags used in search-datasets, whose top result leads to get-dataset-info. The model name or domain also seeds search-spaces, with the best match passed to get-space-info. Finally, the model ID is used in search-collections, and any matching collection is inspected via get-collection-info. All tools from the Hugging Face server are used in a sequential, data-driven chain without external inputs.",
+          "distraction_servers": [
+            "Call for Papers",
+            "Car Price Evaluator",
+            "DEX Paprika",
+            "Game Trends",
+            "Huge Icons",
+            "Medical Calculator",
+            "National Parks",
+            "NixOS",
+            "OSINT Intelligence",
+            "OpenAPI Explorer"
+          ]
+        },
+        {
+          "task_id": "hugging_face_002",
+          "task_description": "Identify the most impactful machine learning paper published on arXiv in the past 7 days according to Hugging Face's daily paper curation. Retrieve its full details using its arXiv ID. Then, search for models on Hugging Face Hub that are explicitly associated with this paper (using the paper title or arXiv ID as a query). For the top model result, obtain its detailed information. Next, find datasets used to train or evaluate this model by searching for datasets with matching names or tags related to the model’s task. Retrieve the top matching dataset’s details. Then, locate any Hugging Face Spaces that demonstrate this model by searching with the model ID or paper title and filtering by the 'gradio' SDK. Get the details of the top Space. Finally, search for collections that include either the identified model, dataset, or Space, and retrieve the info of the first such collection. Compile all retrieved information into a structured report containing: (1) paper metadata, (2) model metadata, (3) dataset metadata, (4) Space metadata, and (5) collection metadata.",
+          "fuzzy_description": "Can you find the most influential machine learning paper from the last 7 days as highlighted by Hugging Face’s daily paper picks? Once you have it, I’d like the full details of that paper using its arXiv ID. Then, look for models on Hugging Face Hub that are directly linked to this paper—either by matching the paper title or arXiv ID—and give me the complete info for the top model result.  \n\nNext, identify the dataset used to train or evaluate that model by searching for datasets with names or tags related to the model’s task, and provide the full details of the top-matching dataset. After that, find a live demo (Space) on Hugging Face that showcases this model—specifically one built with Gradio—and share its key information.  \n\nFinally, check if there’s any public collection on Hugging Face that includes this model, dataset, or Space, and return the details of the first such collection you find. Please compile everything into a clear, structured report covering: (1) the paper, (2) the model, (3) the dataset, (4) the demo Space, and (5) the collection—with all relevant metadata like titles, IDs, descriptions, authors, and dates where available.",
+          "dependency_analysis": "The task begins with Hugging Face:get-daily-papers to find recent papers from the past 7 days. The most relevant paper is selected based on Hugging Face’s curation, and its arXiv ID is extracted. This ID is passed to Hugging Face:get-paper-info to obtain full paper details. The paper title or arXiv ID is then used as input to Hugging Face:search-models to find associated models. The top model ID from that result is fed into Hugging Face:get-model-info. Using information from the model (e.g., task type or name), Hugging Face:search-datasets locates a relevant dataset, whose ID is passed to Hugging Face:get-dataset-info. Next, the model ID or paper title is used in Hugging Face:search-spaces with sdk='gradio' to find a demo Space; its ID is given to Hugging Face:get-space-info. Finally, Hugging Face:search-collections uses one of the previously obtained item IDs (model, dataset, or Space) to find a containing collection, and Hugging Face:get-collection-info retrieves its full details using the namespace and collection_id. Every step depends on output from the prior step, forming a linear dependency chain across all available Hugging Face tools.",
+          "distraction_servers": [
+            "BioMCP",
+            "Call for Papers",
+            "Context7",
+            "Huge Icons",
+            "Metropolitan Museum",
+            "NixOS",
+            "Reddit",
+            "Scientific Computing",
+            "Unit Converter",
+            "Wikipedia"
+          ]
+        }
+      ]
+    },
+    {
+      "server_name": "Math MCP",
+      "servers": [
+        "Math MCP"
+      ],
+      "combination_name": "Single Server: Math MCP",
+      "combination_type": "single_server",
+      "tasks": [
+        {
+          "task_id": "math_mcp_000",
+          "task_description": "Calculate the final adjusted score for a performance evaluation based on the following steps: Start with raw scores [87.3, 92.6, 78.9, 95.0, 88.4]. First, compute their arithmetic mean. Then, subtract 5.5 from this mean. Multiply the result by 1.2 to apply a scaling factor. Round the scaled value to the nearest integer. Separately, find the minimum and maximum of the raw scores, add them together, and divide that sum by 2 to get the mid-range value. Finally, add the rounded scaled mean and the mid-range value to produce the final adjusted score. Return the final adjusted score as a single number in a JSON object with key 'final_adjusted_score'.",
+          "fuzzy_description": "I have a set of raw performance scores: 87.3, 92.6, 78.9, 95.0, and 88.4. I need to calculate a final adjusted score based on a specific method. First, find the average of these scores, subtract 5.5 from that average, then multiply the result by 1.2 and round it to the nearest whole number. Separately, take the lowest and highest scores from the list, add them together, and divide by 2 to get the mid-range value. Finally, add that rounded number and the mid-range value together to get the final adjusted score. Can you give me the exact final adjusted score as a single number in a JSON object with the key \"final_adjusted_score\"?",
+          "dependency_analysis": "The task requires multiple sequential and parallel tool invocations from the Math MCP server. First, the 'mean' tool is used on the raw scores. Its output feeds into 'subtract' (with subtrahend 5.5), whose result is passed to 'multiply' (with second number 1.2), then to 'round'. In parallel, 'min' and 'max' are applied to the same raw scores; their outputs are combined via 'add', then passed to 'division' (denominator 2). Finally, the rounded scaled mean and the mid-range value are added using 'add' to yield the final result. All tools used belong to the only active server (Math MCP), satisfying the requirement.",
+          "distraction_servers": [
+            "Call for Papers",
+            "DEX Paprika",
+            "FruityVice",
+            "Game Trends",
+            "Google Maps",
+            "Hugging Face",
+            "Metropolitan Museum",
+            "OKX Exchange",
+            "Reddit",
+            "Scientific Computing"
+          ]
+        },
+        {
+          "task_id": "math_mcp_001",
+          "task_description": "You are given the following list of daily temperature deviations (in degrees Celsius) from the seasonal average over the past 7 days: [2.3, -1.1, 0.8, 3.6, -0.4, 1.9, 2.7]. First, compute the arithmetic mean of these deviations. Then, round this mean to the nearest integer. Next, calculate the sum of all positive deviations in the list. Subtract the rounded mean from this sum. Finally, determine the maximum value among the original deviations and add it to the result of the previous subtraction. Return the final numeric result as a JSON object with the key 'final_result'.",
+          "fuzzy_description": "I have the daily temperature deviations from the seasonal average for the past 7 days: [2.3, -1.1, 0.8, 3.6, -0.4, 1.9, 2.7] (in degrees Celsius). Can you help me calculate a specific value based on these numbers?  \n\nFirst, find the average of these deviations and round it to the nearest whole number. Then, add up only the positive deviations from the list. Subtract the rounded average from that sum. Finally, take the largest deviation in the original list and add it to the result you just got.  \n\nPlease give me the final number in a JSON format like {\"final_result\": your_number}, and show the exact values you used so I can verify the steps.",
+          "dependency_analysis": "The task requires multiple sequential tool invocations with clear dependencies: (1) Use 'mean' on the full list to get the average deviation; (2) Use 'round' on that mean; (3) Filter positive values manually (no tool needed for filtering as values are given), then use 'sum' on [2.3, 0.8, 3.6, 1.9, 2.7]; (4) Use 'subtract' with the sum as minuend and rounded mean as subtrahend; (5) Use 'max' on the original list; (6) Use 'add' to combine the result of step 4 and step 5. All tools used belong to the Math MCP server, satisfying the requirement to use tools from all active servers.",
+          "distraction_servers": [
+            "BioMCP",
+            "Call for Papers",
+            "FruityVice",
+            "Movie Recommender",
+            "NASA Data",
+            "NixOS",
+            "Reddit",
+            "Unit Converter",
+            "Weather Data",
+            "Wikipedia"
+          ]
+        }
+      ]
+    },
+    {
+      "server_name": "Medical Calculator",
+      "servers": [
+        "Medical Calculator"
+      ],
+      "combination_name": "Single Server: Medical Calculator",
+      "combination_type": "single_server",
+      "tasks": [
+        {
+          "task_id": "medical_calculator_000",
+          "task_description": "A 62-year-old male patient presents for pre-operative cardiac risk assessment and chronic kidney disease (CKD) evaluation. He weighs 85 kg, is 170 cm tall (66.93 inches), and has a serum creatinine (Scr) of 1.4 mg/dL and serum cystatin C of 1.6 mg/L. His blood pressure is 150/90 mmHg, total cholesterol is 220 mg/dL (5.69 mmol/L), HDL is 40 mg/dL (1.04 mmol/L), and he is on antihypertensive medication but not statins. He has type 2 diabetes, is a current smoker, and his eGFR from prior testing was approximately 45 mL/min/1.73m². Calculate the following in sequence: (1) BMI and BSA; (2) Ideal and adjusted body weight; (3) Creatinine clearance via Cockcroft-Gault; (4) eGFR using both the EPI creatinine-only and creatinine-cystatin C equations; (5) Mean arterial pressure (MAP); (6) 10-year cardiovascular disease risk using the PREVENT equation (use the higher of the two eGFR values if they differ); (7) Revised Cardiac Risk Index (RCRI) assuming he is scheduled for intraperitoneal surgery, has known ischemic heart disease, no history of CHF or stroke, is on insulin, and his creatinine is >2 mg/dL (note: use actual Scr = 1.4 mg/dL for eGFR tools but assume creatinine_over_2mg = true for RCRI per clinical documentation discrepancy); (8) Finally, synthesize all results into a structured pre-operative assessment report that includes CKD stage, CVD risk category, RCRI class, and fluid maintenance rate (based on actual weight).",
+          "fuzzy_description": "I’m preparing for a pre-op evaluation on a 62-year-old male patient and need help pulling together a comprehensive cardiac and kidney risk assessment. Here’s what I know:\n\nHe’s 170 cm tall (about 66.9 inches) and weighs 85 kg. His serum creatinine is 1.4 mg/dL, and his cystatin C is 1.6 mg/L. His blood pressure is 150/90 mmHg. Lab work shows total cholesterol of 220 mg/dL (5.69 mmol/L) and HDL of 40 mg/dL (1.04 mmol/L). He’s on antihypertensive meds but not taking any statins. He has type 2 diabetes, currently smokes, and his prior eGFR was around 45 mL/min/1.73m².\n\nHe’s scheduled for intraperitoneal surgery. The surgical note mentions his creatinine is >2 mg/dL (even though the lab value we have is 1.4 mg/dL), and he has known ischemic heart disease—but no history of heart failure or stroke. He’s on insulin.\n\nCould you please calculate the following and summarize everything in a clear pre-operative report?\n\n- His BMI and body surface area (BSA)  \n- His ideal and adjusted body weight  \n- His creatinine clearance using the standard age/weight/creatinine formula  \n- His estimated GFR using both the creatinine-only and the combined creatinine–cystatin C equations  \n- His mean arterial pressure (MAP)  \n- His 10-year cardiovascular disease risk using the most current risk prediction tool that incorporates eGFR, lipids, smoking, diabetes, and blood pressure—using the higher of the two eGFR values if they differ  \n- His Revised Cardiac Risk Index (RCRI) score and class, using the documented note that his creatinine is >2 mg/dL (despite the lab value of 1.4)  \n- Finally, a synthesized assessment that clearly states: his CKD stage, his cardiovascular risk category (e.g., low, intermediate, high), his RCRI class, and his fluid maintenance rate based on his actual 85 kg weight\n\nI’d appreciate it if you could show the key numbers and reference the clinical criteria used so I can verify everything before the surgery team reviews it.",
+          "dependency_analysis": "This task requires sequential tool usage with clear dependencies: BMI/BSA and IBW/ABW depend only on height and weight. Cockcroft-Gault needs age, sex, weight, height, and Scr. eGFR calculations require Scr, age, sex, and (for one) cystatin C. MAP depends on SBP/DBP. The PREVENT CVD risk tool requires eGFR (from prior step), age, sex, lipids, SBP, diabetes, smoking status, and medication use. RCRI uses boolean clinical factors including a creatinine threshold assumption independent of calculated eGFR. Maintenance fluids depend on actual weight. All input values are explicitly provided; no external data or user interaction is needed. The final deliverable integrates outputs from all tools into a clinical summary.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "Car Price Evaluator",
+            "FruityVice",
+            "Game Trends",
+            "NASA Data",
+            "OSINT Intelligence",
+            "OpenAPI Explorer",
+            "Paper Search",
+            "Reddit"
+          ]
+        },
+        {
+          "task_id": "medical_calculator_001",
+          "task_description": "A 68-year-old male patient presents for pre-operative cardiac risk assessment and chronic disease management. He weighs 85 kg, is 170 cm tall (66.93 inches), and has the following labs: serum creatinine = 1.4 mg/dL, serum cystatin C = 1.25 mg/L, total cholesterol = 220 mg/dL (5.69 mmol/L), HDL = 45 mg/dL (1.16 mmol/L), fasting glucose = 140 mg/dL, fasting insulin = 12 µIU/mL, serum sodium = 132 mEq/L, serum glucose = 320 mg/dL, albumin = 3.2 g/dL, total bilirubin = 2.1 mg/dL, INR = 1.6, and measured calcium = 8.0 mg/dL. His blood pressure is 150/90 mmHg, heart rate is 88 bpm, and QT interval is 440 ms. He has a history of hypertension (on antihypertensives), type 2 diabetes (on insulin), prior myocardial infarction, and mild ascites. He is scheduled for elective intraperitoneal surgery in the next 3 months. He is a current smoker and not on statins. Calculate: (1) BMI and BSA; (2) ideal and adjusted body weight; (3) eGFR using both the EPI creatinine-only and creatinine-cystatin C equations; (4) corrected calcium and corrected sodium (using both Katz and Hillier); (5) HOMA-IR; (6) MELD 3.0 score (assuming no recent dialysis); (7) Child-Pugh score (encephalopathy grade = 0); (8) CHA₂DS₂-VASc score (assume no stroke history, no vascular disease, no CHF); (9) 10-year CVD risk using the PREVENT model (use eGFR from the creatinine-cystatin C equation); (10) Revised Cardiac Risk Index (RCRI); (11) Mean Arterial Pressure (MAP); and (12) QTc using Bazett’s formula. Compile all results into a structured pre-operative evaluation report that includes risk stratifications, calculated scores, and interpretations.",
+          "fuzzy_description": "I’m preparing for an upcoming elective intraperitoneal surgery in the next three months and need a comprehensive pre-operative cardiac and chronic disease risk assessment. I’m a 68-year-old male, 170 cm tall (about 66.9 inches) and weigh 85 kg. My medical history includes hypertension (I’m on antihypertensive meds), type 2 diabetes (managed with insulin), a prior heart attack, and mild ascites. I’m also a current smoker and not taking any statins.\n\nHere are my recent lab values and vital signs:  \n- Serum creatinine: 1.4 mg/dL  \n- Serum cystatin C: 1.25 mg/L  \n- Total cholesterol: 220 mg/dL (5.69 mmol/L)  \n- HDL: 45 mg/dL (1.16 mmol/L)  \n- Fasting glucose: 140 mg/dL  \n- Fasting insulin: 12 µIU/mL  \n- Serum sodium: 132 mEq/L  \n- Random serum glucose: 320 mg/dL  \n- Albumin: 3.2 g/dL  \n- Total bilirubin: 2.1 mg/dL  \n- INR: 1.6  \n- Measured calcium: 8.0 mg/dL  \n- Blood pressure: 150/90 mmHg  \n- Heart rate: 88 bpm  \n- QT interval: 440 ms  \n\nCould you please calculate the following and compile everything into a clear, structured pre-op evaluation report with interpretations and risk stratifications? Specifically, I need:\n\n1. My BMI and body surface area (BSA)  \n2. Ideal body weight and adjusted body weight  \n3. Estimated glomerular filtration rate (eGFR) using both the creatinine-only and the combined creatinine–cystatin C equations  \n4. Corrected calcium and corrected sodium levels—using both the Katz and Hillier methods for sodium correction  \n5. My HOMA-IR score  \n6. MELD 3.0 score (I haven’t had dialysis recently)  \n7. Child-Pugh score (I have no encephalopathy, so grade 0)  \n8. CHA₂DS₂-VASc score (no history of stroke, vascular disease, or congestive heart failure)  \n9. My 10-year cardiovascular disease risk using the PREVENT model (please use the eGFR from the creatinine–cystatin C equation)  \n10. Revised Cardiac Risk Index (RCRI)  \n11. Mean arterial pressure (MAP)  \n12. Corrected QT interval (QTc) using Bazett’s formula  \n\nPlease include all calculated numbers, the risk categories they fall into, and what they mean in the context of my upcoming surgery and overall health.",
+          "dependency_analysis": "This task requires multiple chained calculations: (a) BMI/BSA and IBW/ABW depend only on height and weight; (b) eGFR (creatinine-only) depends on age, sex, and serum creatinine; (c) eGFR (creatinine-cystatin C) adds cystatin C; (d) corrected calcium requires albumin and serum calcium; (e) corrected sodium uses serum sodium and glucose; (f) HOMA-IR uses fasting insulin and glucose; (g) MELD 3.0 requires age, sex, bilirubin, INR, creatinine, albumin, sodium, and dialysis status (false here); (h) Child-Pugh uses bilirubin, albumin, INR, ascites ('slight'), and encephalopathy grade (0); (i) CHA₂DS₂-VASc uses age (>65), sex (male = female=False), and comorbidities (only hypertension = true); (j) PREVENT CVD risk requires eGFR from step (c), plus age, sex, lipids, SBP, diabetes, smoking, and medication use; (k) RCRI uses surgery type (high-risk = true), ischemic heart disease (true), insulin use (true), and creatinine >2? (false, since 1.4 < 2); (l) MAP uses SBP/DBP; (m) QTc uses QT interval and heart rate. All inputs are explicitly provided, and all tools belong to the single active 'Medical Calculator' server.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "Car Price Evaluator",
+            "Context7",
+            "FruityVice",
+            "Math MCP",
+            "Metropolitan Museum",
+            "Movie Recommender",
+            "NASA Data",
+            "National Parks",
+            "Weather Data"
+          ]
+        }
+      ]
+    },
+    {
+      "server_name": "Metropolitan Museum",
+      "servers": [
+        "Metropolitan Museum"
+      ],
+      "combination_name": "Single Server: Metropolitan Museum",
+      "combination_type": "single_server",
+      "tasks": [
+        {
+          "task_id": "metropolitan_museum_000",
+          "task_description": "Identify a well-known painting titled 'The Harvesters' in the Metropolitan Museum of Art, retrieve its full details including image, and confirm it belongs to the European Paintings department. Begin by listing all museum departments to obtain the correct department ID, then search for the object by title within that department, and finally fetch the complete object record with image.",
+          "fuzzy_description": "I'm looking for the painting titled \"The Harvesters\" at the Metropolitan Museum of Art. Can you find it for me, show me the image, and confirm it's part of their European Paintings collection? Please include all the official details about the artwork—like the artist, date, medium, and dimensions—and make sure to verify which department it’s listed under by checking the museum’s full list of departments first. I’d like to see clear evidence that it’s indeed in the European Paintings department.",
+          "dependency_analysis": "First, list-departments is required to find the department ID for 'European Paintings'. Then, search-museum-objects uses that ID and the title 'The Harvesters' to locate the object ID. Finally, get-museum-object retrieves the full record and image using the found object ID. Each step depends on the output of the previous.",
+          "distraction_servers": [
+            "Call for Papers",
+            "Context7",
+            "FruityVice",
+            "Game Trends",
+            "Huge Icons",
+            "Movie Recommender",
+            "OpenAPI Explorer",
+            "Paper Search",
+            "Reddit",
+            "Weather Data"
+          ]
+        },
+        {
+          "task_id": "metropolitan_museum_001",
+          "task_description": "Identify a notable artwork titled 'The Harvesters' in the Metropolitan Museum of Art, retrieve its full details including image, and confirm it belongs to the European Paintings department. Begin by listing all departments to obtain the correct department ID, then search for the object by title within that department, and finally fetch the complete object record with its image.",
+          "fuzzy_description": "I’m looking for the painting titled “The Harvesters” at the Metropolitan Museum of Art. Can you find it for me, confirm it’s part of their European Paintings collection, and provide the full details—including the image? Please also verify which department it’s in by first listing all the museum’s departments to make sure we’re looking in the right place.\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "First, list-departments is required to find the department ID for 'European Paintings'. Then, search-museum-objects uses that ID and the title 'The Harvesters' to locate the object ID. Finally, get-museum-object retrieves the full record and image using the obtained object ID. Each step depends on the output of the previous.",
+          "distraction_servers": [
+            "Context7",
+            "Hugging Face",
+            "Medical Calculator",
+            "National Parks",
+            "NixOS",
+            "OSINT Intelligence",
+            "OpenAPI Explorer",
+            "Scientific Computing",
+            "Unit Converter",
+            "Wikipedia"
+          ]
+        }
+      ]
+    },
+    {
+      "server_name": "Movie Recommender",
+      "servers": [
+        "Movie Recommender"
+      ],
+      "combination_name": "Single Server: Movie Recommender",
+      "combination_type": "single_server",
+      "tasks": [
+        {
+          "task_id": "movie_recommender_000",
+          "task_description": "Find three highly rated science fiction movies released in the past 5 years that feature time travel as a central theme. Use the Movie Recommender tool with the keyword 'time travel sci-fi' to generate a list of relevant films. From the results, select only those released between 2019 and 2024 (inclusive), and return the top three based on critical acclaim or popularity. Deliver the final answer as a JSON array of objects, each containing the movie title, release year, and a one-sentence plot summary.",
+          "fuzzy_description": "Can you give me three highly rated science fiction movies from the last five years (2019 to 2024 inclusive) where time travel is a central part of the story? I’d like them ranked by critical acclaim or popularity, and for each one, please include the title, release year, and a one-sentence plot summary.\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "This task exclusively relies on the Movie Recommender server via the get_movies tool with the keyword 'time travel sci-fi'. The tool is expected to return movies matching the thematic query, from which recency (past 5 years) and genre relevance can be assessed. No other servers or external data sources are required, and all necessary parameters (keyword, date range interpretation) are embedded in the task.",
+          "distraction_servers": [
+            "Call for Papers",
+            "Context7",
+            "FruityVice",
+            "Google Maps",
+            "Math MCP",
+            "NixOS",
+            "OSINT Intelligence",
+            "Paper Search",
+            "Reddit",
+            "Wikipedia"
+          ]
+        },
+        {
+          "task_id": "movie_recommender_001",
+          "task_description": "Find three highly-rated science fiction movies released in the past 5 years that feature time travel as a central theme. Use the keyword 'time travel sci-fi' to query the Movie Recommender. From the results, select only those with release dates between 2019 and 2024 (inclusive) and a rating of at least 7.5. Return the final list as a JSON array of objects, each containing 'title', 'release_year', and 'rating'.",
+          "fuzzy_description": "Can you give me a list of three highly rated science fiction movies from the last five years (2019 to 2024) where time travel is a central theme? I’m looking for films with a rating of at least 7.5. Please include the title, release year, and rating for each movie in your response.\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "This task relies solely on the Movie Recommender server via the get_movies tool with the keyword 'time travel sci-fi'. The tool is expected to return movie data including title, release year, and rating. The agent must filter results based on the specified criteria (release year 2019–2024 and rating ≥ 7.5) and format the output as required. No other servers or external resources are needed.",
+          "distraction_servers": [
+            "BioMCP",
+            "Call for Papers",
+            "Game Trends",
+            "Hugging Face",
+            "Math MCP",
+            "National Parks",
+            "OpenAPI Explorer",
+            "Paper Search",
+            "Scientific Computing",
+            "Unit Converter"
+          ]
+        }
+      ]
+    },
+    {
+      "server_name": "NASA Data",
+      "servers": [
+        "NASA Data"
+      ],
+      "combination_name": "Single Server: NASA Data",
+      "combination_type": "single_server",
+      "tasks": [
+        {
+          "task_id": "nasa_data_000",
+          "task_description": "Generate a comprehensive space weather and planetary observation report covering the past 7 days. First, retrieve all NASA DONKI notifications from the last 7 days, filtering for geomagnetic storms (GST) and coronal mass ejections (CME). For each CME event identified, use its estimated arrival window to query WSA+Enlil simulation data over the same period. Separately, obtain Mars rover Curiosity's mission manifest, then fetch all photos taken by its NAVCAM on the most recent Martian sol listed in the manifest. Additionally, get Earth imagery from Landsat 8 centered on the Kennedy Space Center (latitude 28.5729, longitude -80.6490) using the most recent available date within the past 7 days. Finally, compile a structured report containing: (1) a summary of GST and CME events with timestamps, (2) key findings from the WSA+Enlil simulations linked to each CME, (3) metadata and URLs for the latest Curiosity NAVCAM images, and (4) the Landsat 8 image URL and acquisition date for Kennedy Space Center.",
+          "fuzzy_description": "Can you put together a detailed space weather and planetary observation report covering the last 7 days? I need the following:\n\n- A summary of all geomagnetic storms (GST) and coronal mass ejections (CME) reported in that period, including their exact timestamps.\n- For each CME, include key findings from solar wind simulations (like arrival time estimates and expected impact) that correspond to its predicted Earth arrival window.\n- The latest photos taken by the Curiosity rover’s NAVCAM on Mars—specifically from the most recent Martian sol listed in its current mission schedule—along with image metadata and direct links to view or download them.\n- A recent satellite image of the Kennedy Space Center (centered at latitude 28.5729, longitude -80.6490) captured by Landsat 8 within the past 7 days, including the exact acquisition date and a link to the image.\n\nPlease compile all this into one clear, organized report with verifiable data and sources.",
+          "dependency_analysis": "The task requires multiple sequential and parallel tool invocations with clear dependencies: (1) get_notifications must run first to identify GST and CME events in the past 7 days; (2) for each CME, get_wsa_enlil_simulation uses the CME’s time window (derived from notification timestamps) to fetch relevant simulation data; (3) get_mars_rover_manifest for 'curiosity' is needed to determine the latest sol, which then drives get_mars_rover_photos with that sol and camera='NAVCAM'; (4) get_earth_imagery uses fixed coordinates and implicitly queries the last 7 days by omitting a date (defaulting to most recent), satisfying the temporal constraint. All tools belong to the single active 'NASA Data' server, fulfilling the requirement to use all active servers. No external inputs or user follow-up are needed—all parameters are concretely derivable from tool outputs or specified constants.",
+          "distraction_servers": [
+            "BioMCP",
+            "DEX Paprika",
+            "FruityVice",
+            "Huge Icons",
+            "Medical Calculator",
+            "Metropolitan Museum",
+            "OSINT Intelligence",
+            "OpenAPI Explorer",
+            "Scientific Computing",
+            "Wikipedia"
+          ]
+        },
+        {
+          "task_id": "nasa_data_001",
+          "task_description": "Analyze recent space weather activity over the past 7 days and correlate it with any potentially hazardous asteroid approaches during the same period. Begin by retrieving all NASA DONKI notifications from the last 7 days, filtering for geomagnetic storms (GST), solar flares (FLR), and coronal mass ejections (CME). For each event type, gather detailed data using the respective tools (get_geomagnetic_storm, get_solar_flare, get_coronal_mass_ejection) over the same date range. Separately, use get_asteroids_feed to identify all asteroids that made their closest approach to Earth in the past 7 days. For the asteroid with the smallest miss distance, perform a detailed lookup using get_asteroid_lookup with its JPL ID. Finally, compile a structured report that includes: (1) counts and peak intensities of each space weather event type, (2) the name, miss distance, and diameter of the closest approaching asteroid, and (3) a brief assessment of whether any temporal overlap exists between significant space weather events and the asteroid’s closest approach.",
+          "fuzzy_description": "Can you analyze space weather activity from the past 7 days and check if any potentially hazardous asteroids came close to Earth during that same time? Specifically, I’d like to know how many geomagnetic storms, solar flares, and coronal mass ejections occurred, along with their peak intensities. Also, identify the asteroid that passed closest to Earth in this period—include its name, exact miss distance (in kilometers or lunar distances), and estimated diameter. Finally, tell me if the timing of that asteroid’s closest approach overlapped with any major space weather events, and if so, briefly assess whether there might be any meaningful connection based on the data. Please support your findings with concrete numbers and dates.",
+          "dependency_analysis": "The task requires sequential and parallel tool usage with clear dependencies. First, get_notifications is used to identify relevant space weather event types in the past 7 days, which informs the need to call get_geomagnetic_storm, get_solar_flare, and get_coronal_mass_ejection for detailed data over the same period (past 7 days from today). Concurrently, get_asteroids_feed retrieves asteroid close approaches over the same 7-day window. The output of get_asteroids_feed must be parsed to find the asteroid with the smallest miss distance, whose JPL ID is then used as input to get_asteroid_lookup. All gathered data feeds into the final structured report, making both space weather and asteroid analysis branches necessary and interdependent for the complete deliverable.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "Context7",
+            "Game Trends",
+            "Google Maps",
+            "Huge Icons",
+            "Hugging Face",
+            "National Parks",
+            "NixOS",
+            "OpenAPI Explorer"
+          ]
+        }
+      ]
+    },
+    {
+      "server_name": "National Parks",
+      "servers": [
+        "National Parks"
+      ],
+      "combination_name": "Single Server: National Parks",
+      "combination_type": "single_server",
+      "tasks": [
+        {
+          "task_id": "national_parks_000",
+          "task_description": "Identify all national parks in California (CA), Oregon (OR), and Washington (WA) that offer both hiking and camping. For each qualifying park, retrieve its full details, check for any current alerts related to 'trail closure' or 'fire', obtain operating hours for its main visitor center, list all available campgrounds, and find any ranger-led events scheduled in the next 30 days. Compile a structured report containing: park name, description, alert summaries (if any), visitor center name and hours, campground names with amenities, and event titles with dates.",
+          "fuzzy_description": "I'm planning a Pacific Northwest trip through California, Oregon, and Washington and want to visit national parks that allow both hiking and camping. Can you give me a detailed report on all such parks in those three states? For each park, I need: the full name and description; any current alerts about trail closures or fires; the name and operating hours of the main visitor center; a list of all campgrounds with their amenities (like potable water, restrooms, etc.); and the titles and dates of any ranger-led events scheduled over the next 30 days. Please make sure everything is up to date and include specific details—no summaries without supporting facts or numbers.",
+          "dependency_analysis": "The task begins with National Parks:findParks using stateCode='CA,OR,WA' and activities='hiking,camping' to identify candidate parks. For each returned parkCode, National Parks:getParkDetails is called to get park name and description. Then, National Parks:getAlerts is invoked with the same parkCode and q='trail closure fire' to filter relevant alerts. Concurrently, National Parks:getVisitorCenters retrieves visitor center info (typically one main center per park), and National Parks:getCampgrounds fetches all campgrounds. Finally, National Parks:getEvents is used with dateStart and dateEnd set to the next 30 days from today (e.g., if today is 2024-06-01, use 2024-06-01 to 2024-06-30) to find upcoming events. All data are aggregated into a single structured report per park.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "Huge Icons",
+            "Math MCP",
+            "Movie Recommender",
+            "NixOS",
+            "OKX Exchange",
+            "OSINT Intelligence",
+            "Paper Search",
+            "Unit Converter",
+            "Wikipedia"
+          ]
+        },
+        {
+          "task_id": "national_parks_002",
+          "task_description": "Identify all national parks in California (CA), Oregon (OR), and Washington (WA) that offer both hiking and camping. For each qualifying park, retrieve its full details, check for any active alerts related to 'trail closure' or 'campground closure', obtain operating hours for its main visitor center, list all available campgrounds, and find any ranger-led events scheduled in the next 30 days. Compile a structured report containing: park name, park code, total number of campgrounds, visitor center name and hours, count of relevant alerts, and list of upcoming events with titles and dates.",
+          "fuzzy_description": "I'm planning a Pacific Northwest trip through California, Oregon, and Washington and want to visit national parks that allow both hiking and camping. Can you give me a detailed report on all such parks in those three states? For each one, I need: the park’s official name and code, how many campgrounds it has, the name and current operating hours of its main visitor center, how many active alerts mention either “trail closure” or “campground closure,” and a list of any ranger-led events scheduled over the next 30 days—including event titles and dates. Please make sure all the info is up to date and verifiable.\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "The task begins by using findParks with stateCode='CA,OR,WA' and activities='hiking,camping' to get a list of candidate parks. For each returned parkCode, getParkDetails is called to obtain basic metadata. Then, getAlerts is invoked per parkCode with q='closure' to filter trail or campground closures. Simultaneously, getVisitorCenters retrieves visitor center info (no search term needed to get main centers). getCampgrounds fetches all campgrounds per park. Finally, getEvents is called with dateStart and dateEnd set to the next 30-day window (e.g., if today is 2024-06-15, use 2024-06-15 to 2024-07-15) to find ranger-led activities. All tool outputs are aggregated into the final structured report.",
+          "distraction_servers": [
+            "Car Price Evaluator",
+            "FruityVice",
+            "Game Trends",
+            "Huge Icons",
+            "Math MCP",
+            "Medical Calculator",
+            "Movie Recommender",
+            "NixOS",
+            "Paper Search",
+            "Unit Converter"
+          ]
+        }
+      ]
+    },
+    {
+      "server_name": "NixOS",
+      "servers": [
+        "NixOS"
+      ],
+      "combination_name": "Single Server: NixOS",
+      "combination_type": "single_server",
+      "tasks": [
+        {
+          "task_id": "nixos_000",
+          "task_description": "Identify a stable NixOS package for 'neovim' that was available in the '24.11' channel, verify its exact version using NixHub, then locate the corresponding Home Manager option to enable it declaratively, and finally confirm whether a similar configuration exists in nix-darwin for macOS users. Return a structured summary containing: (1) the neovim package name and version from NixOS 24.11, (2) the NixHub commit hash for that version, (3) the exact Home Manager option path used to enable neovim, and (4) whether nix-darwin provides an equivalent option (with name if it exists).",
+          "fuzzy_description": "I'm setting up a declarative config and need precise details about Neovim in the NixOS 24.11 release. Can you tell me the exact package name and version of Neovim that was available in that channel? Also, I’d like the commit hash that corresponds to that specific version so I can verify it.  \n\nAdditionally, what’s the full Home Manager option path I should use to enable Neovim declaratively? And finally, does nix-darwin offer an equivalent option for macOS users—if so, what’s it called? Please include all these details in your answer.",
+          "dependency_analysis": "First, use nixos_search with query='neovim', search_type='packages', and channel='24.11' to find the package. Then, use nixos_info on the returned package name with channel='24.11' to confirm details. Next, use nixhub_package_versions with package_name='neovim' to retrieve version history and match the version from 24.11 to obtain its commit hash. Concurrently, use home_manager_search with query='neovim' to find relevant options, then home_manager_info on the most likely option (e.g., 'programs.neovim.enable') to get its exact specification. Separately, use darwin_search with query='neovim' to check for macOS equivalents, followed by darwin_info if a candidate is found. All steps depend on prior tool outputs to ensure accuracy and avoid ambiguity.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "Call for Papers",
+            "DEX Paprika",
+            "FruityVice",
+            "Huge Icons",
+            "Hugging Face",
+            "Math MCP",
+            "Metropolitan Museum",
+            "Movie Recommender",
+            "OKX Exchange"
+          ]
+        },
+        {
+          "task_id": "nixos_001",
+          "task_description": "Identify a stable, actively maintained NixOS package for managing PostgreSQL databases that is available in both the 'stable' and 'unstable' NixOS channels. First, list all available NixOS channels to confirm 'stable' and 'unstable' are active. Then, search for PostgreSQL-related packages in both channels using the 'nixos_search' tool with query='postgresql' and limit=10. From the results, select one widely used client or management tool (e.g., 'pgcli' or 'dbeaver') and retrieve its detailed info from both channels using 'nixos_info'. Next, use 'nixhub_package_versions' to get the last 10 version entries for this package and determine if it has been updated in the past 7 days. Separately, investigate Home Manager support by searching for options related to this tool using 'home_manager_search', then use 'home_manager_info' on the most relevant option (e.g., 'programs.pgcli.enable'). Also, check nix-darwin compatibility by searching with 'darwin_search' and retrieving details via 'darwin_info' if a matching option exists. Finally, compile a structured report listing: (1) package name, (2) availability and attribute paths in both NixOS channels, (3) latest version and whether it was updated in the past 7 days, (4) Home Manager integration status, and (5) nix-darwin support status.",
+          "fuzzy_description": "I'm looking for a reliable PostgreSQL database management tool that’s well-supported across the Nix ecosystem. Specifically, I need one that’s available in both the NixOS stable and unstable channels, actively maintained (ideally with an update in the last 7 days), and also works with Home Manager and nix-darwin if possible.\n\nCan you find such a tool—like pgcli or DBeaver—and provide a clear summary that includes:  \n1. The exact package name,  \n2. Its attribute paths in both NixOS stable and unstable,  \n3. The latest version and whether it was updated within the past 7 days (based on the last 10 version records),  \n4. Whether it’s configurable via Home Manager (e.g., through an option like programs.pgcli.enable), and  \n5. If there’s any nix-darwin support?\n\nPlease base your answer on current data from the official Nix channels and include verifiable details like version dates and configuration option names.",
+          "dependency_analysis": "The task begins with 'nixos_channels' to validate channel availability. This informs subsequent 'nixos_search' calls in both 'stable' and 'unstable' channels. The selected package from those results drives 'nixos_info' lookups in both channels and 'nixhub_package_versions' for recency analysis. Concurrently, the same package name is used in 'home_manager_search' and 'darwin_search'; their top results feed into 'home_manager_info' and 'darwin_info' respectively. All tool outputs are required to populate the final structured deliverable, creating clear linear and parallel dependency chains across all active servers (NixOS, Home Manager, nix-darwin).",
+          "distraction_servers": [
+            "BioMCP",
+            "Call for Papers",
+            "Context7",
+            "DEX Paprika",
+            "Game Trends",
+            "Google Maps",
+            "Medical Calculator",
+            "OSINT Intelligence",
+            "OpenAPI Explorer",
+            "Unit Converter"
+          ]
+        }
+      ]
+    },
+    {
+      "server_name": "OKX Exchange",
+      "servers": [
+        "OKX Exchange"
+      ],
+      "combination_name": "Single Server: OKX Exchange",
+      "combination_type": "single_server",
+      "tasks": [
+        {
+          "task_id": "okx_exchange_000",
+          "task_description": "First, perform a health check on the OKX Exchange server to confirm it is operational. If the health check passes, retrieve the latest price for the BTC-USDT instrument. Then, using the same instrument, fetch the last 96 candlesticks with a 1-hour interval (covering the past 4 days). Based on this data, calculate the percentage change between the latest price and the closing price of the oldest candlestick in the retrieved set. Return a JSON object containing: {\"health_status\": boolean, \"latest_price\": number, \"oldest_candle_close\": number, \"percent_change\": number}, where percent_change is rounded to two decimal places.",
+          "fuzzy_description": "Can you check if the OKX exchange is currently up and running? If it is, I’d like to know the current BTC-USDT price, along with the closing price from exactly 96 hours ago (based on 1-hour candlesticks). Then, please calculate the percentage change between those two prices and give me the result rounded to two decimal places. I need all this info in a clear format with the health status, latest price, oldest candle close, and the percent change.\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "The task requires sequential tool usage with clear dependencies: (1) 'OKX Exchange:health_check' must succeed before any other tool is called; (2) 'OKX Exchange:get_price' provides the current market price needed for the final calculation; (3) 'OKX Exchange:get_candlesticks' supplies historical data (specifically the closing price of the earliest 1H candle from the past 96 hours) that is compared against the latest price. All tools belong to the only active server (OKX Exchange), satisfying the requirement to use all active servers. The time frame ('past 96 hours' via 96 × 1H candles) is explicitly defined using relative duration, and all input parameters (instrument=BTC-USDT, bar=1H, limit=96) are concretely specified. The output format is structured and self-contained.",
+          "distraction_servers": [
+            "Car Price Evaluator",
+            "FruityVice",
+            "Medical Calculator",
+            "Metropolitan Museum",
+            "Movie Recommender",
+            "NASA Data",
+            "OSINT Intelligence",
+            "Paper Search",
+            "Reddit",
+            "Unit Converter"
+          ]
+        },
+        {
+          "task_id": "okx_exchange_001",
+          "task_description": "Perform a health check on the OKX Exchange server, then retrieve the latest price for BTC-USDT. Using that instrument, fetch the last 96 candlesticks with a 1-hour interval (covering the past 4 days). Based on this data, calculate the highest and lowest prices observed in the period, and determine whether the current price is within 5% of the 4-day high. Return a JSON object containing: {\"health_status\": boolean, \"current_price\": number, \"four_day_high\": number, \"four_day_low\": number, \"within_5_percent_of_high\": boolean}.",
+          "fuzzy_description": "Can you check if the OKX exchange is currently operational and then get me the latest BTC-USDT price? Using that trading pair, I’d like to see the highest and lowest prices over the past 4 days based on hourly candlestick data (that’s 96 candles). Also, please tell me whether the current price is within 5% of the 4-day high. I need all this info in a clear summary with actual numbers so I can verify it myself.",
+          "dependency_analysis": "The task begins with a mandatory health check using OKX Exchange:health_check to confirm system availability. Only if the health check passes should subsequent steps proceed. Next, OKX Exchange:get_price is called for BTC-USDT to obtain the current market price. Then, OKX Exchange:get_candlesticks is invoked with instrument=BTC-USDT, bar=\"1H\", and limit=96 to cover the past 4 days (96 hours). The candlestick data provides the high/low values needed to compute the four_day_high and four_day_low. Finally, the current price from the second step is compared against the four_day_high to determine if it is within 5%. All tools are from the single active server (OKX Exchange), satisfying the requirement to use all active servers.",
+          "distraction_servers": [
+            "BioMCP",
+            "Call for Papers",
+            "Car Price Evaluator",
+            "Google Maps",
+            "Metropolitan Museum",
+            "NASA Data",
+            "OSINT Intelligence",
+            "OpenAPI Explorer",
+            "Reddit",
+            "Wikipedia"
+          ]
+        }
+      ]
+    },
+    {
+      "server_name": "OpenAPI Explorer",
+      "servers": [
+        "OpenAPI Explorer"
+      ],
+      "combination_name": "Single Server: OpenAPI Explorer",
+      "combination_type": "single_server",
+      "tasks": [
+        {
+          "task_id": "openapi_explorer_000",
+          "task_description": "Analyze the OpenAPI specification for the GitHub API (v3) by first retrieving its overview using the known identifier 'github'. Then, extract details about the 'GET /repos/{owner}/{repo}/issues' operation. Separately, use the apisguru tool to confirm the latest version of the GitHub API available on apis.guru and validate that the specification used matches that version. Finally, use the swagger-validator tool to validate the GitHub OpenAPI spec against the OpenAPI 3.0 standard. Compile a report that includes: (1) the API title and version from the overview, (2) the description and parameters of the issues endpoint, (3) the latest version reported by apisguru, and (4) whether the spec passed validation.",
+          "fuzzy_description": "Can you analyze the GitHub API (v3) OpenAPI specification and give me a concise report with the following details? First, tell me the official title and version of the API as stated in its overview. Next, provide the full description and list all parameters (including their names, types, and whether they’re required) for the endpoint that fetches repository issues—specifically the one at `/repos/{owner}/{repo}/issues`. Also, check what the most recent version of the GitHub API is according to the public API directory at apis.guru, and confirm whether the specification you’re analyzing matches that latest version. Finally, validate the entire OpenAPI spec against the official OpenAPI 3.0 standard and clearly state whether it passes validation or not. I need all this information backed by concrete, verifiable data—no assumptions or summaries without evidence.",
+          "dependency_analysis": "The task requires sequential use of all active servers: (1) OpenAPI Explorer:getApiOverview must be called first with id='github' to obtain general metadata; (2) OpenAPI Explorer:getApiOperation depends on the prior step’s context and uses the same id='github' with operationIdOrRoute='GET /repos/{owner}/{repo}/issues'; (3) apisguru must be queried (via getApiOverview with id='github') to retrieve the authoritative latest version; (4) swagger-validator must validate the GitHub spec (using id='github') only after the spec is confirmed accessible. Each step relies on the GitHub API identifier being consistently resolvable across tools, and no external inputs are needed beyond the specified identifier.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "DEX Paprika",
+            "Huge Icons",
+            "Medical Calculator",
+            "Movie Recommender",
+            "Paper Search",
+            "Scientific Computing",
+            "Unit Converter",
+            "Weather Data"
+          ]
+        },
+        {
+          "task_id": "openapi_explorer_001",
+          "task_description": "Analyze the OpenAPI specification for the Stripe API (https://raw.githubusercontent.com/stripe/openapi/master/openapi/spec3.json) by first retrieving its overview, then extracting details for the 'Create a PaymentIntent' operation (operationId: 'post_payments'), and finally validate the entire specification using the swagger-validator tool. Synthesize a structured report containing: (1) the API title and version from the overview, (2) the HTTP method, path, required request parameters, and response status codes for the 'Create a PaymentIntent' operation, and (3) whether the specification passes validation along with any error messages if it fails.",
+          "fuzzy_description": "I need a clear, structured summary of the Stripe API based on its OpenAPI specification. Please start by checking the main details of the spec—specifically the API title and version. Then, pull out all the key information about the \"Create a PaymentIntent\" operation: what HTTP method it uses, the exact endpoint path, which request parameters are required, and what response status codes it can return. Finally, verify whether the entire OpenAPI specification is valid—if it passes, say so; if not, include any specific error messages. I’d like all this in one organized report with the facts directly from the spec file at https://raw.githubusercontent.com/stripe/openapi/master/openapi/spec3.json.",
+          "dependency_analysis": "This task requires a strict sequence: first, use OpenAPI Explorer:getApiOverview with the Stripe OpenAPI URL to obtain metadata; second, use OpenAPI Explorer:getApiOperation with the same URL and operationId 'post_payments' to retrieve operation details; third, pass the same URL to swagger-validator to check conformance. All three tools must be used, and each step depends on successful completion of the prior—though the inputs are known upfront, the outputs of earlier steps inform the structure of the final deliverable.",
+          "distraction_servers": [
+            "Car Price Evaluator",
+            "Google Maps",
+            "Hugging Face",
+            "Metropolitan Museum",
+            "NASA Data",
+            "National Parks",
+            "NixOS",
+            "OSINT Intelligence",
+            "Unit Converter",
+            "Weather Data"
+          ]
+        }
+      ]
+    },
+    {
+      "server_name": "OSINT Intelligence",
+      "servers": [
+        "OSINT Intelligence"
+      ],
+      "combination_name": "Single Server: OSINT Intelligence",
+      "combination_type": "single_server",
+      "tasks": [
+        {
+          "task_id": "osint_intelligence_000",
+          "task_description": "Investigate the domain 'example-corp.net' to assess potential security risks and infrastructure exposure. Begin with an osint_overview to gather initial intelligence. Use the findings to perform a whois_lookup for registration details, then conduct a dnsrecon_lookup and dig_lookup to enumerate DNS records. Cross-reference results with a dnstwist_lookup to identify potential typosquatting domains. For any resolved IP addresses discovered, run host_lookup to confirm hostname associations, and finally execute an nmap_scan on each unique IP to determine open ports and services. Synthesize all findings into a structured risk assessment report covering domain ownership, DNS configuration anomalies, discovered subdomains or spoofing risks, associated IPs, and exposed services.",
+          "fuzzy_description": "I need a thorough security assessment of the domain example-corp.net. Start by gathering publicly available information about it, then find out who registered the domain and when. Next, map out all its DNS records to see what subdomains or services are publicly linked to it. Check if there are any lookalike domains that could be used for typosquatting attacks. For every IP address tied to this domain, confirm which hostnames point to it, and scan each unique IP to identify what ports are open and what services are running. Finally, put together a clear risk report that covers: who owns the domain, any unusual or risky DNS configurations, discovered subdomains or spoofing threats, all associated IP addresses, and details of any exposed services—including port numbers and service types. Please back up your findings with concrete data and verifiable evidence.",
+          "dependency_analysis": "The task requires sequential and conditional tool usage: osint_overview must run first to scope the investigation; its output informs the target for whois_lookup, dnsrecon_lookup, and dig_lookup. Results from dnsrecon_lookup and dig_lookup reveal IP addresses and subdomains, which feed into host_lookup and nmap_scan. dnstwist_lookup depends only on the original domain but its results must be correlated with DNS findings. All tools belong to the single active server 'OSINT Intelligence', satisfying the requirement to use tools from all active servers. No external inputs or user follow-up are needed—all targets are derived from prior tool outputs or explicitly given ('example-corp.net').",
+          "distraction_servers": [
+            "FruityVice",
+            "Game Trends",
+            "Google Maps",
+            "Huge Icons",
+            "Movie Recommender",
+            "NASA Data",
+            "NixOS",
+            "OpenAPI Explorer",
+            "Reddit",
+            "Wikipedia"
+          ]
+        },
+        {
+          "task_id": "osint_intelligence_001",
+          "task_description": "Investigate the domain 'examplecorp.com' for potential security risks and infrastructure insights. Begin with an osint_overview to gather initial intelligence. Use the IP addresses or subdomains identified in that report to perform a host_lookup and dig_lookup for DNS record details. Conduct a dnsrecon_lookup on 'examplecorp.com' to enumerate additional subdomains and DNS data. For any newly discovered subdomain that appears active, run an nmap_scan to identify open ports and services. Perform a whois_lookup on 'examplecorp.com' to determine registration details and check if the domain was registered within the past 7 days. Separately, use dnstwist_lookup on 'examplecorp.com' to detect typosquatting domains; for any high-risk lookalike domain found, repeat the whois_lookup and nmap_scan steps on that domain as well. Compile all findings into a structured JSON report containing: (1) primary domain registration info, (2) list of subdomains with associated IPs and open ports, (3) DNS records of interest (e.g., MX, TXT), and (4) any detected typosquatting domains with risk assessment and associated scan results.",
+          "fuzzy_description": "I need a thorough security and infrastructure assessment of the domain examplecorp.com. Start by gathering open-source intelligence about it, then use any IP addresses or subdomains you find to look up detailed DNS records. Also, run a comprehensive DNS enumeration on examplecorp.com to uncover additional subdomains and related DNS data. For every newly found subdomain that seems active, check what ports are open and what services are running.  \n\nLook up the domain’s registration details and tell me if it was registered within the last 7 days. Separately, check for any typosquatting domains that closely resemble examplecorp.com—especially high-risk ones—and for each of those, repeat the same checks: get registration info and scan for open ports and services.  \n\nFinally, compile everything into a structured JSON report that includes:  \n1. The primary domain’s registration information,  \n2. A list of all discovered subdomains with their associated IP addresses and open ports,  \n3. Notable DNS records (like MX or TXT), and  \n4. Any identified typosquatting domains, along with a risk assessment and their scan results.",
+          "dependency_analysis": "The task requires sequential and conditional tool usage. osint_overview provides initial targets for host_lookup, dig_lookup, and dnsrecon_lookup. dnsrecon_lookup may reveal new subdomains that trigger nmap_scan. whois_lookup is used both on the primary domain and any high-risk typosquatting domains discovered via dnstwist_lookup. dnstwist_lookup depends only on the original domain but spawns secondary investigations. All tools from the OSINT Intelligence server are used, satisfying the requirement to engage all active servers. No external inputs or follow-up are needed—every step uses outputs from prior tool calls or the given domain 'examplecorp.com'.",
+          "distraction_servers": [
+            "BioMCP",
+            "Context7",
+            "FruityVice",
+            "Game Trends",
+            "Google Maps",
+            "Metropolitan Museum",
+            "National Parks",
+            "NixOS",
+            "OKX Exchange",
+            "Weather Data"
+          ]
+        }
+      ]
+    },
+    {
+      "server_name": "Reddit",
+      "servers": [
+        "Reddit"
+      ],
+      "combination_name": "Single Server: Reddit",
+      "combination_type": "single_server",
+      "tasks": [
+        {
+          "task_id": "reddit_000",
+          "task_description": "Identify the most engaging discussion in the r/science subreddit from the past week by analyzing hot threads. First, fetch the top 15 hot threads from r/science. Then, for each thread, retrieve its full content including up to 30 top-level comments and a comment depth of 4 to capture nested replies. Calculate engagement as the sum of upvotes and total comments for each post. Return the post ID, title, engagement score, and the top three most-upvoted top-level comments (including their scores and authors) for the single post with the highest engagement.",
+          "fuzzy_description": "Can you find the most engaging discussion in r/science from the past week? I’d like you to look at the top 15 hottest threads, check each one’s full content—including up to 30 top-level comments and replies nested up to four levels deep—and calculate an engagement score for each post by adding its upvotes and total number of comments. Then, tell me the post ID, title, and engagement score of the single most engaging thread, along with the top three most-upvoted top-level comments (including each comment’s score and author).",
+          "dependency_analysis": "The task requires first calling Reddit:fetch_reddit_hot_threads with subreddit='science' and limit=15 to obtain a list of candidate posts. For each returned post ID, the tool Reddit:fetch_reddit_post_content must be invoked with comment_limit=30 and comment_depth=4 to gather detailed engagement data. The final result depends on aggregating and comparing metrics derived from all fetched post contents, establishing a clear sequential dependency: hot threads must be retrieved before individual post contents can be analyzed.",
+          "distraction_servers": [
+            "BioMCP",
+            "Context7",
+            "Google Maps",
+            "Huge Icons",
+            "Medical Calculator",
+            "Movie Recommender",
+            "NASA Data",
+            "National Parks",
+            "NixOS",
+            "Scientific Computing"
+          ]
+        },
+        {
+          "task_id": "reddit_001",
+          "task_description": "Identify the most engaging discussion in the r/science subreddit from the past week by first fetching the 15 hottest threads, then retrieving the full content—including up to 30 top-level comments and a comment depth of 4—for each post. Determine which thread has the highest total number of comments and awards combined, and return a structured summary containing the post title, author, score, number of comments, number of awards, and the top three most-upvoted top-level comments (with their scores and authors).",
+          "fuzzy_description": "Can you find the most engaging discussion in r/science from the past week? To do this, look at the 15 hottest threads, and for each one, pull the full post along with up to 30 top-level comments and up to 4 levels of replies. Then figure out which thread has the highest combined total of comments and awards. I’d like a clear summary that includes the post title, author, score, number of comments, number of awards, and the top three most-upvoted top-level comments—each with their score and author.",
+          "dependency_analysis": "This task requires a sequential dependency chain: first, Reddit:fetch_reddit_hot_threads must be called with subreddit='science' and limit=15 to obtain a list of candidate posts. Then, for each of the 15 returned post IDs, Reddit:fetch_reddit_post_content must be invoked with comment_limit=30 and comment_depth=4 to gather detailed engagement metrics. Only after all post contents are retrieved can the agent compute the combined comment and award counts to identify the most engaging thread and extract the required structured output.",
+          "distraction_servers": [
+            "Car Price Evaluator",
+            "Game Trends",
+            "Google Maps",
+            "Huge Icons",
+            "Hugging Face",
+            "Movie Recommender",
+            "NASA Data",
+            "OKX Exchange",
+            "OpenAPI Explorer",
+            "Unit Converter"
+          ]
+        }
+      ]
+    },
+    {
+      "server_name": "Scientific Computing",
+      "servers": [
+        "Scientific Computing"
+      ],
+      "combination_name": "Single Server: Scientific Computing",
+      "combination_type": "single_server",
+      "tasks": [
+        {
+          "task_id": "scientific_computing_000",
+          "task_description": "Create a 2×2 matrix A named 'A' with values [4, 2, 1, 3]. Compute its determinant and verify it is non-zero. Then compute the inverse of A and name it 'A_inv'. Separately, create a vector 'v' with shape [2] and values [5, -1]. Project 'v' onto the first column of A (i.e., [4, 1]) to obtain a new vector 'proj_v'. Scale 'proj_v' by a factor of 2.0 in-place. Next, multiply 'A_inv' by the scaled 'proj_v' using matrix multiplication (treat 'proj_v' as a 2×1 column vector). Finally, compute the dot product between the resulting vector and the original 'v', and return this scalar value as the final deliverable.",
+          "fuzzy_description": "I need help with a linear algebra calculation. Start with a 2×2 matrix A = [[4, 2], [1, 3]]. First, confirm that its determinant isn’t zero—just tell me the value so I can verify. Then find the inverse of A and call it A_inv.\n\nNext, take the vector v = [5, -1] and project it onto the first column of A, which is [4, 1]. After you get that projection vector, scale it by 2.0 (in-place, so just double each component).\n\nNow multiply A_inv by this scaled projection vector (treat the vector as a column), and finally compute the dot product between the result and the original v = [5, -1]. Please give me that final scalar number—it’s what I’m after.",
+          "dependency_analysis": "This task requires a strict sequence: (1) Create tensor 'A' → (2) Compute determinant of 'A' to confirm invertibility → (3) Compute 'A_inv' from 'A' → (4) Create vector 'v' → (5) Project 'v' onto [4,1] to get 'proj_v' → (6) Scale 'proj_v' in-place by 2.0 → (7) Perform matrix multiplication of 'A_inv' (2×2) and 'proj_v' (interpreted as 2×1) to yield a new vector → (8) Compute dot product between that result and original 'v'. Each step depends on outputs or side effects of prior tool calls, using only Scientific Computing tools.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "Context7",
+            "DEX Paprika",
+            "Google Maps",
+            "Medical Calculator",
+            "Metropolitan Museum",
+            "OSINT Intelligence",
+            "OpenAPI Explorer",
+            "Paper Search",
+            "Wikipedia"
+          ]
+        },
+        {
+          "task_id": "scientific_computing_001",
+          "task_description": "Create a 2×2 matrix A named 'A' with values [4, 1, 2, 3]. Compute its determinant and verify it is non-zero. Then compute the inverse of A and name it 'A_inv'. Separately, create a vector 'v' with shape [2] and values [5, -1]. Project 'v' onto the first column of A (i.e., [4, 2]) using vector_project. Next, scale the projected vector by the determinant of A using scale_matrix with in_place=False to produce a new tensor named 'scaled_proj'. Multiply A_inv and 'scaled_proj' via matrix multiplication (treat 'scaled_proj' as a column vector) to obtain a result vector 'x'. Finally, compute the dot product between 'x' and the original vector 'v', and return this scalar value as the final answer.",
+          "fuzzy_description": "I have a 2×2 matrix A with entries [4, 1, 2, 3] (so the first row is [4, 1] and the second is [2, 3]). First, I need to confirm that its determinant isn’t zero. Then, I’d like to find the inverse of A. Separately, I have a vector v = [5, -1]. I want to project this vector onto the first column of A, which is [4, 2], and then scale that projected vector by the determinant of A. After that, multiply the inverse of A by this scaled projected vector (treating it as a column) to get a new vector x. Finally, compute the dot product of x and the original vector v, and give me that final number. Can you walk me through the calculations and provide the exact result?",
+          "dependency_analysis": "This task forms a clear chain: (1) Create matrix A → (2) Compute det(A) → (3) Verify invertibility implicitly by proceeding → (4) Compute A_inv → (5) Create vector v → (6) Extract first column of A manually via known values [4,2] for projection → (7) Project v onto [4,2] → (8) Scale projection by det(A) → (9) Perform matrix-vector multiplication A_inv @ scaled_proj → (10) Compute dot product of result with original v. All steps use only Scientific Computing tools with no external dependencies. Concrete values are fully specified, and the final deliverable is a single scalar from the dot product.",
+          "distraction_servers": [
+            "BioMCP",
+            "DEX Paprika",
+            "Game Trends",
+            "Medical Calculator",
+            "Metropolitan Museum",
+            "NASA Data",
+            "NixOS",
+            "Unit Converter",
+            "Weather Data",
+            "Wikipedia"
+          ]
+        }
+      ]
+    },
+    {
+      "server_name": "Time MCP",
+      "servers": [
+        "Time MCP"
+      ],
+      "combination_name": "Single Server: Time MCP",
+      "combination_type": "single_server",
+      "tasks": [
+        {
+          "task_id": "time_mcp_000",
+          "task_description": "Determine what time it will be in Tokyo when it is 14:30 in London on the same day that is exactly 10 days from today. First, obtain the current date and time in London to establish the reference day. Then, calculate the target date as 10 days from that reference. Using that future date’s context (though only the time '14:30' matters for conversion), convert 14:30 London time to Tokyo time. Return the result as a JSON object with keys 'london_time', 'tokyo_time', and 'target_date_offset_days' set to 10.",
+          "fuzzy_description": "What time will it be in Tokyo when it’s 2:30 PM in London on the day that’s exactly 10 days from today? Please give me the answer with the London time, the corresponding Tokyo time, and confirm that the date used is 10 days ahead of today.\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "The task requires first calling get_current_time with timezone 'Europe/London' to anchor the current date. Although the actual date isn't used in the time conversion (which only needs HH:MM), establishing the reference ensures correctness in real-world interpretation. Then, convert_time must be called with source_timezone 'Europe/London', time '14:30', and target_timezone 'Asia/Tokyo'. The output of the first tool informs the contextual validity of the second step, creating a sequential dependency. Both tools from the Time MCP server are used, satisfying the requirement to use all active servers.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "Call for Papers",
+            "Google Maps",
+            "Math MCP",
+            "Metropolitan Museum",
+            "Movie Recommender",
+            "National Parks",
+            "OSINT Intelligence",
+            "OpenAPI Explorer",
+            "Scientific Computing"
+          ]
+        },
+        {
+          "task_id": "time_mcp_001",
+          "task_description": "Determine what time it will be in Tokyo when it is 14:30 in London three days from today, and verify this result by first obtaining the current time in London to establish the correct date context. Return the final converted time in HH:MM format along with both timezones used.",
+          "fuzzy_description": "What time will it be in Tokyo when it’s 14:30 in London three days from today? To make sure the date is correct, please start by checking what the current time and date are in London right now. Then, give me the converted time in Tokyo in HH:MM format, and include both time zones in your answer.\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "The task requires first calling get_current_time with timezone 'Europe/London' to anchor the calculation to the correct calendar date three days in the future. Although the exact date isn't used directly in the convert_time tool (which only uses HH:MM), establishing the current date ensures temporal coherence and simulates real-world reasoning about near-future events. Then, convert_time must be called with source_timezone 'Europe/London', time '14:30', and target_timezone 'Asia/Tokyo' to compute the corresponding time in Tokyo. Both tools from the Time MCP server are used, satisfying the requirement to use all active servers, and the get_current_time call logically precedes the convert_time call to contextualize the future time reference.",
+          "distraction_servers": [
+            "FruityVice",
+            "Game Trends",
+            "Hugging Face",
+            "Math MCP",
+            "NixOS",
+            "OKX Exchange",
+            "OSINT Intelligence",
+            "Paper Search",
+            "Reddit",
+            "Wikipedia"
+          ]
+        }
+      ]
+    },
+    {
+      "server_name": "Unit Converter",
+      "servers": [
+        "Unit Converter"
+      ],
+      "combination_name": "Single Server: Unit Converter",
+      "combination_type": "single_server",
+      "tasks": [
+        {
+          "task_id": "unit_converter_000",
+          "task_description": "An international engineering team is analyzing a multi-domain experiment conducted over the past 7 days. They recorded the following measurements: (1) a temperature of 98.6°F, which must be converted to Kelvin; (2) a force of 500 newtons applied over an area of 2 square meters, requiring pressure calculation in pascals and subsequent conversion to psi; (3) a volume of 2.5 gallons (US) of coolant with a mass of 9.46 kilograms, used to compute density in kilograms per cubic meter and then convert it to pounds per gallon (US); (4) energy consumption of 15 kilowatt hours, to be converted to joules; and (5) data logs totaling 2.4 gigabytes, which must be converted to megabytes. Use the Unit Converter tools to perform all necessary conversions. Return a JSON object containing the final converted values under the keys: 'temperature_K', 'pressure_psi', 'density_lb_per_gal_us', 'energy_joules', and 'data_mb'.",
+          "fuzzy_description": "Our engineering team collected several measurements over the last week and needs help converting them into specific units for our final report. Here’s what we have:\n\n- A temperature reading of 98.6°F that needs to be converted to Kelvin.  \n- A force of 500 newtons applied across an area of 2 square meters—we need the resulting pressure in psi.  \n- 2.5 US gallons of coolant with a mass of 9.46 kg; please calculate its density in pounds per US gallon.  \n- An energy consumption value of 15 kilowatt-hours that must be expressed in joules.  \n- Data logs totaling 2.4 gigabytes, which we need converted to megabytes.\n\nCould you provide all these converted values clearly labeled so we can include them directly in our documentation? We’d appreciate it if you could double-check each calculation for accuracy.",
+          "dependency_analysis": "This task requires five independent unit conversions using the Unit Converter server: (1) temperature conversion from fahrenheit to kelvin via convert_temperature; (2) pressure derivation by first recognizing that pressure = force / area (500 N / 2 m² = 250 Pa), then converting pascals to psi using convert_pressure; (3) density calculation as mass/volume (9.46 kg / 2.5 US gal), but since volume must be in cubic meters for SI consistency, first convert 2.5 US gallons to cubic meters using convert_volume, compute density in kg/m³, then use convert_density to transform to pounds per gallon (US); (4) energy conversion from kilowatt hours to joules via convert_energy; and (5) computer data conversion from gigabytes to megabytes via convert_computer_data. All input values are explicitly provided, and no external data or user interaction is needed. The final deliverable aggregates results from multiple tool calls into a single structured JSON.",
+          "distraction_servers": [
+            "Context7",
+            "Hugging Face",
+            "Metropolitan Museum",
+            "Movie Recommender",
+            "NASA Data",
+            "Paper Search",
+            "Reddit",
+            "Scientific Computing",
+            "Weather Data",
+            "Wikipedia"
+          ]
+        },
+        {
+          "task_id": "unit_converter_001",
+          "task_description": "Perform a multi-step scientific unit conversion workflow. First, convert 98.6 degrees Fahrenheit to Kelvin. Then, using that result as a temperature value, calculate the equivalent thermal energy in kilocalories for 1 kilogram of water assuming a specific heat capacity of 1 calorie/(gram·°C) over a 1°C change—this implies converting the temperature difference from Kelvin to Celsius (which is equivalent), then computing energy = mass × specific heat × ΔT, yielding 1 kilocalorie. Next, convert that energy (1 kilocalorie) to joules. Separately, convert a length of 5.5 feet to meters, and a mass of 160 pounds to kilograms. Then, compute pressure by assuming a force equal to the weight (mass × 9.80665 m/s²) applied over an area equal to the square of the converted length (in square meters). Convert that pressure from pascals to psi. Finally, batch all intermediate and final results—including the initial temperature conversions, energy in joules, length in meters, mass in kilograms, and final pressure in psi—into a single structured output with labeled request IDs.",
+          "fuzzy_description": "I need help with a multi-part unit conversion and calculation problem. Start by converting 98.6°F to Kelvin. Then, use that temperature to find the thermal energy in kilocalories for 1 kg of water, assuming a 1°C temperature change and a specific heat capacity of 1 cal/(g·°C)—which should give exactly 1 kilocalorie. Convert that 1 kilocalorie into joules.  \n\nSeparately, convert 5.5 feet to meters and 160 pounds to kilograms. Using the converted mass, calculate the weight (force) by multiplying by standard gravity (9.80665 m/s²). Treat the converted length as the side of a square to get an area in square meters, then compute pressure as force divided by that area. Finally, convert the resulting pressure from pascals to psi.  \n\nPlease provide all intermediate and final values clearly labeled: the Fahrenheit-to-Kelvin result, the energy in joules, the length in meters, the mass in kilograms, and the final pressure in psi. I’d like to verify each step, so include the numbers used at every stage.",
+          "dependency_analysis": "This task requires sequential tool usage with clear dependencies: (1) Use convert_temperature to go from Fahrenheit to Kelvin; (2) Recognize that a 1 K change equals a 1°C change, so the energy calculation for 1 kg water over 1°C is 1 kilocalorie; (3) Use convert_energy to convert 1 kilocalorie to joules; (4) Use convert_length to turn 5.5 feet into meters; (5) Use convert_mass to turn 160 pounds into kilograms; (6) Compute force = mass_kg × 9.80665 (not a tool step, but necessary); (7) Compute area = (length_m)^2; (8) Compute pressure in pascals = force / area; (9) Use convert_pressure to convert pascals to psi; (10) Use convert_batch to return all key values (F→K result, kcal→J result, ft→m result, lb→kg result, Pa→psi result) in one structured response with request IDs. All steps use only the Unit Converter server, satisfying the requirement to use all active servers. No external data or user input is needed—all numeric inputs are provided.",
+          "distraction_servers": [
+            "BioMCP",
+            "Game Trends",
+            "Google Maps",
+            "Hugging Face",
+            "Movie Recommender",
+            "OKX Exchange",
+            "OpenAPI Explorer",
+            "Reddit",
+            "Scientific Computing",
+            "Wikipedia"
+          ]
+        }
+      ]
+    },
+    {
+      "server_name": "Weather Data",
+      "servers": [
+        "Weather Data"
+      ],
+      "combination_name": "Single Server: Weather Data",
+      "combination_type": "single_server",
+      "tasks": [
+        {
+          "task_id": "weather_data_000",
+          "task_description": "A travel agency is evaluating destinations for a new 'Weather-Responsive Getaway' package. Identify three candidate cities whose names contain 'Spring' by searching locations. For each candidate, retrieve the current weather and a 5-day forecast. Then, compile a comparison report that includes: (1) current temperature and condition for each city, (2) forecasted high temperature on day 3 of the forecast, and (3) a recommendation flag set to 'YES' if both current and day-3 temperatures are between 15°C and 25°C inclusive, otherwise 'NO'. Return the results as a JSON array of objects with keys: city, current_temp_c, current_condition, day3_high_c, recommended.",
+          "fuzzy_description": "I'm helping a travel agency design a new \"Weather-Responsive Getaway\" package, and I need your help finding suitable destinations. Can you look for three cities whose names include the word \"Spring\"? For each of those cities, please get the current weather (including temperature in Celsius and conditions like sunny or rainy) and the 5-day forecast. Then, put together a comparison that shows:\n\n- The city name  \n- Current temperature (°C) and weather condition  \n- The forecasted high temperature on day 3 (°C)  \n- A recommendation marked as \"YES\" only if both the current temperature and the day-3 high are between 15°C and 25°C (inclusive); otherwise, mark it \"NO\"\n\nPlease return this info as a JSON array with the keys: city, current_temp_c, current_condition, day3_high_c, and recommended.\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "The task begins with using search_locations_tool with query='Spring' to find candidate cities. For each resulting city, get_current_weather_tool is called to obtain current temperature and condition. Concurrently or subsequently, get_weather_forecast_tool is invoked with days=5 for the same city to extract the day-3 high temperature. The final structured output depends on successful execution of all three tools per city, forming a clear chain: search → current weather + forecast → synthesis into deliverable.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "Context7",
+            "Game Trends",
+            "Medical Calculator",
+            "Metropolitan Museum",
+            "NASA Data",
+            "OpenAPI Explorer",
+            "Reddit",
+            "Scientific Computing",
+            "Wikipedia"
+          ]
+        },
+        {
+          "task_id": "weather_data_001",
+          "task_description": "A user is planning a week-long outdoor photography expedition and wants to compare current conditions with the upcoming forecast for three candidate cities: 'Asheville', 'Boulder', and 'Portland'. First, use the search_locations_tool to verify the existence and canonical names of these cities. Then, for each confirmed city, retrieve the current weather using get_current_weather_tool and obtain a 7-day forecast using get_weather_forecast_tool. Finally, compile a structured comparison report that includes, for each city: (1) verified location name, (2) current temperature and condition, and (3) average forecasted high temperature over the next 7 days.",
+          "fuzzy_description": "I'm planning a week-long outdoor photography trip and am deciding between Asheville, Boulder, and Portland. Can you check if these cities are valid locations and then give me a clear comparison of their current weather and the forecast for the next seven days? For each city, I’d like to know: the confirmed city name, the current temperature and conditions, and the average high temperature expected over the next week. I need actual numbers and verified details to help make my decision.",
+          "dependency_analysis": "The task requires a clear dependency chain: first, location names must be validated via search_locations_tool to ensure accurate subsequent queries. Only after confirmation can get_current_weather_tool and get_weather_forecast_tool be reliably used for each city. The final deliverable depends on aggregating outputs from all three tools across all three cities, ensuring usage of every available tool in the Weather Data server. No external information or user input is needed beyond the initial city names provided in the task.",
+          "distraction_servers": [
+            "BioMCP",
+            "Car Price Evaluator",
+            "Context7",
+            "Google Maps",
+            "Math MCP",
+            "Metropolitan Museum",
+            "NASA Data",
+            "OKX Exchange",
+            "OSINT Intelligence",
+            "Unit Converter"
+          ]
+        }
+      ]
+    },
+    {
+      "server_name": "Wikipedia",
+      "servers": [
+        "Wikipedia"
+      ],
+      "combination_name": "Single Server: Wikipedia",
+      "combination_type": "single_server",
+      "tasks": [
+        {
+          "task_id": "wikipedia_001",
+          "task_description": "Identify the main causes of the 2008 global financial crisis as described in the Wikipedia article 'Subprime mortgage crisis', then extract key facts about its impact on European economies. Begin by searching Wikipedia for relevant articles using the query '2008 financial crisis'. From the results, confirm that 'Subprime mortgage crisis' is a top match and retrieve its full section list. Use this to locate a section titled 'Global effects' or similar. Summarize that section with a focus on Europe. Then, extract five key facts specifically about European countries' responses or consequences. Finally, get a list of topics related to the 'Subprime mortgage crisis' article to suggest further reading. Deliver a JSON object containing: (1) the tailored summary of global effects focused on Europe (max 250 characters), (2) the list of five extracted key facts about Europe, and (3) up to eight related topics.",
+          "fuzzy_description": "Can you summarize the main causes of the 2008 financial crisis based on the Wikipedia article 'Subprime mortgage crisis' and then focus on how it affected Europe? I need a brief overview (under 250 characters) of the global effects with emphasis on European economies, plus five specific facts about European countries’ responses or consequences—like bailout amounts, GDP drops, or bank failures—with actual numbers if available. Also, please include up to eight related topics from the article for further reading.",
+          "dependency_analysis": "The task begins with Wikipedia:search_wikipedia to find relevant articles. The result must include 'Subprime mortgage crisis', which is then used as input to Wikipedia:get_sections to identify relevant sections like 'Global effects'. That section title is passed to Wikipedia:summarize_article_section (or indirectly via summarize_article_for_query if exact section name varies). Simultaneously, Wikipedia:extract_key_facts is called on the same article with topic_within_article='Europe' to get region-specific facts. Finally, Wikipedia:get_related_topics is invoked on the same article to produce related subjects. All tools depend on the initial search confirming the correct article title, creating a clear sequential and branching dependency chain within the Wikipedia server.",
+          "distraction_servers": [
+            "Call for Papers",
+            "Context7",
+            "DEX Paprika",
+            "Huge Icons",
+            "Math MCP",
+            "NixOS",
+            "OKX Exchange",
+            "OSINT Intelligence",
+            "Unit Converter",
+            "Weather Data"
+          ]
+        },
+        {
+          "task_id": "wikipedia_002",
+          "task_description": "Identify the main causes of the 2023 European heatwaves and summarize how they impacted public health systems in affected countries. Begin by searching Wikipedia for articles related to '2023 European heatwave'. From the top result, retrieve the article title and use it to get a tailored summary focused on 'causes'. Separately, extract key facts about 'public health impact' from the same article. Then, obtain the list of sections in the article and locate one titled 'Health effects' or similar; if found, summarize that section. Finally, compile all gathered information into a structured report containing: (1) a concise overview of causes, (2) a bullet-point list of key public health impacts, and (3) a short summary of the health effects section if available.",
+          "fuzzy_description": "Can you look into the 2023 European heatwaves and give me a clear, evidence-based summary of what caused them and how they affected public health systems in the countries hit hardest? I’d like you to start with the main Wikipedia article on the topic and pull out:\n\n1. A concise explanation of the primary causes—backed by specific details or data from the article.  \n2. A bullet-point list of the key impacts on public health, including any reported numbers like excess deaths, hospitalizations, or strain on medical services.  \n3. If the article has a section specifically about health effects (or something very similar), please summarize that part too.\n\nMake sure everything is grounded in verifiable facts from the source, and keep the whole thing well-organized and easy to follow.",
+          "dependency_analysis": "The task begins with Wikipedia:search_wikipedia to find relevant articles. The top result title is used as input for four dependent tools: Wikipedia:summarize_article_for_query (with query='causes'), Wikipedia:extract_key_facts (with topic_within_article='public health impact'), Wikipedia:get_sections (to identify a health-related section), and conditionally Wikipedia:summarize_article_section (if a matching section like 'Health effects' exists). All steps rely solely on outputs from prior tool calls, forming a clear sequential and conditional dependency chain within the Wikipedia server.",
+          "distraction_servers": [
+            "Call for Papers",
+            "Car Price Evaluator",
+            "Context7",
+            "DEX Paprika",
+            "Game Trends",
+            "Huge Icons",
+            "Movie Recommender",
+            "OKX Exchange",
+            "OSINT Intelligence",
+            "Reddit"
+          ]
+        }
+      ]
+    }
+  ],
+  "total_tasks": 54
+}

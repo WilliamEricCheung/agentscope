@@ -2,8 +2,8 @@
 """Laplace Docker MCP server registration config loader.
 
 Loads per-server registration configs from the Laplace MCP manifest bundled
-inside the agentscope package tree
-(``laplace/mcp_lifecycle/laplace_mcp_manifest.json``).
+inside the server_config package
+(``agentscope/mcp/server_config/laplace_mcp_manifest.json``).
 
 Args:
     manifest_path (`str | None`, optional):
@@ -23,7 +23,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
-from typing import Any
+from typing import Any, Awaitable, Callable
 
 from .._mcp_server_helper import _DockerMCPServerConfig
 from .base import _DockerMCPRegistrationConfig
@@ -40,8 +40,9 @@ def build_laplace_registration_config(
             Human-readable server name as it appears in the manifest.
         manifest_path (`str | None`, optional):
             Explicit path to the Laplace MCP manifest.  When omitted the
-            default manifest bundled inside the agentscope repository is
-            used (``laplace/mcp_lifecycle/laplace_mcp_manifest.json``).
+            default manifest bundled inside the ``agentscope.mcp`` package
+            is used (``agentscope/mcp/server_config/``
+            ``laplace_mcp_manifest.json``).
 
     Returns:
         `_DockerMCPRegistrationConfig`:
@@ -130,6 +131,71 @@ def load_laplace_registration_configs(
     return configs
 
 
+def build_laplace_speculative_executor(
+    manifest_path: str | None = None,
+    ready_only: bool = True,
+) -> Callable[[str], Awaitable[object | None]]:
+    """Build a speculative prewarm executor for manifest-defined servers.
+
+    Args:
+        manifest_path (`str | None`, optional):
+            Explicit path to the Laplace MCP manifest.  When omitted the
+            bundled package manifest is used.
+        ready_only (`bool`, optional):
+            Whether to include only entries marked as prewarm-ready.
+
+    Returns:
+        `Callable[[str], Awaitable[object | None]]`:
+            An executor compatible with prompt prewarming.
+    """
+    registrations = list(
+        load_laplace_registration_configs(
+            manifest_path=manifest_path,
+            ready_only=ready_only,
+        ).values(),
+    )
+
+    from .._prewarm_router import build_mcp_speculative_executor
+
+    return build_mcp_speculative_executor(registrations)
+
+
+def load_laplace_registration_bundle(
+    manifest_path: str | None = None,
+    ready_only: bool = True,
+) -> tuple[
+    dict[str, _DockerMCPRegistrationConfig],
+    Callable[[str], Awaitable[object | None]],
+]:
+    """Load all Laplace registrations together with a prewarm executor.
+
+    This is the batch entry point for experiment code.  The returned
+    registrations can be passed around as normal registration configs, while
+    the paired executor plugs into the existing speculative prewarm pathway
+    and therefore reuses the same Docker start/resume/idle-stop lifecycle.
+
+    Args:
+        manifest_path (`str | None`, optional):
+            Explicit path to the Laplace MCP manifest.  When omitted the
+            bundled package manifest is used.
+        ready_only (`bool`, optional):
+            Whether to include only entries marked as prewarm-ready.
+
+    Returns:
+        `tuple[dict[str, _DockerMCPRegistrationConfig], Callable[[str], Awaitable[object | None]]]`:
+            The loaded registrations plus an executor for speculative
+            prewarming.
+    """
+    configs = load_laplace_registration_configs(
+        manifest_path=manifest_path,
+        ready_only=ready_only,
+    )
+    return configs, build_laplace_speculative_executor(
+        manifest_path=manifest_path,
+        ready_only=ready_only,
+    )
+
+
 # ---------------------------------------------------------------------------
 # Internal helpers
 # ---------------------------------------------------------------------------
@@ -161,16 +227,14 @@ def _load_manifest(manifest_path: str | None) -> dict[str, Any]:
 def _resolve_default_manifest_path() -> Path:
     """Resolve the default Laplace MCP manifest path.
 
-    The manifest lives at
-    ``<agentscope-repo>/laplace/mcp_lifecycle/laplace_mcp_manifest.json``.
+    The manifest lives next to this module inside the ``server_config``
+    package directory.
 
     Returns:
         `Path`:
             The resolved manifest path.
     """
-    # src/agentscope/mcp/server_config/_laplace_mcp.py → repo root is 4 levels up
-    repo_root = Path(__file__).resolve().parents[4]
-    return repo_root / "laplace" / "mcp_lifecycle" / "laplace_mcp_manifest.json"
+    return Path(__file__).resolve().with_name("laplace_mcp_manifest.json")
 
 
 def _resolve_placeholders(value: str) -> str:

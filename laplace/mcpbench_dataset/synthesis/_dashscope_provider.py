@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import os
 import sys
@@ -52,6 +53,7 @@ class DashScopeCompletionProvider:
         model_name: str = "qwen-plus",
         api_key: str | None = None,
         temperature: float = 0.7,
+        request_timeout_seconds: float = 120.0,
     ) -> None:
         """Initialize the completion provider.
 
@@ -63,6 +65,8 @@ class DashScopeCompletionProvider:
                 `DASHSCOPE_API_KEY` is used.
             temperature (`float`, optional):
                 Sampling temperature for generation.
+            request_timeout_seconds (`float`, optional):
+                Maximum seconds allowed for one completion request.
 
         Raises:
             `ValueError`:
@@ -76,6 +80,7 @@ class DashScopeCompletionProvider:
             )
 
         self.model_name = model_name
+        self.request_timeout_seconds = request_timeout_seconds
         self.model = DashScopeChatModel(
             model_name=model_name,
             api_key=resolved_api_key,
@@ -107,13 +112,22 @@ class DashScopeCompletionProvider:
             `ValueError`:
                 Raised when the model response does not contain text blocks.
         """
-        response = await self.model(
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-            max_tokens=max_tokens,
-        )
+        try:
+            response = await asyncio.wait_for(
+                self.model(
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    max_tokens=max_tokens,
+                ),
+                timeout=self.request_timeout_seconds,
+            )
+        except asyncio.TimeoutError as exc:
+            raise TimeoutError(
+                "DashScope completion request timed out after "
+                f"{self.request_timeout_seconds:.0f}s.",
+            ) from exc
         text = self._extract_text(response)
         if not text:
             raise ValueError("DashScope returned an empty response.")

@@ -1,11 +1,10 @@
 {
-  "primary_dataset": "mcpbench_tasks_single_runner_format.json",
   "datasets": [
     "mcpbench_tasks_single_runner_format.json",
-    "mcpbench_tasks_multi_2server_runner_format.json",
-    "mcpbench_tasks_multi_3server_runner_format.json"
+    "laplace_tasks_single_runner_format.json"
   ],
   "joint_training": true,
+  "training_mode": "single_only",
   "text_mode": "both",
   "train_ratio": 0.8,
   "seed": 42,
@@ -47,6 +46,6 @@
     "Weather Data": "weather_data",
     "Wikipedia": "wikipedia"
   },
-  "train_samples": 83,
-  "eval_samples": 21
+  "train_samples": 173,
+  "eval_samples": 44
 }

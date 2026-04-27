@@ -152,9 +152,9 @@ uv.lock
 
 # AgentScope MCP lifecycle runtime state
 laplace/mcp_lifecycle/*.json
-!laplace/mcp_lifecycle/laplace_mcp_manifest.json
 laplace/mcp_lifecycle/*.tmp
 laplace/mcp_lifecycle/daemon.pid
+!src/agentscope/mcp/server_config/laplace_mcp_manifest.json
 
 # FastText semantic router model artifact
 laplace/mcpbench_dataset/artifacts_fasttext_router_deploy/semantic_router_fasttext.bin

@@ -5,11 +5,15 @@ from __future__ import annotations
 
 import json
 import tempfile
+from unittest import IsolatedAsyncioTestCase
 from pathlib import Path
 from unittest import TestCase
+from unittest.mock import AsyncMock, patch
 
 from agentscope.mcp.server_config._laplace_mcp import (
     build_laplace_registration_config,
+    build_laplace_speculative_executor,
+    load_laplace_registration_bundle,
     load_laplace_registration_configs,
 )
 
@@ -148,3 +152,99 @@ class LaplaceServerConfigTest(TestCase):
                     server_name="Math MCP",
                     manifest_path=str(manifest_path),
                 )
+
+    def test_load_registration_bundle_returns_configs_and_executor(self) -> None:
+        """The batch entry point should return configs plus an executor."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            manifest_path = Path(temp_dir) / "laplace_mcp_manifest.json"
+            manifest_path.write_text(
+                json.dumps(
+                    {
+                        "servers": {
+                            "Wikipedia": {
+                                "ready_for_prewarm": True,
+                                "server_config": {
+                                    "container_name": "laplace-wikipedia",
+                                    "image": "laplace/wikipedia:local",
+                                    "transport": "streamable_http",
+                                    "url": "http://localhost:9001/mcp",
+                                    "client_name": "laplace-wikipedia",
+                                },
+                                "docker_run_command": [
+                                    "docker",
+                                    "run",
+                                    "laplace/wikipedia:local",
+                                ],
+                                "group_name": "laplace_wikipedia",
+                                "group_description": "Wikipedia tools.",
+                            },
+                        },
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            configs, executor = load_laplace_registration_bundle(
+                manifest_path=str(manifest_path),
+            )
+
+        self.assertEqual(list(configs.keys()), ["Wikipedia"])
+        self.assertTrue(callable(executor))
+
+
+class LaplaceSpeculativeExecutorTest(IsolatedAsyncioTestCase):
+    """Tests for manifest-backed Laplace speculative executor building."""
+
+    async def test_executor_routes_loaded_registration(self) -> None:
+        """The executor should reuse the normal speculative ensure path."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            manifest_path = Path(temp_dir) / "laplace_mcp_manifest.json"
+            manifest_path.write_text(
+                json.dumps(
+                    {
+                        "servers": {
+                            "Wikipedia": {
+                                "ready_for_prewarm": True,
+                                "server_config": {
+                                    "container_name": "laplace-wikipedia",
+                                    "image": "laplace/wikipedia:local",
+                                    "transport": "streamable_http",
+                                    "url": "http://localhost:9001/mcp",
+                                    "client_name": "laplace-wikipedia",
+                                },
+                                "docker_run_command": [
+                                    "docker",
+                                    "run",
+                                    "laplace/wikipedia:local",
+                                ],
+                                "group_name": "laplace_wikipedia",
+                                "group_description": "Wikipedia tools.",
+                            },
+                        },
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            executor = build_laplace_speculative_executor(
+                manifest_path=str(manifest_path),
+            )
+
+        speculative_mock = AsyncMock()
+        with patch(
+            "agentscope.mcp._mcp_server_helper"
+            "._speculative_ensure_local_docker_mcp_server",
+            speculative_mock,
+        ):
+            await executor("laplace-wikipedia")
+
+        kwargs = speculative_mock.await_args.kwargs
+        self.assertEqual(kwargs["config"].container_name, "laplace-wikipedia")
+        self.assertEqual(kwargs["docker_run_command"], [
+            "docker",
+            "run",
+            "laplace/wikipedia:local",
+        ])
+        self.assertIsNone(kwargs["headers"])

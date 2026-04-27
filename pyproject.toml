@@ -204,6 +204,7 @@ include-package-data = true
 
 [tool.setuptools.package-data]
 "*" = ["py.typed"]
+"agentscope.mcp.server_config" = ["laplace_mcp_manifest.json"]
 
 [build-system]
 requires = ["setuptools>=45", "wheel"]

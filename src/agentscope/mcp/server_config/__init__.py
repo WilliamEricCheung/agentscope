@@ -6,6 +6,8 @@ from .factory import _MCPServerConfigFactory
 from .github_mcp import build_github_registration_config
 from ._laplace_mcp import (
     build_laplace_registration_config,
+    build_laplace_speculative_executor,
+    load_laplace_registration_bundle,
     load_laplace_registration_configs,
 )
 from .playwright_mcp import build_playwright_registration_config
@@ -16,5 +18,7 @@ __all__ = [
     "build_playwright_registration_config",
     "build_github_registration_config",
     "build_laplace_registration_config",
+    "build_laplace_speculative_executor",
+    "load_laplace_registration_bundle",
     "load_laplace_registration_configs",
 ]

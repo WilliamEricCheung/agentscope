@@ -346,7 +346,8 @@ class LaplaceMCPManifestSource:
         manifest_path (`str | None`, optional):
             Explicit path to ``laplace_mcp_manifest.json``.  When omitted
             the default path
-            ``<repo_root>/laplace/mcp_lifecycle/laplace_mcp_manifest.json``
+            ``<repo_root>/src/agentscope/mcp/server_config/``
+            ``laplace_mcp_manifest.json``
             is used.
     """
 
@@ -424,16 +425,28 @@ class LaplaceMCPManifestSource:
         return [config.name for config in self.load_server_configs()]
 
     def load_problematic_tools(self) -> list[str]:
-        """Return known problematic tool names.
+        """Return known problematic tool names from the manifest.
 
-        The Laplace manifest does not carry a problematic-tools list, so
-        an empty list is returned.  Override or subclass to add filtering.
+        Each server entry may declare a ``"problematic_tools"`` list of
+        bare tool names (without the server-name prefix).  These are
+        expanded into fully qualified ``"ServerName:tool_name"`` keys that
+        match the discovery layer's naming convention and returned as a
+        flat deduplicated list.
 
         Returns:
             `list[str]`:
-                Empty list.
+                Fully qualified problematic tool names.
         """
-        return []
+        manifest = json.loads(self.manifest_path.read_text(encoding="utf-8"))
+        result: list[str] = []
+        seen: set[str] = set()
+        for server_name, payload in manifest.get("servers", {}).items():
+            for bare_name in payload.get("problematic_tools", []):
+                qualified = f"{server_name}:{bare_name}"
+                if qualified not in seen:
+                    result.append(qualified)
+                    seen.add(qualified)
+        return result
 
     # ------------------------------------------------------------------
     # Internal helpers
@@ -476,8 +489,10 @@ class LaplaceMCPManifestSource:
         repo_root = Path(__file__).resolve().parents[3]
         return (
             repo_root
-            / "laplace"
-            / "mcp_lifecycle"
+            / "src"
+            / "agentscope"
+            / "mcp"
+            / "server_config"
             / "laplace_mcp_manifest.json"
         )
 

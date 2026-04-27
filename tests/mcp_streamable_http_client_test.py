@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 """The MCP client test module in agentscope."""
 import asyncio
+from contextlib import asynccontextmanager
 from multiprocessing import Process
+from types import SimpleNamespace
 from unittest.async_case import IsolatedAsyncioTestCase
+from unittest.mock import patch
 
 import mcp.types
 from mcp.server import FastMCP
@@ -183,3 +186,65 @@ class StreamableHttpMCPClientTest(IsolatedAsyncioTestCase):
                 ],
             ),
         )
+
+    async def test_streamable_http_stateless_client_retries_fetch_failed(self) -> None:
+        """Retry `list_tools` once when the server returns transient fetch failures."""
+
+        attempts = 0
+
+        class FakeSession:
+            """Minimal async session stub used for retry testing."""
+
+            def __init__(self, *_args: object, **_kwargs: object) -> None:
+                """Initialize the fake session."""
+
+            async def __aenter__(self) -> "FakeSession":
+                """Enter the async context manager."""
+                return self
+
+            async def __aexit__(
+                self,
+                _exc_type: object,
+                _exc_val: object,
+                _exc_tb: object,
+            ) -> bool:
+                """Exit the async context manager."""
+                return False
+
+            async def initialize(self) -> None:
+                """Initialize the fake session."""
+
+            async def list_tools(self) -> SimpleNamespace:
+                """Return tools after one transient failure."""
+                nonlocal attempts
+                attempts += 1
+                if attempts == 1:
+                    raise ExceptionGroup(
+                        "unhandled errors in a TaskGroup",
+                        [RuntimeError("fetch failed")],
+                    )
+                return SimpleNamespace(
+                    tools=[SimpleNamespace(name="tool_1")],
+                )
+
+        class RetryableClient(HttpStatelessClient):
+            """Test client that bypasses the real HTTP transport."""
+
+            @asynccontextmanager
+            async def get_client(self) -> tuple[None, None]:
+                """Yield placeholder streams for the fake session."""
+                yield (None, None)
+
+        client = RetryableClient(
+            name="retryable_client",
+            transport="streamable_http",
+            url="http://127.0.0.1:8002/mcp",
+            list_tools_retry_attempts=2,
+            list_tools_retry_delay=0,
+        )
+
+        with patch("agentscope.mcp._http_stateless_client.ClientSession", FakeSession):
+            tools = await client.list_tools()
+
+        self.assertEqual([tool.name for tool in tools], ["tool_1"])
+        self.assertEqual(attempts, 2)
