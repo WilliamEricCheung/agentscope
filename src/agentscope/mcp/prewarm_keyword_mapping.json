@@ -29,5 +29,195 @@
     "branch",
     "仓库",
     "代码"
+  ],
+  "laplace-biomcp": [
+    "braf",
+    "melanoma",
+    "variant",
+    "trial",
+    "drug"
+  ],
+  "laplace-bibliomantic": [
+    "hexagram",
+    "bibliomantic",
+    "ching",
+    "divination",
+    "philip"
+  ],
+  "laplace-call-for-papers": [
+    "conferences",
+    "academic",
+    "submission",
+    "deadline",
+    "papers"
+  ],
+  "laplace-car-price-evaluator": [
+    "toyota",
+    "fipe"
+  ],
+  "laplace-context7": [
+    "library",
+    "documentation",
+    "next.js",
+    "tokens"
+  ],
+  "laplace-dex-paprika": [
+    "ethereum",
+    "liquidity",
+    "pool",
+    "ohlcv",
+    "token"
+  ],
+  "laplace-fruityvice": [
+    "fruit",
+    "calories",
+    "vitamin",
+    "apple",
+    "banana"
+  ],
+  "laplace-game-trends": [
+    "steam",
+    "epic",
+    "trending",
+    "sellers",
+    "played"
+  ],
+  "laplace-google-maps": [
+    "location",
+    "address",
+    "distance",
+    "elevation",
+    "building"
+  ],
+  "laplace-huge-icons": [
+    "icons",
+    "dashboard",
+    "react",
+    "flutter",
+    "notification"
+  ],
+  "laplace-huggingface": [
+    "model",
+    "dataset",
+    "arxiv",
+    "collection",
+    "space"
+  ],
+  "laplace-math-mcp": [
+    "yield",
+    "revenue",
+    "profit",
+    "median",
+    "farms"
+  ],
+  "laplace-medical-calculator": [
+    "egfr",
+    "creatinine",
+    "prevent",
+    "homa",
+    "rcri"
+  ],
+  "laplace-metmuseum": [
+    "harvesters",
+    "painting",
+    "european",
+    "department",
+    "image"
+  ],
+  "laplace-movie-recommender": [
+    "steampunk",
+    "exploration",
+    "fiction",
+    "travel",
+    "movies"
+  ],
+  "laplace-nasa-data": [
+    "asteroid",
+    "curiosity",
+    "geomagnetic",
+    "coronal",
+    "landsat"
+  ],
+  "laplace-national-parks": [
+    "parks",
+    "campgrounds",
+    "visitor",
+    "hiking",
+    "closure"
+  ],
+  "laplace-nixos": [
+    "nixos",
+    "postgresql",
+    "stable",
+    "manager",
+    "darwin"
+  ],
+  "laplace-okx-exchange": [
+    "btc-usdt",
+    "candlesticks",
+    "price",
+    "exchange",
+    "latest"
+  ],
+  "laplace-openapi-explorer": [
+    "openapi",
+    "stripe",
+    "paymentintent"
+  ],
+  "laplace-osint-intelligence": [
+    "domain",
+    "subdomains",
+    "typosquatting",
+    "registration",
+    "ports"
+  ],
+  "laplace-paper-search": [
+    "arxiv",
+    "pubmed",
+    "biorxiv",
+    "medrxiv",
+    "scholar"
+  ],
+  "laplace-reddit": [
+    "subreddit",
+    "comments",
+    "thread",
+    "upvoted",
+    "post"
+  ],
+  "laplace-scientific-computing": [
+    "matrix",
+    "determinant",
+    "gradient",
+    "eigenvalues",
+    "vector"
+  ],
+  "laplace-time-mcp": [
+    "tokyo",
+    "london",
+    "future",
+    "converted",
+    "date"
+  ],
+  "laplace-unit-converter": [
+    "kelvin",
+    "joules",
+    "pressure",
+    "thermal",
+    "fahrenheit"
+  ],
+  "laplace-weather-data": [
+    "springfield",
+    "forecast",
+    "precipitation",
+    "humidity",
+    "weather"
+  ],
+  "laplace-wikipedia": [
+    "wikipedia",
+    "heatwaves",
+    "climate",
+    "causes",
+    "related"
   ]
 }

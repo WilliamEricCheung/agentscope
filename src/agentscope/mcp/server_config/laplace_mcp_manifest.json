@@ -127,7 +127,7 @@
         "container_name": "laplace-context7",
         "image": "laplace/context7:local",
         "transport": "streamable_http",
-        "url": "http://localhost:8804/mcp",
+        "url": "http://localhost:8904/mcp",
         "client_name": "laplace-context7"
       },
       "docker_run_command": [
@@ -138,7 +138,7 @@
         "--name",
         "laplace-context7",
         "-p",
-        "8804:8812",
+        "8904:8812",
         "laplace/context7:local",
         "node",
         "dist/index.js",

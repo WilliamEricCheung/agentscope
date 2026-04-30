@@ -13,6 +13,7 @@ from tool import create_worker
 from agentscope.agent import ReActAgent, UserAgent
 from agentscope.formatter import DashScopeChatFormatter
 from agentscope.mcp import (
+    MCPPrewarmHybridRouter,
     MCPPrewarmRouter,
     _MCPServerConfigFactory,
     build_mcp_speculative_executor,
@@ -74,7 +75,7 @@ Your primary purpose is to break down complicated tasks into manageable subtasks
         toolkit=toolkit,
         max_iters=20,
         prompt_prewarm_router=(
-            MCPPrewarmRouter() if ON_DEMAND_PREWARM_ENABLED else None
+            MCPPrewarmHybridRouter() if ON_DEMAND_PREWARM_ENABLED else None
         ),
         prompt_prewarm_executor=(
             build_mcp_speculative_executor(planner_prewarm_registrations)

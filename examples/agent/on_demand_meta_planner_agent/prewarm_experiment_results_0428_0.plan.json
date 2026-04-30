@@ -1,0 +1,45 @@
+{
+  "task_file": "/mnt/d/Project/agentscope/laplace/mcp_dataset/laplace_tasks_single_runner_format.json",
+  "manifest_path": null,
+  "sample_size": 5,
+  "repeats": 20,
+  "seed": 42,
+  "modes": [
+    "none",
+    "keyword",
+    "semantic",
+    "hybrid"
+  ],
+  "sampled_tasks": [
+    {
+      "server_name": "OpenAPI Explorer",
+      "task_id": "openapi_explorer_001",
+      "task_description": "Analyze the OpenAPI specification for the Stripe API (https://raw.githubusercontent.com/stripe/openapi/master/openapi/spec3.json) by first retrieving its overview, then extracting details for the 'create_payment_intent' operation. Validate the specification using the swagger-validator tool. Finally, synthesize a structured report containing: (1) the API title and version from the overview, (2) the HTTP method and path for 'create_payment_intent', (3) whether the spec passed validation, and (4) a list of required request body properties for that operation.",
+      "fuzzy_description": "I need a clear summary of key details from the Stripe API’s OpenAPI specification. Specifically, please find: the official title and version of the API; the exact HTTP method and endpoint path used to create a payment intent; whether the full specification is valid according to standard OpenAPI validation rules; and a list of all required properties that must be included in the request body when creating a payment intent. Use the official spec file at https://raw.githubusercontent.com/stripe/openapi/master/openapi/spec3.json as your source, and make sure your findings are directly supported by its contents."
+    },
+    {
+      "server_name": "Car Price Evaluator",
+      "task_id": "car_price_evaluator_001",
+      "task_description": "Retrieve a comprehensive list of all available car brands, then for each brand, fetch the current market prices of its car models. Additionally, obtain the full list of vehicles categorized as 'cars' (\"carros\") to cross-validate model coverage. Compile a structured report that includes: (1) total number of car brands, (2) total number of unique car models with pricing data, and (3) any discrepancies between models listed under individual brands versus the global 'cars' vehicle list. The final deliverable must be a JSON object with keys 'total_brands', 'total_priced_models', and 'missing_models_from_global_list'.",
+      "fuzzy_description": "I need a detailed report on car brands and their models’ current market prices. Specifically, please gather all available car brands, then for each one, collect the up-to-date prices for every car model they offer. Also, pull the complete list of vehicles officially categorized as “cars” so we can check if any models are missing from the brand-by-brand data. In the end, I’d like a JSON-formatted summary that includes: (1) the total number of car brands found, (2) the total count of unique car models that have pricing information, and (3) a list of any models that appear in the global “cars” list but aren’t included under their respective brands. Make sure the numbers and discrepancies are clearly backed by the data you collect."
+    },
+    {
+      "server_name": "Bibliomantic",
+      "task_id": "bibliomantic_001",
+      "task_description": "Perform a comprehensive bibliomantic consultation for the question: 'Should I accept a new job offer in the next 3 months?' First, use the Bibliomantic:i_ching_divination tool with this query to obtain an initial hexagram. Extract the hexagram number from the result and use it as input to Bibliomantic:get_hexagram_details to retrieve its traditional name and full interpretation. Then, feed the original question into Bibliomantic:bibliomantic_consultation to generate a Philip K. Dick–style augmented reading that integrates I Ching wisdom. Finally, include system context by calling Bibliomantic:server_statistics. Compile all outputs into a single structured report containing: (1) the initial divination result, (2) the detailed hexagram interpretation, (3) the bibliomantic consultation narrative, and (4) the server statistics used during the session.",
+      "fuzzy_description": "I’m trying to decide whether I should accept a new job offer sometime in the next three months, and I’d like a deep, meaningful reading to help guide me. Could you give me a full consultation that starts with an I Ching divination for this specific question? I want to know the exact hexagram that comes up—its number, traditional name, and complete interpretation. Then, please weave that insight into a narrative-style reading inspired by Philip K. Dick’s tone and themes, directly addressing my job decision. Also, include any system data or session metrics from when the reading was performed—things like timestamp, processing details, or server info—as part of the final report. Put everything together in one clear, structured response with all four parts: the initial divination, the hexagram details, the narrative consultation, and the supporting system context."
+    },
+    {
+      "server_name": "Scientific Computing",
+      "task_id": "scientific_computing_005",
+      "task_description": "Create a 2×2 matrix A named 'A' with values [4, 1, 2, 3]. Compute its determinant and verify it is non-zero. Then compute the inverse of A and name it 'A_inv'. Separately, create a vector 'v' with shape [2] and values [5, -1]. Project 'v' onto the first column of A (i.e., [4, 2]) using vector_project. Next, scale the projected vector by the determinant of A using scale_matrix with in_place=False to produce a new tensor named 'scaled_proj'. Multiply A_inv and 'scaled_proj' via matrix multiplication (treat 'scaled_proj' as a column vector) to obtain a result vector 'x'. Finally, compute the dot product between 'x' and the original vector 'v', and return this scalar value as the final answer.",
+      "fuzzy_description": "I have a 2×2 matrix A with entries [4, 1, 2, 3] (so the first row is [4, 1] and the second is [2, 3]). First, I need to confirm that its determinant isn’t zero. Then, I’d like to find the inverse of A. Separately, I have a vector v = [5, -1]. I want to project this vector onto the first column of A, which is [4, 2], and then scale that projected vector by the determinant of A. After that, multiply the inverse of A by this scaled projected vector (treating it as a column) to get a new vector x. Finally, compute the dot product of x and the original vector v, and give me that final number. Can you walk me through the calculations and provide the exact result?"
+    },
+    {
+      "server_name": "Google Maps",
+      "task_id": "google_maps_000",
+      "task_description": "Find the highest-rated coffee shop that is currently open within 1500 meters of the Empire State Building. Retrieve its full details, including phone number and operating hours. Then, calculate the walking distance and duration from the Empire State Building to this coffee shop. Finally, determine the elevation at both the Empire State Building and the coffee shop’s location.",
+      "fuzzy_description": "I'm looking for the highest-rated coffee shop that’s currently open within 1,500 meters of the Empire State Building. Can you give me its full details—like the name, address, phone number, and current operating hours? Also, please tell me how far it is to walk there from the Empire State Building and how long that walk would take. Finally, I’d like to know the elevation at both the Empire State Building and the coffee shop’s location."
+    }
+  ]
+}

@@ -28,6 +28,7 @@ from ._mcp_server_config import (
 )
 from ._prewarm_router import (
     MCPPrewarmRouter,
+    MCPPrewarmHybridRouter,
     MCPPrewarmKeywordRouter,
     MCPPrewarmSemanticRouter,
     build_mcp_speculative_executor,
@@ -56,6 +57,7 @@ __all__ = [
     "load_laplace_registration_bundle",
     "load_laplace_registration_configs",
     "MCPPrewarmRouter",
+    "MCPPrewarmHybridRouter",
     "MCPPrewarmKeywordRouter",
     "MCPPrewarmSemanticRouter",
     "build_mcp_speculative_executor",

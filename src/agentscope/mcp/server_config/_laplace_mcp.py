@@ -95,6 +95,7 @@ def build_laplace_registration_config(
         headers=_string_dict(payload.get("headers")),
         tool_names=tuple(str(t) for t in payload.get("tool_names", [])),
         group_notes=str(payload["notes"]) if "notes" in payload else None,
+        server_name=server_name,
     )
 
 

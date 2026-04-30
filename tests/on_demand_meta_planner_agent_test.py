@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the on-demand meta planner example helpers."""
+import asyncio
 import importlib.util
 import inspect
 import sys
@@ -104,7 +105,7 @@ class OnDemandMetaPlannerToolTest(TestCase):
         source = main_path.read_text(encoding="utf-8")
 
         self.assertIn(
-            "MCPPrewarmRouter() if ON_DEMAND_PREWARM_ENABLED else None",
+            "MCPPrewarmHybridRouter() if ON_DEMAND_PREWARM_ENABLED else None",
             source,
         )
         self.assertIn(
@@ -116,14 +117,36 @@ class OnDemandMetaPlannerToolTest(TestCase):
             source,
         )
 
+    def test_worker_uses_hybrid_prewarm_router(self) -> None:
+        """Worker helper should also wire Hybrid Router for L1->L2 prewarm."""
+        tool_path = (
+            Path(__file__).resolve().parents[1]
+            / "examples"
+            / "agent"
+            / "on_demand_meta_planner_agent"
+            / "tool.py"
+        )
+        source = tool_path.read_text(encoding="utf-8")
+
+        self.assertIn(
+            "base_prewarm_router = MCPPrewarmHybridRouter()",
+            source,
+        )
+
     def test_build_timing_summary_returns_expected_metrics(self) -> None:
         """Timing summary should compute key latencies from recorded events."""
         timing_run = {
             "events": [
                 {
+                    "step": "prewarm_router_enabled",
+                    "elapsed_ms": 1.0,
+                    "configured_router_method": "hybrid",
+                },
+                {
                     "step": "prewarm_router_matched",
                     "elapsed_ms": 5.0,
-                    "router_method": "keyword",
+                    "configured_router_method": "hybrid",
+                    "effective_route_method": "keyword",
                     "candidate_count": 1,
                     "candidates": "playwright-mcp",
                 },
@@ -131,13 +154,15 @@ class OnDemandMetaPlannerToolTest(TestCase):
                     "step": "prewarm_candidate_started",
                     "elapsed_ms": 12.0,
                     "candidate": "playwright-mcp",
-                    "router_method": "keyword",
+                    "configured_router_method": "hybrid",
+                    "effective_route_method": "keyword",
                 },
                 {
                     "step": "prewarm_candidate_finished",
                     "elapsed_ms": 80.0,
                     "candidate": "playwright-mcp",
-                    "router_method": "keyword",
+                    "configured_router_method": "hybrid",
+                    "effective_route_method": "keyword",
                     "startup_mode": "resume",
                     "effective": True,
                 },
@@ -156,7 +181,15 @@ class OnDemandMetaPlannerToolTest(TestCase):
         summary = self.module._build_mcp_timing_summary(timing_run)
 
         self.assertEqual(summary["startup_mode"], "resume")
-        self.assertEqual(summary["prewarm_router_method"], "keyword")
+        self.assertNotIn("prewarm_router_method", summary)
+        self.assertEqual(
+            summary["prewarm_router_configured_method"],
+            "hybrid",
+        )
+        self.assertEqual(
+            summary["prewarm_router_effective_route_method"],
+            "keyword",
+        )
         self.assertTrue(summary["prewarm_router_matched"])
         self.assertEqual(summary["prewarm_router_candidate_count"], 1)
         self.assertEqual(summary["prewarm_router_candidates"], "playwright-mcp")
@@ -168,3 +201,72 @@ class OnDemandMetaPlannerToolTest(TestCase):
         self.assertEqual(summary["prewarm_duration_ms"], 68.0)
         self.assertEqual(summary["prewarm_ready_before_activation_ms"], 20.0)
         self.assertEqual(summary["wait_for_mcp_ready_after_activation_ms"], 240.0)
+
+    def test_logged_candidate_events_include_effective_route_method(self) -> None:
+        """Candidate-level prewarm events should expose the effective route."""
+
+        class _FakeRouter:
+            """Minimal router stub for timing event tests."""
+
+            method = "hybrid"
+            last_route_method = "semantic"
+
+            def __call__(self, _msg: object) -> list[str]:
+                """Return one normalized candidate."""
+                return ["playwright-mcp"]
+
+        class _FakeClient:
+            """Minimal speculative client stub."""
+
+            startup_mode = "resume"
+
+        async def _fake_base_executor(_candidate: str) -> _FakeClient:
+            """Return a resumed client for the selected candidate."""
+            return _FakeClient()
+
+        timing_run = self.module._create_mcp_timing_run(
+            task_description="Open a documentation page",
+            prewarm=True,
+        )
+        candidate_effective_route_methods: dict[str, str] = {}
+        router = self.module._build_logged_prewarm_router(
+            _FakeRouter(),
+            timing_run,
+            candidate_effective_route_methods,
+        )
+
+        original_builder = self.module.build_mcp_speculative_executor
+        self.module.build_mcp_speculative_executor = (
+            lambda _registrations: _fake_base_executor
+        )
+        try:
+            executor = self.module._build_logged_prewarm_executor(
+                registrations=[],
+                timing_run=timing_run,
+                configured_router_method="hybrid",
+                candidate_effective_route_methods=candidate_effective_route_methods,
+            )
+
+            candidates = asyncio.run(router(None))
+            self.assertEqual(candidates, ["playwright-mcp"])
+            asyncio.run(executor("playwright-mcp"))
+        finally:
+            self.module.build_mcp_speculative_executor = original_builder
+
+        started_event = next(
+            event
+            for event in timing_run["events"]
+            if event.get("step") == "prewarm_candidate_started"
+        )
+        finished_event = next(
+            event
+            for event in timing_run["events"]
+            if event.get("step") == "prewarm_candidate_finished"
+        )
+
+        self.assertEqual(
+            candidate_effective_route_methods["playwright-mcp"],
+            "semantic",
+        )
+        self.assertEqual(started_event["effective_route_method"], "semantic")
+        self.assertEqual(finished_event["effective_route_method"], "semantic")

@@ -3,11 +3,15 @@
 import json
 import os
 import tempfile
+from pathlib import Path
 from unittest import IsolatedAsyncioTestCase, TestCase
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import numpy as np
+
 from agentscope.agent import ReActAgent
 from agentscope.mcp import (
+    MCPPrewarmHybridRouter,
     MCPPrewarmRouter,
     MCPPrewarmKeywordRouter,
     MCPPrewarmSemanticRouter,
@@ -82,10 +86,49 @@ class MCPPrewarmKeywordRouterTest(TestCase):
         router = MCPPrewarmRouter(method="semantic")
         self.assertIsInstance(router, MCPPrewarmSemanticRouter)
 
-    def test_semantic_router_placeholder_returns_none(self) -> None:
-        """Semantic router placeholder currently returns None due TODO/pass."""
-        router = MCPPrewarmRouter(method="semantic")
-        self.assertIsNone(router(self._make_msg("hello")))
+    def test_base_router_dispatches_to_hybrid_when_specified(self) -> None:
+        """Base router should dispatch to hybrid router for method hybrid."""
+        router = MCPPrewarmRouter(method="hybrid")
+        self.assertIsInstance(router, MCPPrewarmHybridRouter)
+
+    def test_semantic_router_uses_retrieval_artifact(self) -> None:
+        """Semantic router should return retrieval-based prewarm candidates."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            artifact_dir = Path(tmpdir)
+            (artifact_dir / "semantic_router_retrieval.json").write_text(
+                json.dumps(
+                    {
+                        "vocabulary": {"w:wikipedia": 0},
+                        "char_ngram_range": [3, 5],
+                        "use_word_bigrams": False,
+                        "top_neighbors": 1,
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            np.savez_compressed(
+                artifact_dir / "semantic_router_retrieval.npz",
+                idf=np.array([1.0], dtype=np.float32),
+                train_matrix=np.array([[1.0]], dtype=np.float32),
+                train_labels=np.array(["Wikipedia"], dtype=object),
+                train_task_ids=np.array(["wiki_000"], dtype=object),
+            )
+            (artifact_dir / "grid_search_results.json").write_text(
+                json.dumps(
+                    {
+                        "best": {
+                            "threshold": 0.05,
+                            "top_k": 1,
+                        },
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            router = MCPPrewarmSemanticRouter(mapping=str(artifact_dir))
+            self.assertEqual(router(self._make_msg("Please search Wikipedia")), ["Wikipedia"])
 
     def test_unknown_method_raises(self) -> None:
         """Unknown method string should raise ValueError."""
@@ -162,6 +205,36 @@ class MCPPrewarmKeywordRouterTest(TestCase):
         )
         self.assertEqual(router("browser_navigate"), ["playwright-mcp"])
 
+    def test_hybrid_router_prefers_keyword_before_semantic(self) -> None:
+        """Hybrid router should short-circuit on L1 keyword matches."""
+        router = MCPPrewarmHybridRouter(
+            mapping={"keyword_mapping": {"playwright-mcp": ["browser"]}},
+        )
+
+        with patch.object(
+            router._semantic_router,
+            "__call__",
+            side_effect=AssertionError("semantic router should not be called"),
+        ):
+            result = router(self._make_msg("Open the browser please"))
+
+        self.assertEqual(result, ["playwright-mcp"])
+        self.assertEqual(router.last_route_method, "keyword")
+
+    def test_hybrid_router_falls_back_to_semantic_on_keyword_miss(self) -> None:
+        """Hybrid router should use L2 semantic routing after L1 miss."""
+        router = MCPPrewarmHybridRouter(
+            mapping={"keyword_mapping": {"playwright-mcp": ["browser"]}},
+        )
+
+        semantic_mock = MagicMock(return_value=["Wikipedia"])
+        router._semantic_router = semantic_mock
+        result = router(self._make_msg("Explain climate policy background"))
+
+        semantic_mock.assert_called_once()
+        self.assertEqual(result, ["Wikipedia"])
+        self.assertEqual(router.last_route_method, "semantic")
+
 
 class ReActAgentStreamPrewarmHookTest(IsolatedAsyncioTestCase):
     """Tests for stream-level prewarm hook installation on ReActAgent."""
@@ -237,11 +310,15 @@ class BuildMCPSpeculativeExecutorTest(IsolatedAsyncioTestCase):
     """Tests for :func:`build_mcp_speculative_executor`."""
 
     def _make_registration(
-        self, container_name: str, client_name: str
+        self,
+        container_name: str,
+        client_name: str,
+        server_name: str | None = None,
     ) -> MagicMock:
         reg = MagicMock()
         reg.server_config.container_name = container_name
         reg.server_config.client_name = client_name
+        reg.server_name = server_name
         reg.docker_run_command = ["docker", "run", container_name]
         reg.headers = None
         return reg
@@ -295,6 +372,25 @@ class BuildMCPSpeculativeExecutorTest(IsolatedAsyncioTestCase):
             await executor("unknown-svc")
 
         speculative_mock.assert_not_awaited()
+
+    async def test_executor_routes_by_server_name(self) -> None:
+        """Executor should also match when keyed by server_name."""
+        reg = self._make_registration(
+            "laplace-wikipedia",
+            "laplace-wikipedia",
+            server_name="Wikipedia",
+        )
+        executor = build_mcp_speculative_executor([reg])
+
+        speculative_mock = AsyncMock()
+        with patch(
+            "agentscope.mcp._mcp_server_helper"
+            "._speculative_ensure_local_docker_mcp_server",
+            speculative_mock,
+        ):
+            await executor("Wikipedia")
+
+        speculative_mock.assert_awaited_once()
 
     async def test_empty_registrations_returns_callable(self) -> None:
         """Even with an empty list, calling the executor should not crash."""

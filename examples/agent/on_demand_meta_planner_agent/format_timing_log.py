@@ -177,7 +177,7 @@ def _build_detail_rows(records: list[dict[str, Any]]) -> list[list[str]]:
                 str(record.get("started_at", "-")),
                 _format_bool(record.get("prewarm")),
                 _normalize_router_method(
-                    summary.get("prewarm_router_method"),
+                    summary.get("prewarm_router_effective_route_method"),
                     bool(record.get("prewarm", False)),
                 ),
                 _format_bool(summary.get("prewarm_router_matched")),
@@ -305,7 +305,7 @@ def _build_router_effectiveness_rows(
         key = (
             bool(record.get("prewarm", False)),
             _normalize_router_method(
-                summary.get("prewarm_router_method"),
+                summary.get("prewarm_router_effective_route_method"),
                 bool(record.get("prewarm", False)),
             ),
         )
@@ -334,6 +334,78 @@ def _build_router_effectiveness_rows(
                 str(matched_runs),
                 str(effective_runs),
                 rate,
+            ],
+        )
+
+    return rows
+
+
+def _build_candidate_effectiveness_rows(
+    records: list[dict[str, Any]],
+) -> list[list[str]]:
+    """Build aggregated rows for candidate-level speculative prewarm results.
+
+    Args:
+        records (`list[dict[str, Any]]`):
+            Timing log records.
+
+    Returns:
+        `list[list[str]]`:
+            Candidate-level summary rows grouped by effective route method.
+    """
+    grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for record in records:
+        for event in record.get("events", []) or []:
+            if event.get("step") != "prewarm_candidate_finished":
+                continue
+            route_method = _normalize_router_method(
+                event.get("effective_route_method"),
+                bool(record.get("prewarm", False)),
+            )
+            grouped[route_method].append(event)
+
+    rows: list[list[str]] = []
+    startup_mode_order = {"cold": 0, "resume": 1, "running": 2, "unknown": 3}
+    for route_method in sorted(
+        grouped,
+        key=lambda item: (startup_mode_order.get(item, 99), item),
+    ):
+        group = grouped[route_method]
+        effective_runs = sum(1 for event in group if event.get("effective") is True)
+        hit_rate = (
+            f"{(effective_runs / len(group)) * 100:.1f}%"
+            if group
+            else "-"
+        )
+        startup_mode_counts: dict[str, int] = defaultdict(int)
+        durations: list[float] = []
+
+        for event in group:
+            startup_mode = _normalize_startup_mode(event.get("startup_mode"))
+            startup_mode_counts[startup_mode] += 1
+            duration = event.get("duration_ms")
+            if duration is not None:
+                durations.append(float(duration))
+
+        startup_mode_distribution = ", ".join(
+            f"{mode}:{startup_mode_counts[mode]}"
+            for mode in sorted(
+                startup_mode_counts,
+                key=lambda mode: (
+                    startup_mode_order.get(mode, 99),
+                    mode,
+                ),
+            )
+        )
+        avg_duration = sum(durations) / len(durations) if durations else None
+        rows.append(
+            [
+                route_method,
+                str(len(group)),
+                str(effective_runs),
+                hit_rate,
+                startup_mode_distribution or "-",
+                _format_number(avg_duration),
             ],
         )
 
@@ -404,6 +476,14 @@ def generate_report(
         "Effective Prewarm Runs",
         "Effectiveness Rate",
     ]
+    candidate_headers = [
+        "Effective Route Method",
+        "Candidate Runs",
+        "Effective Candidate Runs",
+        "Speculative Hit Rate",
+        "Startup Mode Distribution",
+        "Avg Duration (ms)",
+    ]
 
     report = "\n\n".join(
         [
@@ -415,6 +495,11 @@ def generate_report(
             _build_markdown_table(aggregate_headers, _build_aggregate_rows(records)),
             "## Prewarm Router Effectiveness",
             _build_markdown_table(router_headers, _build_router_effectiveness_rows(records)),
+            "## Candidate-level Speculative Prewarm Effectiveness",
+            _build_markdown_table(
+                candidate_headers,
+                _build_candidate_effectiveness_rows(records),
+            ),
             "## Aggregated Comparison by Prewarm + Startup Mode",
             _build_markdown_table(
                 subgroup_headers,

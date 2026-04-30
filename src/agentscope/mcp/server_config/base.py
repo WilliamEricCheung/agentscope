@@ -25,6 +25,8 @@ class _DockerMCPRegistrationConfig:
             Representative MCP tool names exposed by this server.
         group_notes (`str | None`, optional):
             Extra usage guidance shown to the agent after activation.
+        server_name (`str | None`, optional):
+            Human-readable server name, when available.
 
     Returns:
         `None`:
@@ -38,3 +40,4 @@ class _DockerMCPRegistrationConfig:
     headers: dict[str, str] | None = None
     tool_names: tuple[str, ...] = ()
     group_notes: str | None = None
+    server_name: str | None = None

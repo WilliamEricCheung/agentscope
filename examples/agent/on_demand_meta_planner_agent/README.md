@@ -58,6 +58,152 @@ Run:
 python main.py
 ```
 
+## Controlled Prewarm Experiment
+
+This folder also includes a dedicated experiment runner for controlled MCP
+prewarm evaluation:
+
+```bash
+python run_prewarm_experiment.py
+```
+
+The runner evaluates four experiment modes on sampled Laplace MCP tasks:
+
+1. `none`: No Prewarm. The target MCP server is started only when formally activated.
+2. `keyword`: Only L1 keyword prewarm is enabled.
+3. `semantic`: Only L2 semantic prewarm is enabled.
+4. `hybrid`: L1 keyword first, then L2 semantic fallback.
+
+### Experiment Setting
+
+- Task source: `laplace/mcp_dataset/laplace_tasks_single_runner_format.json`
+- Sampling rule: randomly sample `sample_size` fuzzy descriptions from distinct servers, one task per server
+- Default sample size: `20`
+- Default repeats per mode and task: `5`
+- Default random seed: `42`
+- Default modes: `none keyword semantic hybrid`
+- Execution model: strictly sequential. No parallel trials are used, so one trial cannot warm a container for another trial.
+- Container isolation: before each single trial, the script forcibly removes all prewarm-ready Laplace MCP containers and clears persisted lifecycle state.
+- Default output naming: auto-incremented daily files such as `prewarm_experiment_results_0428_0.jsonl`, `prewarm_experiment_report_0428_0.md`, and `prewarm_experiment_results_0428_0.plan.json`. If `0428_0` already exists, the next default run uses `0428_1`.
+
+This means a full default run executes:
+
+```text
+20 sampled tasks x 4 modes x 5 repeats = 400 trials
+```
+
+### Required Environment
+
+Besides the model/API settings used by `main.py`, the experiment runner also assumes:
+
+- Docker CLI is available in the current shell
+- The prewarm-ready Laplace MCP images declared in `agentscope/mcp/server_config/laplace_mcp_manifest.json` are already available locally or can be started successfully
+- Semantic router artifacts are available at the default retrieval artifact directory, or you provide the corresponding environment/config used by `MCPPrewarmSemanticRouter`
+
+### Basic Run
+
+Run the full default experiment:
+
+```bash
+python run_prewarm_experiment.py \
+	--sample-size 20 \
+	--repeats 5 \
+	--seed 42
+```
+
+Run only selected modes:
+
+```bash
+python run_prewarm_experiment.py \
+	--modes none keyword semantic hybrid
+```
+
+Use custom output paths:
+
+```bash
+python run_prewarm_experiment.py \
+	--output-log-path ./custom_prewarm_results.jsonl \
+	--output-report-path ./custom_prewarm_report.md \
+	--plan-path ./custom_prewarm_results.plan.json
+```
+
+### Resume And Restart
+
+The experiment runner supports resumable execution because the full run can be long.
+
+It writes three artifacts:
+
+- JSONL results file: one or more records per trial
+- Markdown report: rebuilt incrementally during execution
+- Plan file: fixed sampled-task plan used for resume consistency
+
+By default, rerunning the same command resumes automatically:
+
+```bash
+python run_prewarm_experiment.py \
+	--sample-size 20 \
+	--repeats 5 \
+	--seed 42
+```
+
+When you do not provide explicit output paths, the runner allocates the next daily output slot automatically, for example `0428_0`, then `0428_1` after the earlier run artifacts already exist.
+
+Resume behavior:
+
+- Previously sampled tasks are reused from the persisted plan file
+- Already completed trials are skipped
+- Trials that only reached `started`, `failed`, or `interrupted` are not treated as completed and will run again
+- If key arguments differ from the existing plan, the script raises an error instead of mixing incompatible runs
+
+Start from scratch and discard previous artifacts:
+
+```bash
+python run_prewarm_experiment.py \
+	--sample-size 20 \
+	--repeats 5 \
+	--seed 42 \
+	--reset-output
+```
+
+Disable resume behavior explicitly:
+
+```bash
+python run_prewarm_experiment.py --no-resume --reset-output
+```
+
+### JSONL Trial Status
+
+The JSONL output records trial lifecycle states explicitly through `trial_status`:
+
+- `started`: the trial has begun and the script has written the initial checkpoint record
+- `completed`: the trial finished successfully and includes the final timing summary
+- `failed`: the trial raised an exception during execution
+- `interrupted`: the trial was interrupted, for example by `KeyboardInterrupt` or task cancellation
+
+This makes it easier to inspect partial progress in raw logs and understand what happened before a resume.
+
+### Report Contents
+
+The generated Markdown report includes:
+
+- `Resume Progress`: completed trials, remaining trials, skipped resumed trials
+- `Sampled Tasks`: the exact sampled fuzzy descriptions used in this run
+- `Overall Comparison by Mode`: aggregate comparison across `none`, `keyword`, `semantic`, and `hybrid`
+- `Per-task Comparison by Mode`: per-server/per-task breakdown across the four modes
+
+The main metrics include:
+
+- `Avg Wait After Activation (ms)`
+- `Target Match Rate`
+- `Effectiveness Rate`
+- activation `startup_mode` distribution
+
+### Notes
+
+- The experiment runner is separate from `main.py`. It is intended for controlled benchmark-style evaluation rather than interactive demonstration.
+- The report aggregates only the latest `completed` record for each trial. `started`, `failed`, and `interrupted` records are preserved in JSONL for debugging, but they do not pollute the summary metrics.
+- Because each trial removes all managed Laplace MCP containers first, this experiment can be slow but gives cleaner prewarm measurements.
+
 ## Architecture Diagram
 
 ```

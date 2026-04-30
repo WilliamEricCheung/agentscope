@@ -152,6 +152,55 @@ class MCPServerHelperLifecycleTest(IsolatedAsyncioTestCase):
         self.assertEqual(client.name, "github")
         self.assertIn("github-mcp", helper._CONTAINER_LIFECYCLE_STATES)
 
+    async def test_persist_container_state_uses_unique_temp_files(self) -> None:
+        """Nested persist calls should not collide on one shared temp file."""
+        container_name = "laplace-openapi-explorer"
+        first_state = helper._ContainerLifecycleState(
+            created_at=1.0,
+            last_used_at=2.0,
+            stop_after_seconds=300.0,
+            remove_after_seconds=600.0,
+            in_use=1,
+            bound_clients={"formal-client"},
+            owner_pids={111},
+        )
+        second_state = helper._ContainerLifecycleState(
+            created_at=3.0,
+            last_used_at=4.0,
+            stop_after_seconds=300.0,
+            remove_after_seconds=600.0,
+            in_use=0,
+            bound_clients={"speculative-client"},
+            owner_pids={222},
+        )
+        real_replace = os.replace
+        nested_persist_pending = True
+
+        def replace_side_effect(src: str, dst: str) -> None:
+            nonlocal nested_persist_pending
+            if nested_persist_pending:
+                nested_persist_pending = False
+                helper._persist_container_lifecycle_state(
+                    container_name,
+                    second_state,
+                )
+            real_replace(src, dst)
+
+        with patch(
+            "agentscope.mcp._mcp_server_helper.os.replace",
+            side_effect=replace_side_effect,
+        ):
+            helper._persist_container_lifecycle_state(container_name, first_state)
+
+        state_path = helper._get_container_state_path(container_name)
+        with open(state_path, encoding="utf-8") as file:
+            payload = json.load(file)
+
+        self.assertEqual(payload["container_name"], container_name)
+        self.assertEqual(payload["in_use"], 1)
+        self.assertEqual(payload["bound_clients"], ["formal-client"])
+        self.assertFalse(os.path.exists(f"{state_path}.tmp"))
+
     async def test_lifecycle_skips_container_while_in_use(self) -> None:
         """Do not stop or remove a container while a tool call is active."""
         container_name = "playwright-mcp"

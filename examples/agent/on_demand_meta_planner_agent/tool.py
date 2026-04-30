@@ -19,6 +19,7 @@ from config import (
 from agentscope.agent import ReActAgent
 from agentscope.formatter import DashScopeChatFormatter
 from agentscope.mcp import (
+    MCPPrewarmHybridRouter,
     MCPPrewarmRouter,
     _DockerMCPRegistrationConfig,
     _MCPServerConfigFactory,
@@ -221,6 +222,7 @@ def _make_lazy_mcp_postprocess(
 def _build_logged_prewarm_router(
     router: MCPPrewarmRouter,
     timing_run: dict[str, Any],
+    candidate_effective_route_methods: dict[str, str],
 ) -> Callable[[Msg | list[Msg] | None], Any]:
     """Wrap a prewarm router so routing decisions are recorded.
 
@@ -229,16 +231,19 @@ def _build_logged_prewarm_router(
             The underlying prewarm router.
         timing_run (`dict[str, Any]`):
             Mutable timing context for the current run.
+        candidate_effective_route_methods (`dict[str, str]`):
+            Mutable mapping from candidate name to the effective route method
+            that selected it.
 
     Returns:
         `Callable[[Msg | list[Msg] | None], Any]`:
             A router wrapper that records method and matched candidates.
     """
-    router_method = str(getattr(router, "method", "unknown"))
+    configured_router_method = str(getattr(router, "method", "unknown"))
     _record_mcp_timing_event(
         timing_run,
         "prewarm_router_enabled",
-        router_method=router_method,
+        configured_router_method=configured_router_method,
     )
 
     async def _router(msg: Msg | list[Msg] | None) -> list[str]:
@@ -248,14 +253,21 @@ def _build_logged_prewarm_router(
         else:
             candidates = candidates_or_awaitable
 
+        router_method = str(
+            getattr(router, "last_route_method", configured_router_method),
+        )
+
         normalized_candidates = sorted(
             {str(candidate).strip() for candidate in candidates or [] if candidate},
         )
         if normalized_candidates:
+            for candidate in normalized_candidates:
+                candidate_effective_route_methods[candidate] = router_method
             _record_mcp_timing_event(
                 timing_run,
                 "prewarm_router_matched",
-                router_method=router_method,
+                configured_router_method=configured_router_method,
+                effective_route_method=router_method,
                 candidate_count=len(normalized_candidates),
                 candidates=",".join(normalized_candidates),
             )
@@ -263,7 +275,8 @@ def _build_logged_prewarm_router(
             _record_mcp_timing_event(
                 timing_run,
                 "prewarm_router_no_match",
-                router_method=router_method,
+                configured_router_method=configured_router_method,
+                effective_route_method=router_method,
                 candidate_count=0,
             )
 
@@ -275,7 +288,8 @@ def _build_logged_prewarm_router(
 def _build_logged_prewarm_executor(
     registrations: list[_DockerMCPRegistrationConfig],
     timing_run: dict[str, Any],
-    router_method: str,
+    configured_router_method: str,
+    candidate_effective_route_methods: dict[str, str],
 ) -> Callable[[str], Any]:
     """Wrap the speculative pre-warm executor with timing logs.
 
@@ -284,8 +298,11 @@ def _build_logged_prewarm_executor(
             The MCP registrations that can be pre-warmed.
         timing_run (`dict[str, Any]`):
             Mutable timing context for the current run.
-        router_method (`str`):
-            The prewarm routing method used to select the candidate.
+        configured_router_method (`str`):
+            The configured prewarm routing method for this run.
+        candidate_effective_route_methods (`dict[str, str]`):
+            Mutable mapping from candidate name to the effective route method
+            that selected it.
 
     Returns:
         `Callable[[str], Any]`:
@@ -294,11 +311,16 @@ def _build_logged_prewarm_executor(
     base_executor = build_mcp_speculative_executor(registrations)
 
     async def _executor(candidate: str) -> None:
+        effective_route_method = candidate_effective_route_methods.get(
+            candidate,
+            configured_router_method,
+        )
         _record_mcp_timing_event(
             timing_run,
             "prewarm_candidate_started",
             candidate=candidate,
-            router_method=router_method,
+            configured_router_method=configured_router_method,
+            effective_route_method=effective_route_method,
         )
         started_at = time.perf_counter()
         try:
@@ -309,7 +331,8 @@ def _build_logged_prewarm_executor(
                 timing_run,
                 "prewarm_candidate_finished",
                 candidate=candidate,
-                router_method=router_method,
+                configured_router_method=configured_router_method,
+                effective_route_method=effective_route_method,
                 startup_mode=startup_mode,
                 effective=effective,
                 duration_ms=round(
@@ -322,7 +345,8 @@ def _build_logged_prewarm_executor(
                 timing_run,
                 "prewarm_candidate_failed",
                 candidate=candidate,
-                router_method=router_method,
+                configured_router_method=configured_router_method,
+                effective_route_method=effective_route_method,
                 duration_ms=round(
                     (time.perf_counter() - started_at) * 1000,
                     3,
@@ -410,18 +434,21 @@ async def create_worker(
     # Phase 4: Optionally enable speculative executor for comparison.
     all_registrations = list(lazy_registry.values())
     if prewarm:
-        base_prewarm_router = MCPPrewarmRouter()
+        base_prewarm_router = MCPPrewarmHybridRouter()
+        candidate_effective_route_methods: dict[str, str] = {}
         router_method = str(
             getattr(base_prewarm_router, "method", "unknown"),
         )
         prewarm_router = _build_logged_prewarm_router(
             base_prewarm_router,
             timing_run,
+            candidate_effective_route_methods,
         )
         prewarm_executor = _build_logged_prewarm_executor(
             all_registrations,
             timing_run,
-            router_method=router_method,
+            configured_router_method=router_method,
+            candidate_effective_route_methods=candidate_effective_route_methods,
         )
         _record_mcp_timing_event(
             timing_run,

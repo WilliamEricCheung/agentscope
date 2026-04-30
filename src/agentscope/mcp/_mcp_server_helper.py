@@ -5,6 +5,7 @@ import json
 import os
 import subprocess
 import sys
+import tempfile
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -231,7 +232,7 @@ def _persist_container_lifecycle_state(
             The state is written atomically to disk.
     """
     state_path = _get_container_state_path(container_name)
-    temp_path = f"{state_path}.tmp"
+    state_dir = os.path.dirname(state_path)
     payload = {
         "container_name": container_name,
         "created_at": state.created_at,
@@ -242,9 +243,20 @@ def _persist_container_lifecycle_state(
         "bound_clients": sorted(state.bound_clients),
         "owner_pids": sorted(state.owner_pids),
     }
-    with open(temp_path, "w", encoding="utf-8") as file:
-        json.dump(payload, file, ensure_ascii=False, indent=2)
-    os.replace(temp_path, state_path)
+    file_descriptor, temp_path = tempfile.mkstemp(
+        dir=state_dir,
+        prefix=f"{Path(state_path).stem}.",
+        suffix=".tmp",
+        text=True,
+    )
+    try:
+        with os.fdopen(file_descriptor, "w", encoding="utf-8") as file:
+            json.dump(payload, file, ensure_ascii=False, indent=2)
+        os.replace(temp_path, state_path)
+    except Exception:
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+        raise
 
 
 def _remove_persisted_container_state(container_name: str) -> None:
@@ -770,12 +782,41 @@ def _build_mcp_timing_summary(
             startup_mode = _normalize_startup_mode(event.get("startup_mode"))
             break
 
-    prewarm_router_method = None
+    prewarm_router_configured_method = None
+    prewarm_router_effective_route_method = None
     for event in reversed(events):
-        router_method = event.get("router_method")
-        if router_method is not None:
-            prewarm_router_method = str(router_method).strip() or None
+        configured_method = event.get("configured_router_method")
+        if configured_method is not None:
+            prewarm_router_configured_method = (
+                str(configured_method).strip() or None
+            )
             break
+
+    if prewarm_router_configured_method is None:
+        for event in reversed(events):
+            router_method = event.get("router_method")
+            if router_method is not None:
+                prewarm_router_configured_method = (
+                    str(router_method).strip() or None
+                )
+                break
+
+    for event in reversed(events):
+        effective_route_method = event.get("effective_route_method")
+        if effective_route_method is not None:
+            prewarm_router_effective_route_method = (
+                str(effective_route_method).strip() or None
+            )
+            break
+
+    if prewarm_router_effective_route_method is None:
+        for event in reversed(events):
+            router_method = event.get("router_method")
+            if router_method is not None:
+                prewarm_router_effective_route_method = (
+                    str(router_method).strip() or None
+                )
+                break
 
     router_candidates: list[str] = []
     for event in events:
@@ -795,7 +836,7 @@ def _build_mcp_timing_summary(
     router_candidates = list(dict.fromkeys(router_candidates))
     prewarm_router_matched = None
     prewarm_router_candidate_count = None
-    if prewarm_router_method is not None:
+    if prewarm_router_configured_method is not None:
         prewarm_router_matched = bool(router_candidates)
         prewarm_router_candidate_count = len(router_candidates)
 
@@ -819,13 +860,18 @@ def _build_mcp_timing_summary(
     effective_modes = list(dict.fromkeys(effective_modes))
     prewarm_effective = None
     prewarm_effective_candidate_count = None
-    if prewarm_router_method is not None:
+    if prewarm_router_configured_method is not None:
         prewarm_effective = bool(effective_candidates)
         prewarm_effective_candidate_count = len(effective_candidates)
 
     return {
         "startup_mode": startup_mode,
-        "prewarm_router_method": prewarm_router_method,
+        "prewarm_router_configured_method": (
+            prewarm_router_configured_method
+        ),
+        "prewarm_router_effective_route_method": (
+            prewarm_router_effective_route_method
+        ),
         "prewarm_router_matched": prewarm_router_matched,
         "prewarm_router_candidate_count": prewarm_router_candidate_count,
         "prewarm_router_candidates": (

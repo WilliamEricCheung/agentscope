@@ -42,9 +42,16 @@ class OnDemandTimingReportTest(TestCase):
                 "started_at": "2026-04-08 18:00:00",
                 "prewarm": False,
                 "task_description": "Get the weather forecast for Beijing tomorrow",
+                "events": [
+                    {
+                        "step": "tool_group_activation_requested",
+                        "elapsed_ms": 100.0,
+                    },
+                ],
                 "summary": {
                     "startup_mode": "cold",
-                    "prewarm_router_method": None,
+                    "prewarm_router_configured_method": None,
+                    "prewarm_router_effective_route_method": None,
                     "prewarm_router_matched": None,
                     "prewarm_effective": None,
                     "time_to_prewarm_start_ms": None,
@@ -58,15 +65,63 @@ class OnDemandTimingReportTest(TestCase):
                 "started_at": "2026-04-08 18:02:00",
                 "prewarm": True,
                 "task_description": "Get the weather forecast for Beijing tomorrow",
+                "events": [
+                    {
+                        "step": "prewarm_candidate_started",
+                        "candidate": "playwright-mcp",
+                        "effective_route_method": "keyword",
+                    },
+                    {
+                        "step": "prewarm_candidate_finished",
+                        "candidate": "playwright-mcp",
+                        "effective_route_method": "keyword",
+                        "startup_mode": "running",
+                        "effective": False,
+                        "duration_ms": 710.5,
+                    },
+                ],
                 "summary": {
                     "startup_mode": "running",
-                    "prewarm_router_method": "keyword",
+                    "prewarm_router_configured_method": "hybrid",
+                    "prewarm_router_effective_route_method": "keyword",
                     "prewarm_router_matched": True,
                     "prewarm_effective": False,
                     "time_to_prewarm_start_ms": 45.2,
                     "prewarm_duration_ms": 710.5,
                     "prewarm_ready_before_activation_ms": 920.0,
                     "wait_for_mcp_ready_after_activation_ms": 3.9,
+                },
+            },
+            {
+                "run_id": "worker-3",
+                "started_at": "2026-04-08 18:04:00",
+                "prewarm": True,
+                "task_description": "Search arXiv and summarize the latest agent paper",
+                "events": [
+                    {
+                        "step": "prewarm_candidate_started",
+                        "candidate": "github-mcp",
+                        "effective_route_method": "semantic",
+                    },
+                    {
+                        "step": "prewarm_candidate_finished",
+                        "candidate": "github-mcp",
+                        "effective_route_method": "semantic",
+                        "startup_mode": "resume",
+                        "effective": True,
+                        "duration_ms": 120.0,
+                    },
+                ],
+                "summary": {
+                    "startup_mode": "resume",
+                    "prewarm_router_configured_method": "hybrid",
+                    "prewarm_router_effective_route_method": "semantic",
+                    "prewarm_router_matched": True,
+                    "prewarm_effective": True,
+                    "time_to_prewarm_start_ms": 20.0,
+                    "prewarm_duration_ms": 120.0,
+                    "prewarm_ready_before_activation_ms": 30.0,
+                    "wait_for_mcp_ready_after_activation_ms": 15.0,
                 },
             },
         ]
@@ -84,11 +139,19 @@ class OnDemandTimingReportTest(TestCase):
         self.assertIn("# On-demand MCP Timing Report", report)
         self.assertIn("## Aggregated Comparison by Prewarm Mode", report)
         self.assertIn("## Prewarm Router Effectiveness", report)
+        self.assertIn("## Candidate-level Speculative Prewarm Effectiveness", report)
         self.assertIn("## Aggregated Comparison by Prewarm + Startup Mode", report)
         self.assertIn("## Per-run Details", report)
         self.assertIn("prewarm=false", report)
         self.assertIn("prewarm=true", report)
         self.assertIn("keyword", report)
+        self.assertIn("semantic", report)
+        self.assertIn("running:1", report)
+        self.assertIn("resume:1", report)
+        self.assertIn("0.0%", report)
+        self.assertIn("100.0%", report)
+        self.assertIn("710.500", report)
+        self.assertIn("120.000", report)
         self.assertIn("running", report)
         self.assertIn("2310.400", report)
         self.assertIn("3.900", report)
