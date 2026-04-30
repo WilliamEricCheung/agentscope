@@ -1,4 +1,4 @@
-"""Merge single-server runner-format synthesis outputs."""
+"""Merge multi-server runner-format synthesis outputs."""
 
 from __future__ import annotations
 
@@ -7,46 +7,10 @@ import json
 from pathlib import Path
 from typing import Any
 
-from ._merge_runner_format import merge_runner_files, merge_runner_payloads, resolve_merge_plan
+from .._merge_runner_format import merge_runner_files, merge_runner_payloads, resolve_merge_plan
 
 
-DEFAULT_SINGLE_RUNNER_GLOB = "benchmark_tasks_single_*_runner_format.json"
-
-
-def resolve_input_files(
-    inputs: list[str] | None = None,
-    glob_pattern: str | None = None,
-    search_root: str | None = None,
-    output_file: str | None = None,
-) -> list[str]:
-    """Resolve merge input files from explicit paths and optional glob.
-
-    Args:
-        inputs (`list[str] | None`, optional):
-            Explicit input file paths.
-        glob_pattern (`str | None`, optional):
-            Optional glob pattern used under ``search_root``.
-        search_root (`str | None`, optional):
-            Root directory for glob expansion.
-        output_file (`str | None`, optional):
-            Output file path to exclude from discovered inputs.
-
-    Returns:
-        `list[str]`:
-            Ordered unique input file paths.
-
-    Raises:
-        `ValueError`:
-            Raised when no input files are resolved.
-    """
-    resolved, _ = resolve_merge_plan(
-        inputs=inputs,
-        glob_pattern=glob_pattern,
-        search_root=search_root,
-        output_file=output_file,
-        include_existing_output=False,
-    )
-    return resolved
+DEFAULT_MULTI_RUNNER_GLOB = "benchmark_tasks_multi_*_runner_format.json"
 
 
 def resolve_merge_sources(
@@ -55,7 +19,7 @@ def resolve_merge_sources(
     search_root: str | None = None,
     output_file: str | None = None,
 ) -> tuple[list[str], list[str]]:
-    """Resolve payload inputs and source-file metadata for single merges.
+    """Resolve payload inputs and source-file metadata for multi merges.
 
     Args:
         inputs (`list[str] | None`, optional):
@@ -80,41 +44,39 @@ def resolve_merge_sources(
     )
 
 
-def merge_single_runner_payloads(
+def merge_multi_runner_payloads(
     payloads: list[dict[str, Any]],
     source_names: list[str] | None = None,
 ) -> dict[str, Any]:
-    """Merge multiple single-server runner-format payloads.
+    """Merge multiple multi-server runner-format payloads.
 
     Args:
         payloads (`list[dict[str, Any]]`):
             Runner-format payloads to merge.
         source_names (`list[str] | None`, optional):
-            Optional source file names for metadata.
+            Raw source files represented by the merge result.
 
     Returns:
         `dict[str, Any]`:
-            Merged runner-format payload with reindexed task ids.
-
-    Raises:
-        `ValueError`:
-            Raised when no payloads are provided.
+            Merged runner-format payload.
     """
     return merge_runner_payloads(payloads, source_names=source_names)
 
 
-def merge_single_runner_files(
+def merge_multi_runner_files(
     input_files: list[str],
     output_file: str,
     source_names: list[str] | None = None,
 ) -> dict[str, Any]:
-    """Merge multiple single-server runner-format files and write output.
+    """Merge multiple multi-server runner-format files and write output.
 
     Args:
         input_files (`list[str]`):
-            Source runner-format file paths.
+            Source runner-format payload paths.
         output_file (`str`):
             Destination JSON file path.
+        source_names (`list[str] | None`, optional):
+            Raw source-file list stored in output metadata.
 
     Returns:
         `dict[str, Any]`:
@@ -135,20 +97,20 @@ def _parse_args() -> argparse.Namespace:
             Parsed CLI args.
     """
     parser = argparse.ArgumentParser(
-        description="Merge benchmark_tasks_single_*_runner_format.json files.",
+        description="Merge benchmark_tasks_multi_*_runner_format.json files.",
     )
     parser.add_argument(
         "inputs",
         nargs="*",
-        help="Optional explicit input single runner-format JSON files.",
+        help="Optional explicit input multi runner-format JSON files.",
     )
     parser.add_argument(
         "--glob",
         dest="glob_pattern",
-        default=DEFAULT_SINGLE_RUNNER_GLOB,
+        default=DEFAULT_MULTI_RUNNER_GLOB,
         help=(
             "Glob pattern under --search-root for auto-discovery "
-            f"(default: {DEFAULT_SINGLE_RUNNER_GLOB})."
+            f"(default: {DEFAULT_MULTI_RUNNER_GLOB})."
         ),
     )
     parser.add_argument(
@@ -178,7 +140,7 @@ def main() -> int:
         search_root=args.search_root,
         output_file=args.output,
     )
-    merged = merge_single_runner_files(
+    merged = merge_multi_runner_files(
         input_files=input_files,
         output_file=args.output,
         source_names=source_names,

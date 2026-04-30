@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 import tempfile
 from datetime import datetime
 from pathlib import Path
@@ -17,25 +18,44 @@ from laplace.mcp_dataset.synthesis._server_config import (
     LaplaceMCPManifestSource,
     MCPBenchCommandSource,
 )
-from laplace.mcp_dataset.synthesis.benchmark_generator import (
+from laplace.mcp_dataset.synthesis.prompt2task.benchmark_generator import (
     BenchmarkTaskGenerator,
 )
-from laplace.mcp_dataset.synthesis.generate_benchmark_tasks import (
+from laplace.mcp_dataset.synthesis.context2sdg.sdg_trace_synthesis import (
+    SDGTraceSynthesizer,
+    build_server_transition_counts,
+    build_server_transition_matrix,
+    build_state_transition_counts,
+    build_state_transition_matrix,
+    build_batch_trace_prompt,
+    load_laplace_server_catalog,
+)
+from laplace.mcp_dataset.synthesis.context2sdg.generate_sdg_traces import (
+    _build_prompt_shard_filename,
+    _build_trace_shard_filename,
+    _build_transition_matrix_payload,
+    _load_checkpointed_traces,
+    _persist_outputs,
+    _resolve_run_paths,
+    _write_prompt_to_shard,
+    _write_trace_to_shard,
+)
+from laplace.mcp_dataset.synthesis.prompt2task.generate_benchmark_tasks import (
     _build_run_stamp,
     _filter_combinations_payload,
     _load_server_whitelist,
 )
-from laplace.mcp_dataset.synthesis.merge_single_runner_format import (
+from laplace.mcp_dataset.synthesis.prompt2task.merge_single_runner_format import (
     merge_single_runner_files,
     merge_single_runner_payloads,
     resolve_input_files,
     resolve_merge_sources,
 )
-from laplace.mcp_dataset.synthesis.merge_multi_runner_format import (
+from laplace.mcp_dataset.synthesis.prompt2task.merge_multi_runner_format import (
     merge_multi_runner_files,
     resolve_merge_sources as resolve_multi_merge_sources,
 )
-from laplace.mcp_dataset.synthesis.task_synthesis import (
+from laplace.mcp_dataset.synthesis.prompt2task.task_synthesis import (
     TaskQualityEvaluator,
     TaskSynthesizer,
 )
@@ -134,6 +154,384 @@ class TaskSynthesizerTest(IsolatedAsyncioTestCase):
         self.assertEqual(len(tasks), 1)
         self.assertEqual(tasks[0]["task_id"], "wikipedia_000")
         self.assertIn("fuzzy_description", tasks[0])
+
+
+class SDGTraceSynthesizerTest(IsolatedAsyncioTestCase):
+    """Test SDG trace prompt and normalization behavior."""
+
+    def test_build_batch_trace_prompt_lists_servers_and_schema(self) -> None:
+        """Batch prompt should expose server names, tools, and schema fields."""
+        prompt = build_batch_trace_prompt(
+            server_catalog={
+                "Google Maps": {
+                    "group_description": "Maps and routing tools.",
+                    "tool_names": ["maps_geocode", "search_nearby"],
+                },
+                "Wikipedia": {
+                    "group_description": "Knowledge lookup tools.",
+                    "tool_names": ["search", "get_page"],
+                },
+            },
+            trace_count=12,
+        )
+
+        self.assertIn("Generate 12 diverse execution traces", prompt)
+        self.assertIn("Server: Google Maps", prompt)
+        self.assertIn("Type:", prompt)
+        self.assertIn("maps_geocode", prompt)
+        self.assertIn("next_server_labels", prompt)
+        self.assertIn("parallel_server_groups", prompt)
+
+    async def test_generate_batch_traces_normalizes_transition_fields(self) -> None:
+        """Standalone batch trace generation should backfill summary fields."""
+        provider = _FakeLLMProvider(
+            responses=[
+                json.dumps(
+                    {
+                        "traces": [
+                            {
+                                "source_server_scope": ["Wikipedia", "BioMCP"],
+                                "user_request": "Please look up a topic and summarize it.",
+                                "execution_trace": [
+                                    {
+                                        "step_index": 1,
+                                        "server_name": "Wikipedia",
+                                        "server_type": "Academic",
+                                        "tool_name": "search",
+                                        "tool_category": "Search",
+                                        "intent": "Find relevant entities.",
+                                        "source_nodes": ["user_request"],
+                                        "target_node": "search_hits",
+                                        "depends_on": [],
+                                    },
+                                    {
+                                        "step_index": 2,
+                                        "server_name": "Wikipedia",
+                                        "server_type": "Academic",
+                                        "tool_name": "get_page",
+                                        "tool_category": "Fetch",
+                                        "intent": "Read the selected page.",
+                                        "source_nodes": ["search_hits"],
+                                        "target_node": "page_content",
+                                        "depends_on": [1],
+                                    },
+                                ],
+                                "sdg_summary": {
+                                    "parallel_server_groups": [["Wikipedia", "BioMCP"]],
+                                },
+                            },
+                        ],
+                    },
+                ),
+            ],
+        )
+        synthesizer = SDGTraceSynthesizer(llm_provider=provider)
+        traces = await synthesizer.generate_batch_traces(
+            trace_count=1,
+            server_catalog={
+                "Wikipedia": {
+                    "group_description": "Knowledge lookup tools.",
+                    "server_type": "Academic",
+                    "tool_names": ["search", "get_page"],
+                },
+                "BioMCP": {
+                    "group_description": "Biomedical lookup tools.",
+                    "server_type": "Academic",
+                    "tool_names": ["search_bio"],
+                },
+            },
+        )
+        trace = traces[0]
+
+        self.assertEqual(trace["trace_id"], "sdg_trace_00000")
+        self.assertEqual(trace["source_server_scope"], ["Wikipedia", "BioMCP"])
+        self.assertEqual(trace["sdg_summary"]["server_path"], ["Wikipedia", "Wikipedia"])
+        self.assertEqual(trace["sdg_summary"]["tool_path"], ["search", "get_page"])
+        self.assertEqual(
+            trace["sdg_summary"]["state_path"],
+            ["Academic::Search", "Academic::Fetch"],
+        )
+        self.assertEqual(trace["sdg_summary"]["next_server_labels"], ["Wikipedia", "END"])
+        self.assertEqual(
+            trace["sdg_summary"]["next_state_labels"],
+            ["Academic::Fetch", "END"],
+        )
+        self.assertEqual(
+            trace["sdg_summary"]["successor_candidates"],
+            ["Wikipedia"],
+        )
+        self.assertEqual(
+            trace["sdg_summary"]["parallel_server_groups"],
+            [["Wikipedia", "BioMCP"]],
+        )
+        self.assertEqual(trace["execution_trace"][0]["source_nodes"], ["user_request"])
+        self.assertEqual(trace["execution_trace"][0]["target_node"], "search_hits")
+        self.assertEqual(trace["execution_trace"][0]["server_type"], "Academic")
+        self.assertEqual(trace["execution_trace"][0]["tool_category"], "Search")
+        self.assertEqual(
+            trace["sdg_summary"]["inferred_edges"],
+            [
+                {
+                    "source_node": "user_request",
+                    "target_node": "search_hits",
+                    "source_step_index": None,
+                    "target_step_index": 1,
+                    "edge_type": "data_dependency",
+                },
+                {
+                    "source_node": "search_hits",
+                    "target_node": "page_content",
+                    "source_step_index": 1,
+                    "target_step_index": 2,
+                    "edge_type": "data_dependency",
+                },
+            ],
+        )
+
+    def test_build_batch_trace_prompt_mentions_standalone_batch_requirements(self) -> None:
+        """Batch prompt should stand alone without task-conditioned inputs."""
+        prompt = build_batch_trace_prompt(
+            server_catalog={
+                "Google Maps": {
+                    "group_description": "Maps tools.",
+                    "tool_names": ["maps_geocode", "search_nearby", "get_place_details"],
+                },
+            },
+            trace_count=8,
+        )
+
+        self.assertIn("Generate 8 diverse execution traces", prompt)
+        self.assertIn("maps_geocode", prompt)
+        self.assertIn("tool_category", prompt)
+        self.assertIn("parallel_server_groups", prompt)
+
+    def test_load_laplace_server_catalog_uses_repo_default_manifest(self) -> None:
+        """Default catalog loading should resolve the repository manifest path."""
+        catalog = load_laplace_server_catalog(ready_only=False)
+
+        self.assertTrue(catalog)
+
+    def test_transition_matrix_helpers_build_server_and_state_matrices(self) -> None:
+        """Transition helpers should build counts and probabilities from traces."""
+        traces = [
+            {
+                "sdg_summary": {
+                    "server_path": ["Wikipedia", "BioMCP", "Wikipedia"],
+                    "state_path": [
+                        "Academic::Search",
+                        "Academic::Fetch",
+                        "Academic::Summarize",
+                    ],
+                },
+            },
+            {
+                "sdg_summary": {
+                    "server_path": ["Wikipedia", "BioMCP"],
+                    "state_path": ["Academic::Search", "Academic::Fetch"],
+                },
+            },
+        ]
+
+        self.assertEqual(
+            build_server_transition_counts(traces),
+            {
+                "Wikipedia": {"BioMCP": 2},
+                "BioMCP": {"Wikipedia": 1},
+            },
+        )
+        self.assertEqual(
+            build_state_transition_counts(traces),
+            {
+                "Academic::Search": {"Academic::Fetch": 2},
+                "Academic::Fetch": {"Academic::Summarize": 1},
+            },
+        )
+        self.assertEqual(
+            build_server_transition_matrix(traces),
+            {
+                "Wikipedia": {"BioMCP": 1.0},
+                "BioMCP": {"Wikipedia": 1.0},
+            },
+        )
+        self.assertEqual(
+            build_state_transition_matrix(traces),
+            {
+                "Academic::Search": {"Academic::Fetch": 1.0},
+                "Academic::Fetch": {"Academic::Summarize": 1.0},
+            },
+        )
+
+    def test_transition_matrix_payload_helper_builds_combined_json(self) -> None:
+        """CLI helper should package both counts and normalized matrices."""
+        traces = [
+            {
+                "sdg_summary": {
+                    "server_path": ["Wikipedia", "BioMCP"],
+                    "state_path": ["Academic::Search", "Academic::Fetch"],
+                },
+            },
+        ]
+
+        payload = _build_transition_matrix_payload(traces)
+
+        self.assertEqual(payload["trace_count"], 1)
+        self.assertEqual(
+            payload["server_transition_counts"],
+            {"Wikipedia": {"BioMCP": 1}},
+        )
+        self.assertEqual(
+            payload["server_transition_matrix"],
+            {"Wikipedia": {"BioMCP": 1.0}},
+        )
+        self.assertEqual(
+            payload["state_transition_counts"],
+            {"Academic::Search": {"Academic::Fetch": 1}},
+        )
+        self.assertEqual(
+            payload["state_transition_matrix"],
+            {"Academic::Search": {"Academic::Fetch": 1.0}},
+        )
+
+    def test_resumable_run_paths_default_to_output_stem_checkpoint(self) -> None:
+        """Checkpoint paths should default under the context2sdg module directory."""
+        paths = _resolve_run_paths(
+            output_path=Path("laplace/mcp_dataset/laplace_sdg_traces.json"),
+            checkpoint_dir=None,
+        )
+        expected_root = (
+            Path("d:/Project/agentscope/laplace/mcp_dataset/synthesis/context2sdg")
+            if os.name == "nt"
+            else Path("/mnt/d/Project/agentscope/laplace/mcp_dataset/synthesis/context2sdg")
+        ) / "laplace_sdg_traces_checkpoint"
+
+        self.assertEqual(
+            paths["root"],
+            expected_root,
+        )
+        self.assertEqual(
+            paths["prompt_dir"],
+            expected_root / "prompts",
+        )
+        self.assertEqual(
+            paths["trace_dir"],
+            expected_root / "traces",
+        )
+
+    def test_build_prompt_shard_filename_is_archive_friendly(self) -> None:
+        """Prompt checkpoint shards should encode shard range and run size."""
+        self.assertEqual(
+            _build_prompt_shard_filename(0, 49, 200),
+            "sdg_prompt_shard_00000_to_00049_of_00200.json",
+        )
+
+    def test_build_trace_shard_filename_is_archive_friendly(self) -> None:
+        """Trace checkpoint shards should encode shard range and run size."""
+        self.assertEqual(
+            _build_trace_shard_filename(0, 49, 200),
+            "sdg_trace_shard_00000_to_00049_of_00200.json",
+        )
+
+    def test_prompt_and_trace_shards_store_multiple_records(self) -> None:
+        """Checkpoint shards should group multiple prompt and trace records."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            prompt_dir = Path(temp_dir) / "prompts"
+            trace_dir = Path(temp_dir) / "traces"
+            prompt_dir.mkdir(parents=True, exist_ok=True)
+            trace_dir.mkdir(parents=True, exist_ok=True)
+
+            _write_prompt_to_shard(prompt_dir, 0, 200, "prompt zero")
+            _write_prompt_to_shard(prompt_dir, 1, 200, "prompt one")
+            _write_trace_to_shard(trace_dir, 0, 200, {"trace_id": "sdg_trace_00000"})
+            _write_trace_to_shard(trace_dir, 1, 200, {"trace_id": "sdg_trace_00001"})
+
+            prompt_shard = json.loads(
+                (prompt_dir / "sdg_prompt_shard_00000_to_00049_of_00200.json").read_text(encoding="utf-8"),
+            )
+            trace_shard = json.loads(
+                (trace_dir / "sdg_trace_shard_00000_to_00049_of_00200.json").read_text(encoding="utf-8"),
+            )
+
+        self.assertEqual(len(prompt_shard["records"]), 2)
+        self.assertEqual(len(trace_shard["records"]), 2)
+
+    def test_load_checkpointed_traces_reads_contiguous_prefix(self) -> None:
+        """Resume helper should load only the contiguous completed prefix of traces."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            trace_dir = Path(temp_dir)
+            (trace_dir / "sdg_trace_shard_00000_to_00004_of_00005.json").write_text(
+                json.dumps(
+                    {
+                        "records": [
+                            {"trace_index": 0, "trace": {"trace_id": "sdg_trace_00000"}},
+                            {"trace_index": 1, "trace": {"trace_id": "sdg_trace_00001"}},
+                            {"trace_index": 3, "trace": {"trace_id": "sdg_trace_00003"}},
+                        ],
+                    },
+                ),
+                encoding="utf-8",
+            )
+
+            traces = _load_checkpointed_traces(
+                trace_dir=trace_dir,
+                requested_trace_count=5,
+            )
+
+        self.assertEqual(
+            traces,
+            [
+                {"trace_id": "sdg_trace_00000"},
+                {"trace_id": "sdg_trace_00001"},
+            ],
+        )
+
+    def test_persist_outputs_writes_archive_manifest_fields(self) -> None:
+        """Manifest should record archive-oriented metadata for paper artifacts."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_path = Path(temp_dir) / "laplace_sdg_traces.json"
+            matrix_path = Path(temp_dir) / "laplace_sdg_transition_matrices.json"
+            run_paths = _resolve_run_paths(
+                output_path=output_path,
+                checkpoint_dir=None,
+            )
+            run_paths["root"].mkdir(parents=True, exist_ok=True)
+            run_paths["prompt_dir"].mkdir(parents=True, exist_ok=True)
+            run_paths["trace_dir"].mkdir(parents=True, exist_ok=True)
+
+            _persist_outputs(
+                traces=[{"trace_id": "sdg_trace_00000"}],
+                requested_trace_count=2,
+                output_path=output_path,
+                transition_matrix_output=str(matrix_path),
+                run_paths=run_paths,
+            )
+
+            manifest = json.loads(
+                run_paths["manifest"].read_text(encoding="utf-8"),
+            )
+
+        self.assertEqual(
+            manifest["manifest_schema"],
+            "laplace.context2sdg.checkpoint_manifest.v1",
+        )
+        self.assertEqual(manifest["collection_id"], "laplace_sdg_traces")
+        self.assertEqual(manifest["status"], "in_progress")
+        self.assertEqual(
+            manifest["artifact_paths"]["consolidated_trace_output"],
+            str(output_path),
+        )
+        self.assertEqual(
+            manifest["file_naming"]["prompt_file_pattern"],
+            "sdg_prompt_shard_{trace_index_start:05d}_to_{trace_index_end:05d}_of_{requested_trace_count:05d}.json",
+        )
+        self.assertEqual(
+            manifest["file_naming"]["trace_file_pattern"],
+            "sdg_trace_shard_{trace_index_start:05d}_to_{trace_index_end:05d}_of_{requested_trace_count:05d}.json",
+        )
+        self.assertEqual(manifest["checkpoint_shard_size"], 50)
+        self.assertEqual(
+            manifest["completed_trace_ids"],
+            ["sdg_trace_00000"],
+        )
 
 
 class TaskQualityEvaluatorTest(IsolatedAsyncioTestCase):

@@ -1,0 +1,86 @@
+{
+  "trace_schema_version": 2,
+  "trace_count": 4,
+  "server_transition_counts": {
+    "Google Maps": {
+      "Google Maps": 6,
+      "Math MCP": 2,
+      "Weather Data": 1
+    },
+    "Math MCP": {
+      "Unit Converter": 2
+    },
+    "Unit Converter": {
+      "Google Maps": 2
+    },
+    "National Parks": {
+      "National Parks": 4,
+      "Google Maps": 2
+    },
+    "Weather Data": {
+      "Weather Data": 1
+    }
+  },
+  "server_transition_matrix": {
+    "Google Maps": {
+      "Google Maps": 0.6666666666666666,
+      "Math MCP": 0.2222222222222222,
+      "Weather Data": 0.1111111111111111
+    },
+    "Math MCP": {
+      "Unit Converter": 1.0
+    },
+    "Unit Converter": {
+      "Google Maps": 1.0
+    },
+    "National Parks": {
+      "National Parks": 0.6666666666666666,
+      "Google Maps": 0.3333333333333333
+    },
+    "Weather Data": {
+      "Weather Data": 1.0
+    }
+  },
+  "state_transition_counts": {
+    "Maps::Resolve": {
+      "Maps::Search": 3,
+      "Maps::Resolve": 1,
+      "Maps::Inspect": 1
+    },
+    "Maps::Search": {
+      "Maps::Inspect": 5
+    },
+    "Maps::Inspect": {
+      "Maps::Compute": 2,
+      "Maps::Inspect": 2,
+      "Maps::Resolve": 2
+    },
+    "Maps::Compute": {
+      "Maps::Convert": 2
+    },
+    "Maps::Convert": {
+      "Maps::Inspect": 2
+    }
+  },
+  "state_transition_matrix": {
+    "Maps::Resolve": {
+      "Maps::Search": 0.6,
+      "Maps::Resolve": 0.2,
+      "Maps::Inspect": 0.2
+    },
+    "Maps::Search": {
+      "Maps::Inspect": 1.0
+    },
+    "Maps::Inspect": {
+      "Maps::Compute": 0.3333333333333333,
+      "Maps::Inspect": 0.3333333333333333,
+      "Maps::Resolve": 0.3333333333333333
+    },
+    "Maps::Compute": {
+      "Maps::Convert": 1.0
+    },
+    "Maps::Convert": {
+      "Maps::Inspect": 1.0
+    }
+  }
+}

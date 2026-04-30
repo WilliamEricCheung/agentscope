@@ -7,7 +7,7 @@ import random
 import re
 from typing import Any
 
-from ._dashscope_provider import DashScopeCompletionProvider
+from .._dashscope_provider import DashScopeCompletionProvider
 
 
 class TaskQualityEvaluator:

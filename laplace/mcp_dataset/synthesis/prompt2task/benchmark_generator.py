@@ -9,9 +9,9 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from ._dashscope_provider import DashScopeCompletionProvider
-from ._mcp_tool_discovery import MCPToolDiscoverer
-from ._server_config import LaplaceMCPManifestSource, ServerConfig
+from .._dashscope_provider import DashScopeCompletionProvider
+from .._mcp_tool_discovery import MCPToolDiscoverer
+from .._server_config import LaplaceMCPManifestSource, ServerConfig
 from .task_synthesis import TaskSynthesizer
 
 _logger = logging.getLogger(__name__)

@@ -19,7 +19,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from ._server_config import LaplaceMCPManifestSource, ServerConfig
+from .._server_config import LaplaceMCPManifestSource, ServerConfig
 
 _logger = logging.getLogger(__name__)
 
@@ -371,7 +371,7 @@ class MCPServerValidator:
                 Tool list returned by MCP server.
         """
 
-        from ._mcp_tool_discovery import HttpStatelessClient
+        from .._mcp_tool_discovery import HttpStatelessClient
 
         transport = "sse" if config.transport == "sse" else "streamable_http"
         client = HttpStatelessClient(
@@ -414,7 +414,7 @@ class MCPServerValidator:
         if selected is None:
             return True, f"Smoke call skipped: {reason}"
 
-        from ._mcp_tool_discovery import HttpStatelessClient
+        from .._mcp_tool_discovery import HttpStatelessClient
 
         transport = "sse" if config.transport == "sse" else "streamable_http"
         client = HttpStatelessClient(
