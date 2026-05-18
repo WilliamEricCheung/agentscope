@@ -1,0 +1,51 @@
+{
+  "mcp_server_combinations": {
+    "three_server_combinations": [
+      {
+        "name": "Travel Planning Suite",
+        "servers": [
+          "Google Maps",
+          "Weather Data",
+          "National Parks"
+        ],
+        "description": "Complete travel planning tools"
+      },
+      {
+        "name": "AI Research Hub",
+        "servers": [
+          "Hugging Face",
+          "Paper Search",
+          "Wikipedia"
+        ],
+        "description": "AI models with research and knowledge"
+      },
+      {
+        "name": "Health Platform",
+        "servers": [
+          "Medical Calculator",
+          "FruityVice",
+          "BioMCP"
+        ],
+        "description": "Health calculations and nutrition"
+      },
+      {
+        "name": "Space Exploration",
+        "servers": [
+          "NASA Data",
+          "Google Maps",
+          "Wikipedia"
+        ],
+        "description": "Space data with Earth locations and knowledge"
+      },
+      {
+        "name": "API Research Platform",
+        "servers": [
+          "OpenAPI Explorer",
+          "Paper Search",
+          "Hugging Face"
+        ],
+        "description": "API exploration with research papers and AI models"
+      }
+    ]
+  }
+}
