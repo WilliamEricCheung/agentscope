@@ -1,0 +1,36 @@
+{
+  "generation_info": {
+    "timestamp": "2026-06-04T14:25:04.392388",
+    "total_servers": 1,
+    "processed_servers": 1,
+    "successful_servers": 1,
+    "failed_servers": 0,
+    "runtime_unhealthy_servers": [],
+    "generation_model": "qwen3-max",
+    "tasks_per_server": 2,
+    "duration": "0:00:53.650379",
+    "status": "completed"
+  },
+  "server_tasks": [
+    {
+      "server_name": "Jupyter MCP",
+      "generation_status": "success",
+      "connection_attempts": 1,
+      "tasks": [
+        {
+          "task_id": "jupyter_mcp_000",
+          "task_description": "You are given a Jupyter server environment. First, list all files in the root directory with a maximum depth of 2 to locate any notebook files (use pattern '*.ipynb'). From the results, identify a notebook named 'analysis_pipeline.ipynb'. If it exists, activate it using use_notebook in 'connect' mode. If it does not exist, create it at the root path 'analysis_pipeline.ipynb' using 'create' mode. Once activated, read the notebook in brief format (limit=50) to inspect its structure. If the notebook is empty or has fewer than 3 cells, insert three new code cells at the beginning: (1) a markdown cell titled '# Data Analysis Pipeline', (2) a code cell that prints 'Pipeline initialized on {current date}' (use Python's datetime.today().strftime('%Y-%m-%d')), and (3) a code cell that lists all available kernels using %lsmagic. Execute the second and third cells sequentially with a timeout of 60 seconds each. After execution, restart the notebook kernel to ensure a clean state. Finally, unuse the notebook and return a structured summary containing: (a) the full path of the notebook, (b) the number of cells after modification, (c) the output of the kernel listing cell, and (d) confirmation that the kernel was restarted.",
+          "dependency_analysis": "This task requires a strict sequence: (1) list_files must run first to discover 'analysis_pipeline.ipynb'; (2) use_notebook depends on the file’s existence to decide between 'connect' or 'create'; (3) read_notebook depends on successful activation; (4) insert_cell operations depend on the cell count from read_notebook; (5) execute_cell depends on inserted cells; (6) restart_notebook depends on the notebook being active; (7) unuse_notebook finalizes resource cleanup. All steps rely exclusively on Jupyter MCP tools with no external dependencies.",
+          "fuzzy_description": "I need to set up a data analysis notebook in my project folder. First, check the root directory and its immediate subfolders for any Jupyter notebooks. If you find one called 'analysis_pipeline.ipynb', open it; if not, create a new one with that name at the top level.  \n\nOnce it’s ready, take a quick look at its contents—just the first 50 lines or so. If it’s empty or has fewer than three cells, add the following at the very beginning:  \n1. A markdown cell with the title “# Data Analysis Pipeline”  \n2. A code cell that prints “Pipeline initialized on [today’s date]” (formatted like YYYY-MM-DD)  \n3. A code cell that runs `%lsmagic` to show available kernels  \n\nThen run the second and third cells one after the other, giving each up to 60 seconds to finish. After they’ve run, restart the kernel to clear everything out.  \n\nWhen you’re done, please give me a summary that includes:  \n- The full file path of the notebook  \n- How many cells it has now  \n- The exact output from the `%lsmagic` command  \n- Confirmation that the kernel was successfully restarted"
+        },
+        {
+          "task_id": "jupyter_mcp_001",
+          "task_description": "You are given a Jupyter server environment. First, list all files in the root directory with a maximum depth of 2 to locate any notebook named 'analysis.ipynb'. If found, activate it in 'connect' mode. If not found, create a new notebook at 'analysis.ipynb' using the 'create' mode. Once activated, insert a markdown cell at index 0 with the title '# Weekly Data Summary (past 7 days)'. Then, insert and execute a code cell at index 1 that generates a synthetic dataset of daily sales for the past 7 days using pandas and prints the total sales. After execution, read the output of that cell to extract the total sales value. Next, overwrite the markdown cell at index 0 to include the actual total sales amount (e.g., '# Weekly Data Summary (past 7 days): Total Sales = $X.XX'). Finally, restart the notebook kernel to ensure clean state and return a JSON object containing: {\"notebook_path\": \"analysis.ipynb\", \"total_sales\": <number>, \"cell_count_after\": <integer>}.",
+          "dependency_analysis": "This task requires sequential tool usage with clear dependencies: (1) Use list_files to discover 'analysis.ipynb'; (2) Depending on existence, use use_notebook in 'connect' or 'create' mode; (3) Insert a markdown cell (insert_cell); (4) Insert and execute a code cell (insert_execute_code_cell) to generate data; (5) Read the executed cell's output via read_cell to extract total sales; (6) Overwrite the initial markdown cell (overwrite_cell_source) with the computed value; (7) Restart the kernel (restart_notebook); (8) Read final notebook structure (read_notebook in brief mode) to count cells for deliverable. All steps depend on prior outcomes, and the final structured JSON deliverable relies on accurate execution and data extraction.",
+          "fuzzy_description": "I need a notebook called 'analysis.ipynb' set up with a weekly sales summary. If it doesn’t already exist in the current folder or its immediate subfolders, please create it. At the top, add a markdown title that says \"# Weekly Data Summary (past 7 days)\". Right below that, include and run a code cell that generates fake daily sales data for the last 7 days using pandas and prints the total sales amount. Once you have that total, update the title to show it—like \"# Weekly Data Summary (past 7 days): Total Sales = $X.XX\", using the actual number from the output. After everything’s done, restart the kernel to clear any leftover state, and give me a JSON response with the notebook path, the total sales value, and how many cells are in the notebook afterward."
+        }
+      ]
+    }
+  ],
+  "failed_servers": []
+}

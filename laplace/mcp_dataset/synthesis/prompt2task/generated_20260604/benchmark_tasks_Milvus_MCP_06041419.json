@@ -1,0 +1,34 @@
+{
+  "generation_info": {
+    "timestamp": "2026-06-04T14:20:03.330169",
+    "total_servers": 1,
+    "processed_servers": 1,
+    "successful_servers": 0,
+    "failed_servers": 1,
+    "runtime_unhealthy_servers": [
+      "Milvus MCP"
+    ],
+    "generation_model": "qwen3-max",
+    "tasks_per_server": 2,
+    "duration": "0:00:46.426815",
+    "status": "completed"
+  },
+  "server_tasks": [
+    {
+      "server_name": "Milvus MCP",
+      "generation_status": "failed",
+      "connection_attempts": 3,
+      "tasks": [],
+      "error_message": "Milvus MCP: unhandled errors in a TaskGroup (1 sub-exception)",
+      "failure_stage": "discovery"
+    }
+  ],
+  "failed_servers": [
+    {
+      "server_name": "Milvus MCP",
+      "error": "Milvus MCP: unhandled errors in a TaskGroup (1 sub-exception)",
+      "attempts": 3,
+      "failure_stage": "discovery"
+    }
+  ]
+}

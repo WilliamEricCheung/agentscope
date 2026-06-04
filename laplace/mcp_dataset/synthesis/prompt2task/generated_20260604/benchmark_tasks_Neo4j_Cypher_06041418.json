@@ -1,0 +1,36 @@
+{
+  "generation_info": {
+    "timestamp": "2026-06-04T14:19:06.890538",
+    "total_servers": 1,
+    "processed_servers": 1,
+    "successful_servers": 1,
+    "failed_servers": 0,
+    "runtime_unhealthy_servers": [],
+    "generation_model": "qwen3-max",
+    "tasks_per_server": 2,
+    "duration": "0:01:00.421946",
+    "status": "completed"
+  },
+  "server_tasks": [
+    {
+      "server_name": "Neo4j Cypher",
+      "generation_status": "success",
+      "connection_attempts": 1,
+      "tasks": [
+        {
+          "task_id": "neo4j_cypher_000",
+          "task_description": "Using the Neo4j database, first retrieve the full graph schema with a sample size of -1 to ensure completeness. Then, based on the schema, construct and execute a read query to find all 'User' nodes who created a 'Post' node in the past 7 days (relative to today). Finally, create a new 'DigestEmail' node for each such user, linked via a 'SCHEDULED_FOR' relationship to their respective posts, with a property 'scheduledDate' set to today's date. Return a structured list of user IDs and the count of posts they authored in the past 7 days.",
+          "dependency_analysis": "The task requires three sequential tool invocations: (1) get_neo4j_schema with sample_size=-1 to understand node labels, properties, and relationships; (2) read_neo4j_cypher to identify recent User-Post activity using date filtering relative to the current date; (3) write_neo4j_cypher to generate DigestEmail nodes and relationships based on results from step 2. Step 2 depends on the schema insight from step 1 to correctly reference labels and properties, and step 3 depends on the output of step 2.",
+          "fuzzy_description": "Can you pull a list of all users who created posts in the last 7 days, along with how many posts each of them made during that time? Also, please make sure a digest email record is scheduled for each of those users—linked to their recent posts—with today’s date marked as the scheduled date. I’d like the final result to clearly show each user’s ID and their post count from the past week.\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources."
+        },
+        {
+          "task_id": "neo4j_cypher_001",
+          "task_description": "Using the Neo4j graph database, first retrieve the full schema to understand node types, properties, and relationships. Then, identify all 'User' nodes who created a 'Post' in the past 7 days. For each such user, update their 'last_active' property to the current date (use a simulated current date of '2024-06-15'). Finally, return a structured list of these users with their IDs, names, and updated last_active timestamps.",
+          "dependency_analysis": "The task begins by calling get_neo4j_schema (with sample_size=-1 to ensure complete schema visibility) to confirm the existence and structure of 'User' and 'Post' nodes and their relationships. This informs the subsequent read query that fetches users who created posts in the past 7 days relative to 2024-06-15 (i.e., on or after 2024-06-08). The write_neo4j_cypher tool then updates the 'last_active' property for those users. The final output is derived from a follow-up read query that retrieves the updated user records, ensuring the deliverable reflects the changes made.",
+          "fuzzy_description": "Can you find all users who created a post in the last 7 days and update their \"last_active\" date to June 15, 2024? I’d like the result to include each user’s ID, name, and their updated \"last_active\" timestamp.\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources."
+        }
+      ]
+    }
+  ],
+  "failed_servers": []
+}

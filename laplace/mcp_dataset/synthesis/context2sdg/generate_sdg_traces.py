@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from .._dashscope_provider import DashScopeCompletionProvider
+from laplace.util.dashscope_provider import DashScopeCompletionProvider
 from .sdg_trace_synthesis import (
     SDGTraceSynthesizer,
     TRACE_SCHEMA_VERSION,

@@ -29,7 +29,7 @@ Docker must be running and all 28 `laplace/*:local` images must be built.
 
 ```bash
 cd ../..
-python -m laplace.mcp_dataset.synthesis.prompt2task.validate_mcp_servers \
+python -m laplace.util.validate_mcp_servers \
   --output laplace/mcp_dataset/server_validation_report.json \
   --fail-on-error
 ```

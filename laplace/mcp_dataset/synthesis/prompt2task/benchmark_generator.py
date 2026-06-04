@@ -3,15 +3,23 @@
 from __future__ import annotations
 
 import asyncio
+from dataclasses import replace
 import json
 import logging
+import subprocess
+import urllib.request
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from .._dashscope_provider import DashScopeCompletionProvider
-from .._mcp_tool_discovery import MCPToolDiscoverer
-from .._server_config import LaplaceMCPManifestSource, ServerConfig
+from laplace.mcp_server_profile.profile_mcp_servers import (
+    _dependency_services_for_targets,
+    _is_tcp_port_open,
+    load_profile_targets,
+)
+from laplace.util.dashscope_provider import DashScopeCompletionProvider
+from laplace.util.mcp_tool_discovery import MCPToolDiscoverer
+from laplace.util.server_config import LaplaceMCPManifestSource, ServerConfig
 from .task_synthesis import TaskSynthesizer
 
 _logger = logging.getLogger(__name__)
@@ -77,6 +85,10 @@ class BenchmarkTaskGenerator:
             manifest_path=manifest_path,
         )
         self.server_configs = self.command_source.load_server_configs()
+        self.profile_targets_by_name = {
+            target.name: target
+            for target in load_profile_targets(self.command_source.manifest_path)
+        }
         self.all_server_names = self.command_source.load_server_names()
         self.problematic_tools = set(self.command_source.load_problematic_tools())
         self.discoverer = MCPToolDiscoverer()
@@ -437,80 +449,85 @@ class BenchmarkTaskGenerator:
         """
         last_error = "Unknown error"
         last_failure_stage = "unknown"
-        server_label = "+".join(c.name for c in server_configs)
-        for attempt in range(1, self.max_retries + 1):
-            _logger.info(
-                "[retry] %s — attempt %d/%d",
-                server_label,
-                attempt,
-                self.max_retries,
-            )
-            try:
-                tools = await self.discoverer.discover_tools(server_configs)
-                tools = self._filter_problematic_tools(tools)
-                if not tools:
-                    raise RuntimeError("No tools discovered after filtering.")
-            except Exception as exc:
-                last_error = str(exc)
-                last_failure_stage = "discovery"
-                _logger.warning(
-                    "[retry] %s — attempt %d failed during discovery: %s",
+        prepared_configs = self._prepare_discovery_configs(server_configs)
+        managed_dependencies = await self._ensure_dependencies(prepared_configs)
+        server_label = "+".join(c.name for c in prepared_configs)
+        try:
+            for attempt in range(1, self.max_retries + 1):
+                _logger.info(
+                    "[retry] %s — attempt %d/%d",
                     server_label,
                     attempt,
-                    exc,
+                    self.max_retries,
                 )
-                if attempt < self.max_retries:
-                    wait = min(5 * attempt, 15)
-                    _logger.info(
-                        "[retry] %s — waiting %ds before next attempt",
+                try:
+                    tools = await self.discoverer.discover_tools(prepared_configs)
+                    tools = self._filter_problematic_tools(tools)
+                    if not tools:
+                        raise RuntimeError("No tools discovered after filtering.")
+                except Exception as exc:
+                    last_error = str(exc)
+                    last_failure_stage = "discovery"
+                    _logger.warning(
+                        "[retry] %s — attempt %d failed during discovery: %s",
                         server_label,
-                        wait,
+                        attempt,
+                        exc,
                     )
-                    await asyncio.sleep(wait)
-                continue
+                    if attempt < self.max_retries:
+                        wait = min(5 * attempt, 15)
+                        _logger.info(
+                            "[retry] %s — waiting %ds before next attempt",
+                            server_label,
+                            wait,
+                        )
+                        await asyncio.sleep(wait)
+                    continue
 
-            try:
-                _logger.info(
-                    "[retry] %s — %d tool(s) discovered, starting task synthesis",
-                    server_label,
-                    len(tools),
-                )
-                server_name = "+".join(config.name for config in server_configs)
-                tasks = await self.synthesizer.generate_tasks(
-                    tools=tools,
-                    server_name=server_name,
-                    num_tasks=self.tasks_per_server,
-                )
-                if not tasks:
-                    raise RuntimeError("DashScope did not produce accepted tasks.")
-
-                _logger.info(
-                    "[retry] %s — synthesis complete (%d task(s) accepted)",
-                    server_label,
-                    len(tasks),
-                )
-                return {
-                    "status": "success",
-                    "attempts": attempt,
-                    "tasks": tasks,
-                }
-            except Exception as exc:
-                last_error = str(exc)
-                last_failure_stage = "synthesis"
-                _logger.warning(
-                    "[retry] %s — attempt %d failed during synthesis: %s",
-                    server_label,
-                    attempt,
-                    exc,
-                )
-                if attempt < self.max_retries:
-                    wait = min(5 * attempt, 15)
+                try:
                     _logger.info(
-                        "[retry] %s — waiting %ds before next attempt",
+                        "[retry] %s — %d tool(s) discovered, starting task synthesis",
                         server_label,
-                        wait,
+                        len(tools),
                     )
-                    await asyncio.sleep(wait)
+                    server_name = "+".join(config.name for config in prepared_configs)
+                    tasks = await self.synthesizer.generate_tasks(
+                        tools=tools,
+                        server_name=server_name,
+                        num_tasks=self.tasks_per_server,
+                    )
+                    if not tasks:
+                        raise RuntimeError("DashScope did not produce accepted tasks.")
+
+                    _logger.info(
+                        "[retry] %s — synthesis complete (%d task(s) accepted)",
+                        server_label,
+                        len(tasks),
+                    )
+                    return {
+                        "status": "success",
+                        "attempts": attempt,
+                        "tasks": tasks,
+                    }
+                except Exception as exc:
+                    last_error = str(exc)
+                    last_failure_stage = "synthesis"
+                    _logger.warning(
+                        "[retry] %s — attempt %d failed during synthesis: %s",
+                        server_label,
+                        attempt,
+                        exc,
+                    )
+                    if attempt < self.max_retries:
+                        wait = min(5 * attempt, 15)
+                        _logger.info(
+                            "[retry] %s — waiting %ds before next attempt",
+                            server_label,
+                            wait,
+                        )
+                        await asyncio.sleep(wait)
+        finally:
+            self._teardown_dependencies(managed_dependencies)
 
         _logger.error(
             "[retry] %s — all %d attempt(s) exhausted: %s",
@@ -525,6 +542,155 @@ class BenchmarkTaskGenerator:
             "failure_stage": last_failure_stage,
             "tasks": [],
         }
+
+    def _prepare_discovery_configs(
+        self,
+        server_configs: list[ServerConfig],
+    ) -> list[ServerConfig]:
+        """Convert HTTP manifest targets into self-managed discovery configs."""
+
+        return [
+            replace(config, pre_warmed=False)
+            if config.transport in {"streamable_http", "sse"}
+            else config
+            for config in server_configs
+        ]
+
+    async def _ensure_dependencies(
+        self,
+        server_configs: list[ServerConfig],
+    ) -> list[Any]:
+        """Start missing backend dependencies required by selected servers."""
+
+        selected_targets = [
+            self.profile_targets_by_name[config.name]
+            for config in server_configs
+            if config.name in self.profile_targets_by_name
+        ]
+        managed: list[Any] = []
+        for dependency in _dependency_services_for_targets(selected_targets):
+            if _is_tcp_port_open("127.0.0.1", dependency.port):
+                if dependency.readiness_url:
+                    try:
+                        await self._wait_for_http_ready(
+                            dependency.readiness_url,
+                            dependency.startup_timeout,
+                        )
+                        continue
+                    except TimeoutError:
+                        pass
+                else:
+                    continue
+
+            if dependency.container_name:
+                self._remove_container_if_exists(dependency.container_name)
+
+            result = subprocess.run(
+                dependency.start_command,
+                check=False,
+                capture_output=True,
+                text=True,
+                stdin=subprocess.DEVNULL,
+                timeout=max(60.0, float(dependency.startup_timeout)),
+            )
+            if result.returncode != 0:
+                raise RuntimeError(
+                    f"Failed to start dependency {dependency.name}: "
+                    f"{(result.stderr or result.stdout).strip()}"
+                )
+
+            await self._wait_for_port(
+                dependency.port,
+                float(dependency.startup_timeout),
+            )
+            if dependency.readiness_url:
+                await self._wait_for_http_ready(
+                    dependency.readiness_url,
+                    float(dependency.startup_timeout),
+                )
+            managed.append(dependency)
+        return managed
+
+    def _teardown_dependencies(self, dependencies: list[Any]) -> None:
+        """Stop dependencies that were started for one generation run."""
+
+        for dependency in reversed(dependencies):
+            try:
+                subprocess.run(
+                    dependency.stop_command,
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                    stdin=subprocess.DEVNULL,
+                    timeout=120,
+                )
+            except Exception:  # noqa: BLE001
+                pass
+
+    async def _wait_for_port(
+        self,
+        port: int,
+        timeout_seconds: float,
+    ) -> None:
+        """Wait until one localhost TCP port accepts connections."""
+
+        loop = asyncio.get_running_loop()
+        deadline = loop.time() + max(1.0, timeout_seconds)
+        while loop.time() < deadline:
+            try:
+                reader, writer = await asyncio.wait_for(
+                    asyncio.open_connection("127.0.0.1", int(port)),
+                    timeout=1.0,
+                )
+                del reader
+                writer.close()
+                await writer.wait_closed()
+                return
+            except Exception:  # noqa: BLE001
+                await asyncio.sleep(0.5)
+
+        raise TimeoutError(f"Timed out waiting for TCP port {port}")
+
+    async def _wait_for_http_ready(
+        self,
+        url: str,
+        timeout_seconds: float,
+    ) -> None:
+        """Wait until one HTTP health endpoint returns success."""
+
+        loop = asyncio.get_running_loop()
+        deadline = loop.time() + max(1.0, timeout_seconds)
+        while loop.time() < deadline:
+            try:
+                status_code = await asyncio.to_thread(self._http_status_code, url)
+                if 200 <= status_code < 400:
+                    return
+            except Exception:  # noqa: BLE001
+                pass
+            await asyncio.sleep(0.5)
+
+        raise TimeoutError(f"Timed out waiting for dependency health endpoint: {url}")
+
+    @staticmethod
+    def _http_status_code(url: str) -> int:
+        """Return one HTTP status code for a health probe URL."""
+
+        request = urllib.request.Request(url, method="GET")
+        with urllib.request.urlopen(request, timeout=5) as response:  # noqa: S310
+            return int(getattr(response, "status", 200))
+
+    @staticmethod
+    def _remove_container_if_exists(container_name: str | None) -> None:
+        """Best-effort cleanup for one docker container name."""
+
+        if not container_name:
+            return
+        subprocess.run(
+            ["docker", "rm", "-f", container_name],
+            check=False,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
 
     async def _process_combination(
         self,

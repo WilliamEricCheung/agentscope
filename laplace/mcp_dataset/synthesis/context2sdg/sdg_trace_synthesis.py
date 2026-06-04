@@ -12,8 +12,8 @@ import json
 from pathlib import Path
 from typing import Any
 
-from .._dashscope_provider import DashScopeCompletionProvider
-from .._server_config import LaplaceMCPManifestSource
+from laplace.util.dashscope_provider import DashScopeCompletionProvider
+from laplace.util.server_config import LaplaceMCPManifestSource
 
 
 TRACE_SCHEMA_VERSION = 2

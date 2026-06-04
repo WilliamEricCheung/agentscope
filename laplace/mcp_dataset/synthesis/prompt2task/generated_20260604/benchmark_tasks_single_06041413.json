@@ -1,0 +1,79 @@
+{
+  "generation_info": {
+    "timestamp": "2026-06-04T14:14:17.086403",
+    "total_servers": 4,
+    "processed_servers": 4,
+    "successful_servers": 0,
+    "failed_servers": 4,
+    "runtime_unhealthy_servers": [
+      "Jupyter MCP",
+      "Milvus MCP",
+      "Neo4j Cypher",
+      "Playwright"
+    ],
+    "generation_model": "qwen3-max",
+    "tasks_per_server": 2,
+    "duration": "0:01:00.246963",
+    "status": "completed"
+  },
+  "server_tasks": [
+    {
+      "server_name": "Playwright",
+      "generation_status": "failed",
+      "connection_attempts": 3,
+      "tasks": [],
+      "error_message": "Playwright: unhandled errors in a TaskGroup (1 sub-exception)",
+      "failure_stage": "discovery"
+    },
+    {
+      "server_name": "Jupyter MCP",
+      "generation_status": "failed",
+      "connection_attempts": 3,
+      "tasks": [],
+      "error_message": "Jupyter MCP: unhandled errors in a TaskGroup (1 sub-exception)",
+      "failure_stage": "discovery"
+    },
+    {
+      "server_name": "Neo4j Cypher",
+      "generation_status": "failed",
+      "connection_attempts": 3,
+      "tasks": [],
+      "error_message": "Neo4j Cypher: unhandled errors in a TaskGroup (1 sub-exception)",
+      "failure_stage": "discovery"
+    },
+    {
+      "server_name": "Milvus MCP",
+      "generation_status": "failed",
+      "connection_attempts": 3,
+      "tasks": [],
+      "error_message": "Milvus MCP: unhandled errors in a TaskGroup (1 sub-exception)",
+      "failure_stage": "discovery"
+    }
+  ],
+  "failed_servers": [
+    {
+      "server_name": "Playwright",
+      "error": "Playwright: unhandled errors in a TaskGroup (1 sub-exception)",
+      "attempts": 3,
+      "failure_stage": "discovery"
+    },
+    {
+      "server_name": "Jupyter MCP",
+      "error": "Jupyter MCP: unhandled errors in a TaskGroup (1 sub-exception)",
+      "attempts": 3,
+      "failure_stage": "discovery"
+    },
+    {
+      "server_name": "Neo4j Cypher",
+      "error": "Neo4j Cypher: unhandled errors in a TaskGroup (1 sub-exception)",
+      "attempts": 3,
+      "failure_stage": "discovery"
+    },
+    {
+      "server_name": "Milvus MCP",
+      "error": "Milvus MCP: unhandled errors in a TaskGroup (1 sub-exception)",
+      "attempts": 3,
+      "failure_stage": "discovery"
+    }
+  ]
+}

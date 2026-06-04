@@ -11,8 +11,9 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from laplace.util.validate_mcp_servers import MCPServerValidator
+
 from .benchmark_generator import BenchmarkTaskGenerator
-from .validate_mcp_servers import MCPServerValidator
 
 _logger = logging.getLogger(__name__)
 

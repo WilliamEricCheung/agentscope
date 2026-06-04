@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from unittest import TestCase
 
-from laplace.mcp_dataset.synthesis.prompt2task.validate_mcp_servers import (
+from laplace.util.validate_mcp_servers import (
     _build_mock_arguments,
     _compute_overall_status,
     _is_low_risk_tool_name,

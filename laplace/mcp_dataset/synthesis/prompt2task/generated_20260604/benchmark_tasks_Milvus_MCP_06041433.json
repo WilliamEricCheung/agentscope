@@ -1,0 +1,36 @@
+{
+  "generation_info": {
+    "timestamp": "2026-06-04T14:35:06.224076",
+    "total_servers": 1,
+    "processed_servers": 1,
+    "successful_servers": 1,
+    "failed_servers": 0,
+    "runtime_unhealthy_servers": [],
+    "generation_model": "qwen3-max",
+    "tasks_per_server": 2,
+    "duration": "0:01:19.770641",
+    "status": "completed"
+  },
+  "server_tasks": [
+    {
+      "server_name": "Milvus MCP",
+      "generation_status": "success",
+      "connection_attempts": 1,
+      "tasks": [
+        {
+          "task_id": "milvus_mcp_000",
+          "task_description": "You are tasked with creating a new collection named 'product_reviews_q3' to analyze customer feedback from the past 90 days. First, list all existing collections to ensure no naming conflict. Then, create the collection with fields: 'id' (primary key), 'review_text' (string), 'embedding' (768-dim vector), and 'timestamp' (string). Insert the following three review records: (1) {'review_text': 'Excellent battery life!', 'embedding': [0.1, 0.9, ..., 0.2], 'timestamp': '2024-06-15'}, (2) {'review_text': 'Poor screen quality.', 'embedding': [-0.3, 0.4, ..., -0.1], 'timestamp': '2024-07-02'}, (3) {'review_text': 'Great value for money.', 'embedding': [0.6, 0.5, ..., 0.7], 'timestamp': '2024-08-10'} — use placeholder vectors of length 768 filled with illustrative values (e.g., first vector: 0.1 at index 0, 0.9 at index 1, 0.2 at index 767, zeros elsewhere). After insertion, load the collection into memory. Next, perform a hybrid search using query text 'positive feedback about battery or value' with the same placeholder query vector as in record #1, searching over 'review_text' and 'embedding' fields, returning 'review_text' and 'timestamp' for top 2 results. Finally, output a JSON object containing the hybrid search results under the key 'top_positive_reviews'.",
+          "dependency_analysis": "The task requires a strict sequence: (1) milvus_list_collections ensures the target collection name is available; (2) milvus_create_collection sets up the schema; (3) milvus_insert_data populates it with concrete records (using specified placeholder vectors); (4) milvus_load_collection makes the data searchable; (5) milvus_hybrid_search executes the combined text-vector query using the inserted schema and data. All steps depend on the successful completion of the prior step, and all required values (collection name, field names, vector dimension, sample data, query text, and output fields) are explicitly provided.",
+          "fuzzy_description": "I need to analyze recent customer feedback, so please help me set up a new collection called 'product_reviews_q3' for reviews from the last 90 days. First, check what collections already exist to avoid any naming conflicts. Then create the new collection with these fields: 'id' as the primary key, 'review_text' as a string, 'embedding' as a 768-dimensional vector, and 'timestamp' as a string.\n\nAfter that, add these three review entries:\n\n1. Review text: \"Excellent battery life!\", timestamp: \"2024-06-15\", with an embedding vector that has 0.1 at index 0, 0.9 at index 1, 0.2 at index 767, and zeros everywhere else.\n2. Review text: \"Poor screen quality.\", timestamp: \"2024-07-02\", with an embedding vector that has -0.3 at index 0, 0.4 at index 1, -0.1 at index 767, and zeros elsewhere.\n3. Review text: \"Great value for money.\", timestamp: \"2024-08-10\", with an embedding vector that has 0.6 at index 0, 0.5 at index 1, 0.7 at index 767, and zeros in all other positions.\n\nOnce the data is inserted, load the collection into memory. Then run a hybrid search using the query text \"positive feedback about battery or value\" along with the same embedding vector used in the first review (the one about battery life). Search across both the 'review_text' and 'embedding' fields, and return only the 'review_text' and 'timestamp' of the top 2 matching results.\n\nFinally, give me the results as a JSON object with the key \"top_positive_reviews\" containing those two matches."
+        },
+        {
+          "task_id": "milvus_mcp_001",
+          "task_description": "Set up a new collection named 'product_reviews_q3' with fields for 'id' (int, primary key), 'review_text' (string), 'embedding' (768-dim float vector), and 'rating' (int). Insert five sample reviews with their embeddings and ratings. Load the collection into memory. Then, perform a hybrid search using the query text 'excellent battery life' and a provided 768-dimensional zero-initialized query vector (all zeros) to find the top 3 most relevant reviews. Return only the 'review_text' and 'rating' fields of the results in a JSON list.",
+          "dependency_analysis": "This task requires a sequence of dependent operations: (1) Create the 'product_reviews_q3' collection with appropriate schema and index settings; (2) Insert sample data into the newly created collection; (3) Load the collection to enable search; (4) Execute a hybrid search combining the given text query and zero vector over the correct text and vector fields. All steps must succeed in order, and all required values (collection name, field names, vector dimension, sample data, query text, and output fields) are explicitly provided.",
+          "fuzzy_description": "I need to analyze some product reviews. Please create a new dataset called 'product_reviews_q3' with the following fields: an integer 'id' as the primary key, a string 'review_text', a 768-dimensional float vector called 'embedding', and an integer 'rating'. Add five sample reviews with their corresponding embeddings and ratings. Once that’s done, load the data into memory and run a hybrid search using the query text “excellent battery life” along with a 768-dimensional query vector filled entirely with zeros. Return only the top 3 most relevant results, showing just the 'review_text' and 'rating' for each, formatted as a JSON list."
+        }
+      ]
+    }
+  ],
+  "failed_servers": []
+}

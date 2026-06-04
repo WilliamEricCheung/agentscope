@@ -1,0 +1,29 @@
+{
+  "manifest_schema": "laplace.context2sdg.checkpoint_manifest.v1",
+  "trace_schema_version": 2,
+  "collection_id": "laplace_sdg_traces",
+  "artifact_type": "sdg_trace_checkpoint_run",
+  "artifact_description": "Checkpointed standalone SDG trace generation artifacts for the Laplace MCP server catalog.",
+  "requested_trace_count": 2,
+  "completed_trace_count": 1,
+  "status": "in_progress",
+  "generation_mode": "standalone_resumable",
+  "started_at_utc": "2026-06-03T03:03:26+00:00",
+  "last_updated_at_utc": "2026-06-04T06:35:37+00:00",
+  "artifact_paths": {
+    "checkpoint_root": "/mnt/d/Project/agentscope/laplace/mcp_dataset/synthesis/context2sdg/laplace_sdg_traces_checkpoint",
+    "prompt_dir": "/mnt/d/Project/agentscope/laplace/mcp_dataset/synthesis/context2sdg/laplace_sdg_traces_checkpoint/prompts",
+    "trace_dir": "/mnt/d/Project/agentscope/laplace/mcp_dataset/synthesis/context2sdg/laplace_sdg_traces_checkpoint/traces",
+    "consolidated_trace_output": "/tmp/tmpk31epbpb/laplace_sdg_traces.json",
+    "transition_matrix_output": "/tmp/tmpk31epbpb/laplace_sdg_transition_matrices.json"
+  },
+  "file_naming": {
+    "prompt_file_pattern": "sdg_prompt_shard_{trace_index_start:05d}_to_{trace_index_end:05d}_of_{requested_trace_count:05d}.json",
+    "trace_file_pattern": "sdg_trace_shard_{trace_index_start:05d}_to_{trace_index_end:05d}_of_{requested_trace_count:05d}.json"
+  },
+  "checkpoint_shard_size": 50,
+  "completed_trace_ids": [
+    "sdg_trace_00000"
+  ],
+  "is_complete": false
+}

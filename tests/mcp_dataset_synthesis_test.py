@@ -59,6 +59,7 @@ from laplace.mcp_dataset.synthesis.prompt2task.task_synthesis import (
     TaskQualityEvaluator,
     TaskSynthesizer,
 )
+from laplace.util.server_config import ServerConfig
 
 
 class _FakeLLMProvider:
@@ -1268,3 +1269,43 @@ class BenchmarkTaskGeneratorSelfHealTest(IsolatedAsyncioTestCase):
         self.assertTrue(results["combinations"][0]["skipped"])
         self.assertEqual(results["combinations"][0]["skip_reason"], "unhealthy_server")
         self.assertTrue(results["combinations"][1]["generation_success"])
+
+
+class BenchmarkTaskGeneratorDiscoveryConfigTest(TestCase):
+    """Test discovery config preparation for HTTP manifest servers."""
+
+    def test_prepare_discovery_configs_switches_http_to_managed_mode(self) -> None:
+        """HTTP servers should be converted from pre-warmed to spawned mode."""
+        generator = BenchmarkTaskGenerator.__new__(BenchmarkTaskGenerator)
+        configs = [
+            ServerConfig(
+                name="Milvus MCP",
+                command="docker",
+                args=["run"],
+                env={},
+                cwd=None,
+                transport="streamable_http",
+                port=8832,
+                endpoint="/mcp",
+                pre_warmed=True,
+            ),
+            ServerConfig(
+                name="Local StdIO",
+                command="python",
+                args=["server.py"],
+                env={},
+                cwd=None,
+                transport="stdio",
+                port=None,
+                endpoint="/mcp",
+                pre_warmed=False,
+            ),
+        ]
+
+        prepared = generator._prepare_discovery_configs(configs)
+
+        self.assertFalse(prepared[0].pre_warmed)
+        self.assertEqual(prepared[0].args, ["run"])
+        self.assertIsNot(prepared[0], configs[0])
+        self.assertFalse(prepared[1].pre_warmed)
+        self.assertIs(prepared[1], configs[1])

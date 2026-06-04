@@ -88,7 +88,11 @@
         "8804:3000",
         "laplace/playwright-mcp:local",
         "--port",
-        "3000"
+        "3000",
+        "--host",
+        "0.0.0.0",
+        "--allowed-hosts",
+        "*"
       ],
       "tool_names": [
         "browser_click",
@@ -167,7 +171,7 @@
         "container_name": "laplace-neo4j-cypher",
         "image": "laplace/neo4j-cypher:local",
         "transport": "streamable_http",
-        "url": "http://localhost:8829/mcp",
+        "url": "http://localhost:8829/mcp/",
         "client_name": "laplace-neo4j-cypher"
       },
       "docker_run_command": [
@@ -630,6 +634,8 @@
         "laplace-mcp-server-milvus",
         "-p",
         "8832:8000",
+        "--add-host",
+        "host.docker.internal:host-gateway",
         "-e",
         "MILVUS_URI=${MILVUS_URI:-http://host.docker.internal:19530}",
         "-e",
@@ -639,8 +645,67 @@
         "laplace/mcp-server-milvus:local",
         "mcp-server-milvus",
         "--streamable-http",
+        "--stateless",
         "--port",
         "8000"
+      ],
+      "profile_dependencies": [
+        {
+          "name": "Milvus Backend",
+          "container_name": "laplace-profile-milvus-backend",
+          "port": 19530,
+          "startup_timeout": 240.0,
+          "readiness_url": "http://127.0.0.1:9091/healthz",
+          "start_command": [
+            "docker",
+            "run",
+            "-d",
+            "--rm",
+            "--name",
+            "laplace-profile-milvus-backend",
+            "--security-opt",
+            "seccomp:unconfined",
+            "-v",
+            "laplace-profile-milvus-data:/var/lib/milvus",
+            "-e",
+            "ETCD_USE_EMBED=true",
+            "-e",
+            "ETCD_DATA_DIR=/var/lib/milvus/etcd",
+            "-e",
+            "ETCD_CONFIG_PATH=/milvus/configs/embedEtcd.yaml",
+            "-e",
+            "COMMON_STORAGETYPE=local",
+            "-e",
+            "DEPLOY_MODE=STANDALONE",
+            "-p",
+            "19530:19530",
+            "-p",
+            "9091:9091",
+            "-p",
+            "2379:2379",
+            "--health-cmd",
+            "curl -f http://localhost:9091/healthz",
+            "--health-interval",
+            "30s",
+            "--health-start-period",
+            "90s",
+            "--health-timeout",
+            "20s",
+            "--health-retries",
+            "3",
+            "--entrypoint",
+            "/bin/sh",
+            "laplace/milvus-backend:official-v3.0-beta",
+            "-c",
+            "printf '%s\n' 'listen-client-urls: http://0.0.0.0:2379' 'advertise-client-urls: http://0.0.0.0:2379' 'quota-backend-bytes: 4294967296' 'auto-compaction-mode: revision' 'auto-compaction-retention: \"1000\"' > /milvus/configs/embedEtcd.yaml && printf '%s\n' '# Extra config to override default milvus.yaml' > /milvus/configs/user.yaml && exec milvus run standalone"
+          ],
+          "stop_command": [
+            "docker",
+            "rm",
+            "-f",
+            "laplace-profile-milvus-backend"
+          ]
+        }
       ],
       "tool_names": [
         "milvus_list_collections",
