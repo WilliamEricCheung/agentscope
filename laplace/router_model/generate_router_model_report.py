@@ -218,6 +218,19 @@ def _build_report(summaries: list[RouterArtifactSummary]) -> str:
     lines.append("")
     lines.append(f"- Compared models: {', '.join(summary.model_name for summary in summaries)}")
     lines.append(f"- Datasets: {', '.join(datasets) if datasets else '-'}")
+    split_descriptions = sorted(
+        {
+            (
+                str(summary.metadata.get("split_method", "-")),
+                str(summary.metadata.get("dedupe_method", "none")),
+            )
+            for summary in summaries
+        },
+    )
+    lines.append(
+        "- Eval split policy: "
+        + ", ".join(f"{split_method} + {dedupe_method}" for split_method, dedupe_method in split_descriptions),
+    )
     lines.append(f"- Current winner by grid-search objective: {winner.model_name}")
     lines.append("")
     lines.append("## Best Grid-Search Results")
@@ -317,6 +330,14 @@ def _build_report(summaries: list[RouterArtifactSummary]) -> str:
         if any(summary.model_name == "fasttext" for summary in summaries)
         else "- FastText artifact was not included.",
     )
+    if any(summary.model_name == "fasttext" for summary in summaries):
+        fasttext_summary = next(summary for summary in summaries if summary.model_name == "fasttext")
+        argmax_baseline = fasttext_summary.best.get("argmax_baseline") or _load_json(fasttext_summary.artifact_dir / "grid_search_results.json").get("argmax_baseline")
+        if isinstance(argmax_baseline, dict):
+            lines.append(
+                "- FastText argmax baseline `micro_f1` is "
+                f"{_format_float(argmax_baseline.get('micro_f1'))} at top_k={_format_int(argmax_baseline.get('top_k'))}."
+            )
     lines.append(
         f"- Retrieval best `micro_f1` is {_format_float(next(summary.best.get('micro_f1') for summary in summaries if summary.model_name == 'retrieval'))}."
         if any(summary.model_name == "retrieval" for summary in summaries)

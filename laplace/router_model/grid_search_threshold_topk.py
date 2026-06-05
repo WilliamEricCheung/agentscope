@@ -109,6 +109,17 @@ def _predict_with_threshold(
     return set(selected)
 
 
+def _predict_argmax(
+    model: Any,
+    text: str,
+    label_to_server: dict[str, str],
+    top_k: int,
+) -> set[str]:
+    """Return plain argmax-style predictions without a score threshold."""
+    scored = _predict_all_scores(model, text, label_to_server)
+    return {server for server, _ in scored[:top_k]}
+
+
 def _evaluate(
     model: Any,
     samples: list[EvalSample],
@@ -148,6 +159,52 @@ def _evaluate(
     total = len(samples)
     return {
         "threshold": threshold,
+        "top_k": top_k,
+        "micro_precision": round(precision, 6),
+        "micro_recall": round(recall, 6),
+        "micro_f1": round(f1, 6),
+        "hit_rate": round(hit / total if total else 0.0, 6),
+        "distraction_false_positive_count": distraction_fp,
+        "samples": total,
+    }
+
+
+def _evaluate_argmax(
+    model: Any,
+    samples: list[EvalSample],
+    label_to_server: dict[str, str],
+    top_k: int,
+) -> dict[str, float | int | str | None]:
+    """Evaluate a threshold-free argmax baseline."""
+    tp = fp = fn = 0
+    hit = 0
+    distraction_fp = 0
+
+    for sample in samples:
+        pred = _predict_argmax(
+            model=model,
+            text=sample.text,
+            label_to_server=label_to_server,
+            top_k=top_k,
+        )
+        true_set = set(sample.positive_servers)
+        tp += len(pred & true_set)
+        fp += len(pred - true_set)
+        fn += len(true_set - pred)
+
+        if pred & true_set:
+            hit += 1
+
+        if sample.distraction_servers:
+            distraction_fp += len(pred & set(sample.distraction_servers))
+
+    precision = tp / (tp + fp) if (tp + fp) else 0.0
+    recall = tp / (tp + fn) if (tp + fn) else 0.0
+    f1 = (2 * precision * recall / (precision + recall)) if (precision + recall) else 0.0
+    total = len(samples)
+    return {
+        "mode": "argmax",
+        "threshold": None,
         "top_k": top_k,
         "micro_precision": round(precision, 6),
         "micro_recall": round(recall, 6),
@@ -204,9 +261,15 @@ def main() -> None:
     parser.add_argument(
         "--thresholds",
         type=str,
-        default="0.10,0.15,0.20,0.25,0.30,0.35,0.40,0.45,0.50,0.55,0.60",
+        default="0.00,0.01,0.02,0.03,0.04,0.05,0.07,0.10,0.15,0.20",
     )
     parser.add_argument("--topk-list", type=str, default="1,2,3")
+    parser.add_argument(
+        "--argmax-top-k",
+        type=int,
+        default=1,
+        help="Top-K used by the threshold-free argmax baseline",
+    )
     parser.add_argument(
         "--objective",
         choices=[
@@ -279,6 +342,18 @@ def main() -> None:
         weight_distraction=args.composite_weight_distraction,
     )
 
+    argmax_baseline = _evaluate_argmax(
+        model=model,
+        samples=eval_samples,
+        label_to_server=label_to_server,
+        top_k=args.argmax_top_k,
+    )
+    _add_composite_score(
+        [argmax_baseline],
+        weight_f1=args.composite_weight_f1,
+        weight_distraction=args.composite_weight_distraction,
+    )
+
     results.sort(
         key=lambda x: (
             float(x[args.objective]),
@@ -298,6 +373,7 @@ def main() -> None:
             "formula": "weight_f1 * micro_f1 - weight_distraction * distraction_fp_rate",
         },
         "best": best,
+        "argmax_baseline": argmax_baseline,
         "trials": results,
     }
 

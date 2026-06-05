@@ -3,38 +3,40 @@
 ## Overview
 
 - Compared models: fasttext, retrieval, encoder
-- Datasets: laplace_tasks_single_runner_format.json, mcpbench_tasks_single_runner_format.json
-- Current winner by grid-search objective: encoder
+- Datasets: /mnt/d/Project/agentscope/laplace/mcp_dataset/laplace_tasks_single_runner_format.json
+- Eval split policy: grouped_by_server_similarity + exact_text_per_server
+- Current winner by grid-search objective: retrieval
 
 ## Best Grid-Search Results
 
 | Rank | Model | Router Family | Text Mode | Objective | Best Score | Micro F1 | Hit Rate | Precision | Recall | Threshold | Top-K | Avg Latency (ms) | Distraction FP | Artifact |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | encoder | encoder_sentence_transformer | task | composite_score | 0.977273 | 0.977273 | 0.977273 | 0.977273 | 0.977273 | 0.050000 | 1 | 5.626751 | 0 | /mnt/d/Project/agentscope/laplace/router_model/artifacts_encoder_router_deploy |
-| 2 | retrieval | retrieval_tfidf | task | composite_score | 0.970455 | 0.977273 | 0.977273 | 0.977273 | 0.977273 | 0.050000 | 1 | 1.230233 | 1 | /mnt/d/Project/agentscope/laplace/router_model/artifacts_retrieval_router_deploy |
-| 3 | fasttext | fasttext | both | composite_score | -0.095455 | 0.000000 | 0.000000 | 0.000000 | 0.000000 | 0.050000 | 1 | 0.133352 | 14 | /mnt/d/Project/agentscope/laplace/router_model/artifacts_fasttext_router_deploy |
+| 1 | retrieval | retrieval_tfidf | split_both | composite_score | 1.000000 | 1.000000 | 1.000000 | 1.000000 | 1.000000 | 0.050000 | 1 | 2.115544 | 0 | /mnt/d/Project/agentscope/laplace/router_model/artifacts_retrieval_router_deploy |
+| 2 | encoder | encoder_sentence_transformer | split_both | composite_score | 1.000000 | 1.000000 | 1.000000 | 1.000000 | 1.000000 | 0.050000 | 1 | 7.822463 | 0 | /mnt/d/Project/agentscope/laplace/router_model/artifacts_encoder_router_deploy |
+| 3 | fasttext | fasttext | split_both | composite_score | 0.000000 | 0.000000 | 0.000000 | 0.000000 | 0.000000 | 0.070000 | 1 | 0.171108 | 0 | /mnt/d/Project/agentscope/laplace/router_model/artifacts_fasttext_router_deploy |
 
 ## Inference Latency
 
 | Model | Repeats | Query Source | Min Latency (ms) | Avg Latency (ms) | Max Latency (ms) |
 | --- | --- | --- | --- | --- | --- |
-| encoder | 20 | artifacts_retrieval_router_deploy/eval_samples.jsonl:dex_paprika_000 | 2.767544 | 5.626751 | 16.121036 |
-| retrieval | 20 | artifacts_retrieval_router_deploy/eval_samples.jsonl:dex_paprika_000 | 0.627934 | 1.230233 | 5.030044 |
-| fasttext | 20 | artifacts_retrieval_router_deploy/eval_samples.jsonl:dex_paprika_000 | 0.111456 | 0.133352 | 0.169775 |
+| retrieval | 20 | /mnt/d/Project/agentscope/laplace/router_model/artifacts_retrieval_router_deploy/eval_samples.jsonl:bibliomantic_002__fuzzy | 0.939577 | 2.115544 | 5.451272 |
+| encoder | 20 | /mnt/d/Project/agentscope/laplace/router_model/artifacts_retrieval_router_deploy/eval_samples.jsonl:bibliomantic_002__fuzzy | 3.154896 | 7.822463 | 9.686201 |
+| fasttext | 20 | /mnt/d/Project/agentscope/laplace/router_model/artifacts_retrieval_router_deploy/eval_samples.jsonl:bibliomantic_002__fuzzy | 0.157791 | 0.171108 | 0.211037 |
 
 ## Training-Time Eval Snapshot
 
 | Model | Eval Micro F1 | Eval Hit Rate | Eval Precision | Eval Recall | Eval Threshold | Eval Top-K |
 | --- | --- | --- | --- | --- | --- | --- |
-| encoder | 0.888889 | 1.000000 | 0.800000 | 1.000000 | 0.350000 | 3 |
-| retrieval | 0.988506 | 0.977273 | 1.000000 | 0.977273 | 0.350000 | 3 |
+| retrieval | 0.970000 | 1.000000 | 0.941748 | 1.000000 | 0.350000 | 3 |
+| encoder | 0.776000 | 1.000000 | 0.633987 | 1.000000 | 0.350000 | 3 |
 | fasttext | 0.000000 | 0.000000 | 0.000000 | 0.000000 | 0.350000 | 3 |
 
 ## Notes
 
-- encoder ranks first on `composite_score` with a margin of 0.006818 over retrieval.
+- retrieval ranks first on `composite_score` with a margin of 0.000000 over encoder.
 - FastText best `micro_f1` is 0.000000.
-- Retrieval best `micro_f1` is 0.977273.
-- Encoder best `micro_f1` is 0.977273.
-- fasttext has the lowest average single-query latency at 0.133352 ms.
+- FastText argmax baseline `micro_f1` is 0.030928 at top_k=1.
+- Retrieval best `micro_f1` is 1.000000.
+- Encoder best `micro_f1` is 1.000000.
+- fasttext has the lowest average single-query latency at 0.171108 ms.
 - This report compares each model at its own best grid-search operating point, not at one shared threshold/top-k.

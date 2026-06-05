@@ -84,7 +84,7 @@ The runner evaluates four experiment modes on sampled Laplace MCP tasks:
 - Default modes: `none keyword semantic hybrid`
 - Execution model: strictly sequential. No parallel trials are used, so one trial cannot warm a container for another trial.
 - Container isolation: before each single trial, the script forcibly removes all prewarm-ready Laplace MCP containers and clears persisted lifecycle state.
-- Default output naming: auto-incremented daily files such as `prewarm_experiment_results_0428_0.jsonl`, `prewarm_experiment_report_0428_0.md`, and `prewarm_experiment_results_0428_0.plan.json`. If `0428_0` already exists, the next default run uses `0428_1`.
+- Default output naming: auto-incremented daily files under `result/`, such as `result/prewarm_experiment_results_0428_0.jsonl`, `result/prewarm_experiment_report_0428_0.md`, and `result/prewarm_experiment_results_0428_0.plan.json`. If `0428_0` already exists, the next default run uses `0428_1`.
 
 This means a full default run executes:
 
@@ -170,6 +170,29 @@ Disable resume behavior explicitly:
 ```bash
 python run_prewarm_experiment.py --no-resume --reset-output
 ```
+
+### Recommended Checklist (Keyword Min-Matches)
+
+The `keyword_min_matches_per_client` gate controls how strict L1 keyword matching is before hybrid falls back to L2 semantic routing.
+
+Latest side-by-side comparison based on:
+
+- `result/prewarm_experiment_results_0605_0.jsonl` (min matches = 1)
+- `result/prewarm_experiment_results_0605_4.jsonl` (min matches = 2)
+- `result/prewarm_experiment_results_0605_5.jsonl` (min matches = 3)
+
+| min matches | Hybrid L1 count | Hybrid L2 fallback count | Hybrid mismatch | Hybrid cold | Hybrid avg non-cold wait (ms) | Hybrid max wait (ms) | Recommendation |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | 95 | 0 | 5.0% | 5.0% | 126.218 | 4091.626 | Too permissive; almost no L2 fallback |
+| 2 | 90 | 5 | 5.0% | 5.0% | 131.783 | 2884.165 | Balanced transition option |
+| 3 | 80 | 20 | 0.0% | 0.0% | 133.887 | 306.083 | Best stability; recommended default for hybrid |
+
+Operational checklist:
+
+1. Start from `--keyword-min-matches-per-client 2` if you want a conservative rollout.
+2. Use `--keyword-min-matches-per-client 3` when you prioritize stability and lower tail latency.
+3. Always run with `--no-resume --reset-output` when comparing different threshold settings.
+4. Keep experiment artifacts under `result/` to simplify review and cleanup.
 
 ### JSONL Trial Status
 

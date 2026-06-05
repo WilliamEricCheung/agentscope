@@ -1,11 +1,11 @@
 {
   "model_name": "retrieval",
-  "artifact_dir": "artifacts_retrieval_router_deploy",
+  "artifact_dir": "/mnt/d/Project/agentscope/laplace/router_model/artifacts_retrieval_router_deploy",
   "repeats": 20,
-  "query_source": "artifacts_retrieval_router_deploy/eval_samples.jsonl:dex_paprika_000",
-  "min_latency_ms": 0.627934,
-  "avg_latency_ms": 1.230233,
-  "max_latency_ms": 5.030044,
+  "query_source": "/mnt/d/Project/agentscope/laplace/router_model/artifacts_retrieval_router_deploy/eval_samples.jsonl:bibliomantic_002__fuzzy",
+  "min_latency_ms": 0.939577,
+  "avg_latency_ms": 2.115544,
+  "max_latency_ms": 5.451272,
   "threshold": 0.05,
   "top_k": 1
 }

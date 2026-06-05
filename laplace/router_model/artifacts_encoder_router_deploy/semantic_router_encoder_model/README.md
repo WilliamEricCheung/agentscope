@@ -4,252 +4,202 @@ tags:
 - sentence-similarity
 - feature-extraction
 - generated_from_trainer
-- dataset_size:491
+- dataset_size:1117
 - loss:CosineSimilarityLoss
 base_model: sentence-transformers/all-MiniLM-L6-v2
 widget:
-- source_sentence: 'Identify the main causes of the 2023 European heatwaves and summarize
-    how they impacted public health systems in affected countries. Begin by searching
-    Wikipedia for articles related to ''2023 European heatwave''. From the top result,
-    retrieve the article title and use it to get a tailored summary focused on ''causes''.
-    Separately, extract key facts about ''public health impact'' from the same article.
-    Then, obtain the list of sections in the article and locate one titled ''Health
-    effects'' or similar; if found, summarize that section. Finally, compile all gathered
-    information into a structured report containing: (1) a concise overview of causes,
-    (2) a bullet-point list of key public health impacts, and (3) a short summary
-    of the health effects section if available.'
+- source_sentence: 'Calculate the final adjusted score for a performance evaluation
+    based on the following steps: Start with raw scores [88.3, 92.7, 76.5, 85.9, 90.1].
+    First, compute their arithmetic mean. Then, subtract 5.2 from this mean. Multiply
+    the result by 1.15 to apply a scaling factor. Round the scaled value to the nearest
+    integer. Separately, find the minimum and maximum of the raw scores, add them
+    together, and divide that sum by 2 to get the mid-range value. Finally, add the
+    rounded scaled mean and the mid-range value to produce the final adjusted score.
+    Return the final adjusted score as a single number in a JSON object with key ''final_adjusted_score''.'
   sentences:
-  - 'Identify the main causes of the 2008 global financial crisis as described in
-    the Wikipedia article ''Subprime mortgage crisis'', then extract key facts about
-    its impact on European economies. Begin by searching Wikipedia for relevant articles
-    using the query ''2008 financial crisis''. From the results, confirm that ''Subprime
-    mortgage crisis'' is a top match and retrieve its full section list. Use this
-    to locate a section titled ''Global effects'' or similar. Summarize that section
-    with a focus on Europe. Then, extract five key facts specifically about European
-    countries'' responses or consequences. Finally, get a list of topics related to
-    the ''Subprime mortgage crisis'' article to suggest further reading. Deliver a
-    JSON object containing: (1) the tailored summary of global effects focused on
-    Europe (max 250 characters), (2) the list of five extracted key facts about Europe,
-    and (3) up to eight related topics.'
-  - Compare the nutritional profiles of three specific fruits—apple, banana, and orange—by
-    retrieving their calorie content, carbohydrate levels, and vitamin C amounts using
-    the FruityVice server. Based on this data, determine which fruit provides the
-    highest vitamin C per 100 grams and which has the lowest carbohydrate content.
-    Present your findings in a structured JSON object with keys for each fruit and
-    a summary field identifying the top vitamin C source and the lowest-carb option.
-  - 'Identify the top-performing liquidity pool by 24-hour trading volume on the Ethereum
-    network, then retrieve its full historical OHLCV data for the past 7 days at 1-hour
-    intervals. Additionally, obtain detailed information about both tokens in the
-    pool and list all other pools on Ethereum that include either of these two tokens,
-    sorted by descending volume. Finally, summarize the findings in a structured report
-    containing: (1) pool address and DEX name, (2) 24h volume in USD, (3) token symbols
-    and addresses, (4) 7-day price trend direction (up/down/stable based on closing
-    prices), and (5) count of alternative pools per token.'
-- source_sentence: 'Identify the most engaging discussion in the r/science subreddit
-    from the past week by first fetching the 15 hottest threads, then retrieving the
-    full content—including top-level comments and up to 3 levels of replies—for each
-    of those posts. Based on total comment count and depth of discussion, select the
-    single post with the richest conversation and produce a structured summary containing:
-    (1) post title, (2) post ID, (3) author, (4) number of top-level comments retrieved,
-    (5) maximum comment depth observed, and (6) a list of the top 3 most-upvoted top-level
-    comment bodies.'
+  - 'A travel agency is planning a promotional campaign for destinations with stable
+    and pleasant weather over the next 5 days. First, search for locations matching
+    the query ''San Jose'' to disambiguate possible cities. From the results, select
+    the city named ''San Jose'' in the United States. Then, retrieve the current weather
+    for that city to assess immediate conditions. Finally, obtain a 5-day weather
+    forecast for the same city. Based on the combined data, generate a structured
+    report indicating whether the location qualifies as ''weather-stable''—defined
+    as having no precipitation in the forecast and daily temperature variation (max
+    - min) under 10°C for all 5 days. Return the result as a JSON object with keys:
+    ''city'', ''current_weather_summary'', ''forecast_stable'', and ''recommendation''.'
+  - 'Can you calculate the average daily temperature over the past 7 days using these
+    recorded values in Celsius: 23.6, 25.1, 22.9, 24.0, 26.3, 21.8, and 25.7? Please
+    find the exact mean by summing them up and dividing by 7, then round it to the
+    nearest whole number using standard rounding rules. I’d like the final result
+    as an integer in a JSON object with the key "rounded_average".'
+  - Identify the top liquidity pool by 24-hour trading volume on the Ethereum network,
+    then retrieve its full details, historical OHLCV data for the past 7 days at 1-hour
+    intervals, and the 10 most recent transactions. Additionally, use the search tool
+    to confirm the primary token in that pool exists across other networks, and summarize
+    all findings in a structured report.
+- source_sentence: Hey, I’ve been working on a machine learning project with a teammate,
+    and we’ve been using a notebook called `model_training.ipynb` in the `experiments/q3_eval/`
+    folder. I’m pretty sure the evaluation part hasn’t been updated recently—it’s
+    probably still just reporting accuracy—but I want to double-check and improve
+    it. Can you look in that directory and see if there are any other notebooks modified
+    in the last week that might have newer evaluation code? If not, go ahead and open
+    `model_training.ipynb`. The evaluation logic should be somewhere around cells
+    12 to 15—just skim through to find it. If it’s only using `accuracy_score`, please
+    update it to also compute and print the F1-score and AUC (using `sklearn.metrics`).
+    Add a short markdown cell right above explaining that we’re expanding the metrics
+    beyond accuracy for better model assessment. After making the change, run that
+    updated code block and show me the actual output it produces. Oh, and once you're
+    done, could you list all currently running notebook sessions? I just want to make
+    sure we didn’t accidentally spin up any extra kernels while doing this. Please
+    make sure the final answer is backed by specific data, concrete numbers, or verifiable
+    sources.
   sentences:
-  - 'Identify the most impactful machine learning paper published on arXiv in the
-    past 7 days according to Hugging Face''s daily paper curation. Retrieve its full
-    details using its arXiv ID. Then, search for models on Hugging Face Hub that are
-    explicitly associated with this paper (using the paper title or arXiv ID as a
-    query). For the top model result, obtain its detailed information. Next, find
-    datasets used to train or evaluate this model by searching for datasets with matching
-    names or tags related to the model’s task. Retrieve the top matching dataset’s
-    details. Then, locate any Hugging Face Spaces that demonstrate this model by searching
-    with the model ID or paper title and filtering by the ''gradio'' SDK. Get the
-    details of the top Space. Finally, search for collections that include either
-    the identified model, dataset, or Space, and retrieve the info of the first such
-    collection. Compile all retrieved information into a structured report containing:
-    (1) paper metadata, (2) model metadata, (3) dataset metadata, (4) Space metadata,
-    and (5) collection metadata.'
-  - 'You are an AI trading-analysis agent using the OKX Exchange API. Perform the
-    following workflow in one run: 1. In parallel, fetch 1-minute candlestick data
-    for the past 30 minutes for both BTC-USDT and ETH-USDT: • Call get_candlesticks
-    with instrument=''BTC-USDT'', bar=''1m'', limit=30 • Call get_candlesticks with
-    instrument=''ETH-USDT'', bar=''1m'', limit=30 2. For each instrument, compute
-    1-minute momentum percentage: momentum1m_pct = (last_close – first_close) / first_close
-    × 100 3. If momentum1m_pct > 1.0% for an instrument, fetch its current market
-    price: • Call get_price with instrument set to that symbol 4. For each instrument
-    where you fetched a price, determine whether the current price continues the momentum
-    direction: direction_continues = (current_price – last_close) has the same sign
-    as momentum1m_pct 5. Identify which instrument has the higher absolute value of
-    momentum1m_pct. On that top instrument, perform 5-minute candlestick analysis
-    for the past hour: • Call get_candlesticks with instrument set to top symbol,
-    bar=''5m'', limit=12 • Compute trend5m_volatility = standard deviation of the
-    12 closing prices 6. If trend5m_volatility > 0.5%, trigger a deeper short-term
-    review: • Call get_candlesticks with the same top instrument, bar=''1m'', limit=60
-    • Label this step “deep_analysis_executed” 7. Produce a JSON report with an array
-    field named “instrument_data” containing one object per symbol with these keys:
-    • instrument: ''BTC-USDT'' or ''ETH-USDT'' • momentum1m_pct: number • current_price:
-    number (if fetched; otherwise null) • direction_continues: boolean (if price fetched;
-    otherwise null) • trend5m_volatility: number (for top instrument; null for the
-    other) • deep_analysis_executed: boolean Ensure you call get_price only when momentum1m_pct
-    > 1.0% and get the deep-dive 1m candles only when volatility > 0.5%.'
-  - 'A developer is building a Next.js application and needs up-to-date documentation
-    on server-side rendering (SSR) patterns, specifically focusing on data fetching
-    with getServerSideProps. They referred to the library simply as ''Next.js''. First,
-    resolve the ambiguous name ''Next.js'' to a Context7-compatible library ID using
-    the resolve-library-id tool. Then, use the retrieved library ID to fetch detailed
-    documentation about SSR and getServerSideProps, limiting the response to 8000
-    tokens. Return a structured summary containing: (1) the resolved library ID, (2)
-    a 3-sentence overview of SSR in Next.js based on the documentation, and (3) two
-    verified code snippets demonstrating getServerSideProps usage.'
-- source_sentence: Identify the most engaging discussion in the r/science subreddit
-    from the past week by first fetching the 15 hottest threads, then retrieving the
-    full content—including up to 30 top-level comments and a comment depth of 4—for
-    each post. Determine which thread has the highest total number of comments and
-    awards combined, and return a structured summary containing the post title, author,
-    score, number of comments, number of awards, and the top three most-upvoted top-level
-    comments (with their scores and authors).
+  - 'Hey, I''m trying to figure out if we can use the official X (Twitter) API for
+    our social listening dashboard—specifically to post tweets programmatically. Before
+    diving into code, I need to confirm a few technical details from the actual API
+    docs. Can you help me find: - The base URL for the X API, - Whether OAuth 2.0
+    is strictly required (or if there’s another auth method), - Exactly what the request
+    body should look like when creating a tweet (e.g., is it JSON? what fields are
+    needed?), and - Any specific rate limits tied to that tweet-creation endpoint?
+    I’d really appreciate it if you could pull this info straight from the official
+    spec—especially the exact scopes needed and hard numbers on rate limits, not just
+    general guidance.'
+  - Find the highest-rated coffee shop that is currently open within 1.5 km of the
+    Empire State Building in New York City. Retrieve its full details including address,
+    phone number, and operating hours. Then, calculate the walking distance and duration
+    from the Empire State Building to this coffee shop. Finally, determine the elevation
+    at both the Empire State Building and the coffee shop’s location.
+  - 'Hey, I''m trying to figure out if we can use the official X (Twitter) API for
+    our social listening dashboard—specifically to post tweets programmatically. Before
+    diving into code, I need to confirm a few technical details from the actual API
+    docs. Can you help me find: - The base URL for the X API, - Whether OAuth 2.0
+    is strictly required (or if there’s another auth method), - Exactly what the request
+    body should look like when creating a tweet (e.g., is it JSON? what fields are
+    needed?), and - Any specific rate limits tied to that tweet-creation endpoint?
+    I’d really appreciate it if you could pull this info straight from the official
+    spec—especially the exact scopes needed and hard numbers on rate limits, not just
+    general guidance.'
+- source_sentence: Hey, can you help me figure out why the promo code 'SAVE10' sometimes
+    breaks checkout on our test site? I’ve been seeing weird intermittent issues.
+    Could you go to https://shop.example.test, add any product to the cart, head to
+    checkout, and try applying that code? If a browser popup shows up—like an alert
+    or prompt—just click OK. Once the discount confirmation appears, grab a screenshot
+    of the whole order summary and save it as 'final_checkout.png'. Also, I need the
+    exact final total price (pull it directly from the page with JS if possible) and
+    a list of all network requests that fired while applying the promo—especially
+    any that failed. Just close the tab when you’re done. Thanks! Please make sure
+    the final answer is backed by specific data, concrete numbers, or verifiable sources.
   sentences:
-  - Find three highly rated science fiction movies released in the past 3 months that
-    feature time travel as a central theme. Use the Movie Recommender tool with an
-    appropriate keyword to retrieve relevant suggestions. From the results, select
-    only those explicitly described as involving time travel and released within the
-    last 3 months (relative to today). Return a JSON list of up to three movies, each
-    containing the title, release date (in YYYY-MM-DD format), and a one-sentence
-    plot summary mentioning time travel.
-  - 'Conduct an integrated clinical assessment for three patients using the Medical
-    Calculator suite. Patient A (Adult Surgical Candidate): • Age: 65 years; Sex:
-    male • Weight: 95 kg; Height: 170 cm (convert to 67 inches) • Serum creatinine
-    (Scr): 1.8 mg/dL; Serum cystatin C (Scys): 1.5 mg/L • Fasting insulin: 20 uIU/mL;
-    Fasting glucose: 150 mg/dL • Serum calcium: 8.0 mg/dL; Albumin: 3.0 g/dL • Measured
-    sodium: 130 mEq/L; Serum glucose: 200 mg/dL • Total cholesterol: 5.2 mmol/L; HDL
-    cholesterol: 1.0 mmol/L • Systolic BP: 150 mmHg; Diastolic BP: 90 mmHg; Heart
-    rate: 80 bpm; QT interval: 380 ms • History: diabetes mellitus (yes), hypertension
-    (yes), congestive heart failure (yes), prior MI (yes), atrial fibrillation (yes),
-    no prior stroke/TIA, non-smoker, on antihypertensive and statin therapy • Hepatic
-    labs: total bilirubin 3.0 mg/dL; albumin 2.5 g/dL; INR 1.8; ascites: slight; encephalopathy
-    grade: 1 • Dialysis in last 7 days: no • Current opioids: oxycodone 5 mg every
-    6 hours (4 doses/day) and fentanyl patch 25 mcg/hr • Chronic steroid: prednisone
-    10 mg orally daily • Scheduled for elective suprainguinal vascular surgery (high
-    risk) Patient B (Pediatric Hypertension Workup): • Age: 12 years 6 months; Sex:
-    female • Weight: 50 kg; Height: 150 cm • Systolic BP: 120 mmHg; Diastolic BP:
-    80 mmHg • Fasting insulin: 15 uIU/mL; Fasting glucose: 100 mg/dL Patient C (Pregnant
-    Wellness Visit): • Age: 30 years; Sex: female; Last menstrual period (LMP): 2024-02-15;
-    Cycle length: 30 days Required outputs (for each patient where applicable): 1.
-    BMI and BSA 2. Ideal Body Weight (IBW) and Adjusted Body Weight (ABW) 3. Maintenance
-    IV fluid rate (4-2-1 rule) 4. Cockcroft-Gault creatinine clearance (use ABW if
-    actual weight >120% IBW) 5. eGFR (2021 CKD-EPI creatinine formula); if eGFR <60,
-    also run CKD-EPI creatinine-cystatin C equation 6. Mean arterial pressure (MAP)
-    7. HOMA-IR score; classify insulin resistance if >2.5 and use to set diabetic
-    flag 8. Corrected calcium for hypoalbuminemia 9. Corrected sodium for hyperglycemia
-    10. QTc using Bazett’s formula 11. CHA₂DS₂-VASc score 12. Wells’ PE score 13.
-    Revised Cardiac Risk Index 14. Framingham 10-year CHD risk 15. PREVENT 10-year
-    CVD risk (requires eGFR, SBP, diabetic flag, smoker flag, antihypertensive/statin
-    use) 16. Child-Pugh score 17. MELD 3.0 score 18. Pregnancy due date estimation
-    (EDD, EDC, EGA from LMP) 19. Equivalent dose of prednisone 10 mg to hydrocortisone
-    20. Total daily MME for oxycodone and fentanyl patch Produce a structured report
-    listing each tool call with input parameters, its result, interpretive classification,
-    and final clinical recommendation per patient. Use the Medical Calculator tools
-    in the sequence and conditional logic outlined. No external data sources—only
-    the values and calculators specified above.'
-  - 'A developer is evaluating libraries for implementing real-time collaborative
-    editing in a web application. They mentioned ''Yjs'' as a candidate but are unsure
-    which Context7-compatible library ID to use. First, resolve the library name ''Yjs''
-    to obtain the correct Context7-compatible library ID. Then, fetch documentation
-    focused on the topic ''real-time collaboration'' with a token limit of 8000 to
-    analyze integration patterns, required dependencies, and code examples. Based
-    on the resolved library ID and retrieved documentation, produce a structured report
-    containing: (1) the selected library ID, (2) a summary of its real-time collaboration
-    capabilities, (3) two representative code snippets demonstrating basic setup and
-    synchronization, and (4) an assessment of documentation quality based on snippet
-    count and clarity.'
-- source_sentence: 'Perform a comprehensive health and data validation check of the
-    Game Trends system, then generate a cross-platform gaming insights report for
-    the current period. First, execute a local health check and verify the API health
-    status. If both are operational, proceed to collect: (1) Steam''s trending games,
-    top sellers, and most played titles; (2) Epic Games Store''s current free games
-    and trending titles. Finally, invoke the all-platforms trending games tool to
-    validate consistency. Synthesize these results into a structured report listing
-    the top 3 overlapping trending games across platforms, the top 5 Steam sellers
-    not on Epic’s trending list, and the next 7 days’ expected free Epic game releases
-    (based on current promotion cycle data). The deliverable must be a JSON object
-    with keys: ''overlapping_trending'', ''steam_exclusive_sellers'', and ''upcoming_epic_free_games''.'
-  sentences:
-  - 'Conduct a comprehensive, multi‐tool investigation of the BRAF V600E variant in
-    melanoma to inform potential targeted therapy strategies. The agent must: 1. Initiate
-    structured reasoning with BioMCP:think. 2. Retrieve current gene annotation for
-    BRAF via BioMCP:gene_getter (gene_id_or_symbol="BRAF"). 3. Retrieve up‐to‐date
-    disease information for melanoma via BioMCP:disease_getter (disease_id_or_name="melanoma").
-    4. Perform a literature search via BioMCP:article_searcher for articles and preprints
-    on BRAF V600E in melanoma (genes=["BRAF"], variants=["V600E"], diseases=["melanoma"],
-    include_preprints=true, page_size=10). 5. Search MyVariant.info via BioMCP:variant_searcher
-    for the BRAF p.V600E variant (gene="BRAF", hgvsp="p.V600E", include_cbioportal=false).
-    6. Fetch detailed variant data via BioMCP:variant_getter for the top rsID returned
-    in step 5. 7. Query NCI’s biomarker vocabulary via BioMCP:nci_biomarker_searcher
-    for name="BRAF V600E" to obtain NCI biomarker codes. 8. Search ClinicalTrials.gov
-    via BioMCP:trial_searcher for open Phase 2 and 3 melanoma trials requiring those
-    NCI biomarker codes (conditions=["melanoma"], other_terms=[<codes from step 7>],
-    recruiting_status="OPEN", phase=["PHASE2","PHASE3"]). 9. For each NCT ID from
-    step 8: a. Fetch core protocol via BioMCP:trial_protocol_getter. b. Fetch outcome
-    measures via BioMCP:trial_outcomes_getter. c. Fetch related publications via BioMCP:trial_references_getter.
-    d. If outcomes are incomplete, fetch full trial record via BioMCP:trial_getter(detail="all").
-    10. Obtain current drug information via BioMCP:drug_getter for vemurafenib and
-    dabrafenib. 11. For each drug: a. Search FDA approval records via BioMCP:openfda_approval_searcher
-    (drug=<name>); then fetch full approval details via BioMCP:openfda_approval_getter
-    for the leading application number. b. Search official label sections via BioMCP:openfda_label_searcher
-    (name=<name>, section=["indications","warnings"], limit=5). c. Search serious
-    adverse events via BioMCP:openfda_adverse_searcher (drug=<name>, serious=true,
-    limit=20). 12. Synthesize and cross‐validate: – Compare NCI biomarker‐driven trial
-    interventions with FDA‐approved indications and adverse event profiles. – Highlight
-    any discrepancies between trial outcomes and post‐marketing safety signals. Expected
-    output: A structured JSON report containing sections for gene context, disease
-    context, literature highlights, variant pathogenicity, trial landscape (with protocol
-    and outcomes summaries), drug approval status, label warnings, and safety signal
-    synthesis.'
-  - Find up to 5 academic conferences in the 'machine learning' domain that have issued
-    calls for papers in the past 7 days. Return a JSON list of these conferences,
-    including their titles and submission deadlines if available.
-  - Compare the nutritional profiles of three specific fruits—apple, banana, and orange—by
-    retrieving their calorie content, carbohydrate levels, and vitamin C amounts using
-    the FruityVice server. Based on this data, determine which fruit provides the
-    highest vitamin C per 100 grams and which has the lowest carbohydrate content.
-    Present your findings in a structured JSON object with keys for each fruit and
-    a summary field identifying the top vitamin C source and the lowest-carb option.
-- source_sentence: Identify a well-known painting titled 'The Harvesters' in the Metropolitan
-    Museum of Art, retrieve its full details including image, and confirm it belongs
-    to the European Paintings department. Begin by listing all museum departments
-    to obtain the correct department ID, then search for the object by title within
-    that department, and finally fetch the complete object record with image.
-  sentences:
+  - 'Perform a multi-step unit conversion pipeline that begins with converting an
+    angle from degrees to radians, then uses that result as part of a derived length
+    calculation. Specifically: (1) Convert 90 degrees to radians. (2) Use the resulting
+    radian value as the angular displacement in a circular arc formula (arc length
+    = radius × angle in radians) assuming a radius of 5 meters, yielding an arc length
+    in meters. (3) Convert that arc length from meters to inches. (4) Separately,
+    convert a mass of 2.5 kilograms to pounds. (5) Convert a temperature of 100 degrees
+    Celsius to Fahrenheit. (6) Convert a volume of 3.785 liters (equivalent to 1 US
+    gallon) to cubic inches. (7) Convert a data size of 8192 megabytes to gigabytes.
+    (8) Convert a time duration of 90 minutes to seconds. Finally, package all eight
+    results into a single structured JSON object with clearly labeled keys corresponding
+    to each step.'
+  - Can you look up the 2023 European heatwaves on Wikipedia and tell me what caused
+    them, especially how climate change played a role? I’d like a short summary (no
+    more than 150 words) of the main causes from the article, along with up to five
+    specific facts from the same source that directly link the event to climate change.
+    Also, please list up to eight related topics from the article that connect to
+    extreme weather or climate science. Make sure everything comes only from Wikipedia
+    and include the exact title of the article you used.
   - Identify a well-known painting titled 'The Harvesters' in the Metropolitan Museum
-    of Art collection, retrieve its full details including image, and confirm it belongs
-    to the European Paintings department. Begin by listing all departments to obtain
+    of Art, retrieve its full details including image, and confirm it belongs to the
+    European Paintings department. Begin by listing all museum departments to obtain
     the correct department ID, then search for the object by title within that department,
-    and finally fetch the complete object record with its image.
-  - 'A 62-year-old male patient presents for pre-operative cardiac risk assessment
-    and chronic kidney disease (CKD) evaluation. He weighs 85 kg, is 170 cm tall (66.93
-    inches), and has a serum creatinine (Scr) of 1.4 mg/dL and serum cystatin C of
-    1.6 mg/L. His blood pressure is 150/90 mmHg, total cholesterol is 220 mg/dL (5.69
-    mmol/L), HDL is 40 mg/dL (1.04 mmol/L), and he is on antihypertensive medication
-    but not statins. He has type 2 diabetes, is a current smoker, and his eGFR from
-    prior testing was approximately 45 mL/min/1.73m². Calculate the following in sequence:
-    (1) BMI and BSA; (2) Ideal and adjusted body weight; (3) Creatinine clearance
-    via Cockcroft-Gault; (4) eGFR using both the EPI creatinine-only and creatinine-cystatin
-    C equations; (5) Mean arterial pressure (MAP); (6) 10-year cardiovascular disease
-    risk using the PREVENT equation (use the higher of the two eGFR values if they
-    differ); (7) Revised Cardiac Risk Index (RCRI) assuming he is scheduled for intraperitoneal
-    surgery, has known ischemic heart disease, no history of CHF or stroke, is on
-    insulin, and his creatinine is >2 mg/dL (note: use actual Scr = 1.4 mg/dL for
-    eGFR tools but assume creatinine_over_2mg = true for RCRI per clinical documentation
-    discrepancy); (8) Finally, synthesize all results into a structured pre-operative
-    assessment report that includes CKD stage, CVD risk category, RCRI class, and
-    fluid maintenance rate (based on actual weight).'
-  - 'Perform a bibliomantic consultation using Philip K. Dick''s method to address
-    the question: ''Should I accept a new job offer in the next 3 months?'' First,
-    conduct an I Ching divination with this query to obtain a hexagram. Then, use
-    the resulting hexagram number to retrieve its full traditional interpretation.
-    Finally, synthesize these results into a coherent guidance statement that integrates
-    both the I Ching reading and the bibliomantic approach, and return it in a structured
-    JSON object containing the original query, hexagram number, hexagram name, core
-    interpretation, and final recommendation.'
+    and finally fetch the complete object record with image.
+- source_sentence: 'I''m investigating a sudden price swing in the WBTC/ETH liquidity
+    pool on Ethereum that occurred over the past 7 days. First, confirm which networks
+    are supported, then identify the top DEXes on Ethereum. Locate the WBTC/ETH pool
+    with the highest 24-hour trading volume, retrieve its detailed metrics, and pull
+    hourly OHLCV data for the last 7 days to analyze volatility patterns. Finally,
+    get the 10 most recent swap transactions in that pool to see if any large trades
+    correlate with price movements. Deliver a summary including: (1) pool address,
+    (2) total volume over the period, (3) max single-hour price change, and (4) count
+    of transactions exceeding $500k in value.'
+  sentences:
+  - 'I’m preparing for an elective abdominal aortic aneurysm repair on a 68-year-old
+    male patient and need a comprehensive preoperative risk assessment. He weighs
+    82 kg, is 70 inches tall, has type 2 diabetes managed with insulin, and known
+    coronary artery disease treated medically—no prior heart failure or stroke. His
+    serum creatinine is 1.4 mg/dL, blood pressure was last recorded at 152/88 mmHg,
+    total cholesterol is 210 mg/dL, HDL is 42 mg/dL, and he’s a current smoker. He’s
+    on antihypertensives but not on a statin. Could you please calculate his Revised
+    Cardiac Risk Index score and tell me what risk category that puts him in? Also,
+    using his creatinine, age, sex, and the 2021 CKD-EPI creatinine equation (not
+    the one with cystatin C), determine his eGFR. With that eGFR plus his age, sex,
+    lipid levels, smoking status, diabetes, and antihypertensive use, estimate his
+    10-year cardiovascular disease risk using the PREVENT model. Lastly, figure out
+    his ideal body weight and adjusted body weight for dosing purposes. I’d appreciate
+    it if you could pull all this together into a clear summary with the actual numbers:
+    RCRI score and category, eGFR value, 10-year CVD risk percentage, and both ideal
+    and adjusted weights in kilograms.'
+  - 'A 68-year-old male patient presents for preoperative evaluation prior to elective
+    abdominal aortic aneurysm repair. His serum creatinine is 1.4 mg/dL, weight is
+    82 kg, height is 70 inches, and he has type 2 diabetes treated with insulin. He
+    reports no history of heart failure or stroke but has known coronary artery disease
+    managed medically. His last menstrual period is irrelevant (he’s male), but his
+    last blood pressure reading was 152/88 mmHg, total cholesterol is 210 mg/dL, HDL
+    is 42 mg/dL, and he is a current smoker. He is not on statins but is taking antihypertensives.
+    Calculate his Revised Cardiac Risk Index score first. Then, use his creatinine
+    to compute eGFR via the 2021 CKD-EPI creatinine equation (not cystatin C). With
+    that eGFR, age, sex, lipid profile, smoking status, diabetes status, and antihypertensive
+    use, calculate his 10-year cardiovascular disease risk using the PREVENT model.
+    Finally, determine his ideal and adjusted body weight for dosing considerations.
+    Return a structured preoperative risk summary containing: (1) RCRI score and risk
+    category, (2) eGFR value, (3) 10-year CVD risk percentage, and (4) ideal and adjusted
+    body weights in kilograms.'
+  - 'I''m evaluating whether to integrate the official X (Twitter) API into our social
+    listening dashboard. Before writing any code, I need a clear understanding of
+    its authentication requirements and rate limits. Start by retrieving an overview
+    of the X API specification using its known identifier. Then, examine the details
+    of the ''create_tweet'' operation to determine what OAuth scopes are required
+    and whether it supports JSON payloads. Finally, produce a concise technical summary
+    that includes: (1) the base URL of the API, (2) whether OAuth 2.0 is mandatory,
+    (3) the exact request payload format for creating a tweet, and (4) any documented
+    rate limits for that endpoint.'
+- source_sentence: 'Perform a health check on the OKX Exchange server, then retrieve
+    the latest price for BTC-USDT. Using that instrument, fetch the last 96 candlesticks
+    at a 1-hour interval (covering the past 4 days). Based on this data, compute the
+    average closing price over the period and determine whether the latest price is
+    above or below this average. Return a JSON object containing: {"health_status":
+    "ok" or error message, "latest_price": number, "average_close_price": number,
+    "price_vs_average": "above" or "below"}.'
+  sentences:
+  - 'I need to set up a data analysis notebook in my project folder. First, check
+    the root directory and its immediate subfolders for any Jupyter notebooks. If
+    you find one called ''analysis_pipeline.ipynb'', open it; if not, create a new
+    one with that name at the top level. Once it’s ready, take a quick look at its
+    contents—just the first 50 lines or so. If it’s empty or has fewer than three
+    cells, add the following at the very beginning: 1. A markdown cell with the title
+    “# Data Analysis Pipeline” 2. A code cell that prints “Pipeline initialized on
+    [today’s date]” (formatted like YYYY-MM-DD) 3. A code cell that runs `%lsmagic`
+    to show available kernels Then run the second and third cells one after the other,
+    giving each up to 60 seconds to finish. After they’ve run, restart the kernel
+    to clear everything out. When you’re done, please give me a summary that includes:
+    - The full file path of the notebook - How many cells it has now - The exact output
+    from the `%lsmagic` command - Confirmation that the kernel was successfully restarted'
+  - 'I’m trying to decide whether I should accept a new job offer in the next three
+    months. I’d like some guidance using two specific approaches: first, a bibliomantic
+    reading done exactly as Philip K. Dick practiced it, applied to this question;
+    and second, an I Ching divination that gives me a hexagram for the same question.
+    From the I Ching result, I need the actual hexagram number (like 1 through 64),
+    its traditional name, and the full classical interpretation of that hexagram.
+    Please put together a clear comparison that includes: (1) the insight from the
+    bibliomancy, (2) the hexagram number and name, and (3) the complete traditional
+    meaning of that hexagram—so I can thoughtfully weigh both perspectives.'
+  - 'Can you check the current status of the OKX exchange, get the latest BTC-USDT
+    price, and then pull the last 96 one-hour candlesticks (covering the past 4 days)?
+    From that data, I’d like to know the highest and lowest prices during this period,
+    along with a clear summary that includes: the current BTC-USDT price, the 4-day
+    high, the 4-day low, and whether the current price is within 5% of that 4-day
+    high. Please provide the actual numbers so I can verify the calculation.'
 pipeline_tag: sentence-similarity
 library_name: sentence-transformers
 ---
@@ -262,7 +212,7 @@ This is a [sentence-transformers](https://www.SBERT.net) model finetuned from [s
 
 ### Model Description
 - **Model Type:** Sentence Transformer
-- **Base model:** [sentence-transformers/all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) <!-- at revision c9745ed1d9f207416be6d2e6f8de32d1f16199bf -->
+- **Base model:** [sentence-transformers/all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) <!-- at revision 1110a243fdf4706b3f48f1d95db1a4f5529b4d41 -->
 - **Maximum Sequence Length:** 256 tokens
 - **Output Dimensionality:** 384 dimensions
 - **Similarity Function:** Cosine Similarity
@@ -304,9 +254,9 @@ from sentence_transformers import SentenceTransformer
 model = SentenceTransformer("sentence_transformers_model_id")
 # Run inference
 sentences = [
-    "Identify a well-known painting titled 'The Harvesters' in the Metropolitan Museum of Art, retrieve its full details including image, and confirm it belongs to the European Paintings department. Begin by listing all museum departments to obtain the correct department ID, then search for the object by title within that department, and finally fetch the complete object record with image.",
-    "Identify a well-known painting titled 'The Harvesters' in the Metropolitan Museum of Art collection, retrieve its full details including image, and confirm it belongs to the European Paintings department. Begin by listing all departments to obtain the correct department ID, then search for the object by title within that department, and finally fetch the complete object record with its image.",
-    'A 62-year-old male patient presents for pre-operative cardiac risk assessment and chronic kidney disease (CKD) evaluation. He weighs 85 kg, is 170 cm tall (66.93 inches), and has a serum creatinine (Scr) of 1.4 mg/dL and serum cystatin C of 1.6 mg/L. His blood pressure is 150/90 mmHg, total cholesterol is 220 mg/dL (5.69 mmol/L), HDL is 40 mg/dL (1.04 mmol/L), and he is on antihypertensive medication but not statins. He has type 2 diabetes, is a current smoker, and his eGFR from prior testing was approximately 45 mL/min/1.73m². Calculate the following in sequence: (1) BMI and BSA; (2) Ideal and adjusted body weight; (3) Creatinine clearance via Cockcroft-Gault; (4) eGFR using both the EPI creatinine-only and creatinine-cystatin C equations; (5) Mean arterial pressure (MAP); (6) 10-year cardiovascular disease risk using the PREVENT equation (use the higher of the two eGFR values if they differ); (7) Revised Cardiac Risk Index (RCRI) assuming he is scheduled for intraperitoneal surgery, has known ischemic heart disease, no history of CHF or stroke, is on insulin, and his creatinine is >2 mg/dL (note: use actual Scr = 1.4 mg/dL for eGFR tools but assume creatinine_over_2mg = true for RCRI per clinical documentation discrepancy); (8) Finally, synthesize all results into a structured pre-operative assessment report that includes CKD stage, CVD risk category, RCRI class, and fluid maintenance rate (based on actual weight).',
+    'Perform a health check on the OKX Exchange server, then retrieve the latest price for BTC-USDT. Using that instrument, fetch the last 96 candlesticks at a 1-hour interval (covering the past 4 days). Based on this data, compute the average closing price over the period and determine whether the latest price is above or below this average. Return a JSON object containing: {"health_status": "ok" or error message, "latest_price": number, "average_close_price": number, "price_vs_average": "above" or "below"}.',
+    'Can you check the current status of the OKX exchange, get the latest BTC-USDT price, and then pull the last 96 one-hour candlesticks (covering the past 4 days)? From that data, I’d like to know the highest and lowest prices during this period, along with a clear summary that includes: the current BTC-USDT price, the 4-day high, the 4-day low, and whether the current price is within 5% of that 4-day high. Please provide the actual numbers so I can verify the calculation.',
+    "I need to set up a data analysis notebook in my project folder. First, check the root directory and its immediate subfolders for any Jupyter notebooks. If you find one called 'analysis_pipeline.ipynb', open it; if not, create a new one with that name at the top level. Once it’s ready, take a quick look at its contents—just the first 50 lines or so. If it’s empty or has fewer than three cells, add the following at the very beginning: 1. A markdown cell with the title “# Data Analysis Pipeline” 2. A code cell that prints “Pipeline initialized on [today’s date]” (formatted like YYYY-MM-DD) 3. A code cell that runs `%lsmagic` to show available kernels Then run the second and third cells one after the other, giving each up to 60 seconds to finish. After they’ve run, restart the kernel to clear everything out. When you’re done, please give me a summary that includes: - The full file path of the notebook - How many cells it has now - The exact output from the `%lsmagic` command - Confirmation that the kernel was successfully restarted",
 ]
 embeddings = model.encode(sentences)
 print(embeddings.shape)
@@ -360,19 +310,19 @@ You can finetune this model on your own dataset.
 
 #### Unnamed Dataset
 
-* Size: 491 training samples
+* Size: 1,117 training samples
 * Columns: <code>sentence_0</code>, <code>sentence_1</code>, and <code>label</code>
-* Approximate statistics based on the first 491 samples:
-  |         | sentence_0                                                                           | sentence_1                                                                           | label                                                         |
-  |:--------|:-------------------------------------------------------------------------------------|:-------------------------------------------------------------------------------------|:--------------------------------------------------------------|
-  | type    | string                                                                               | string                                                                               | float                                                         |
-  | details | <ul><li>min: 46 tokens</li><li>mean: 181.46 tokens</li><li>max: 256 tokens</li></ul> | <ul><li>min: 46 tokens</li><li>mean: 176.51 tokens</li><li>max: 256 tokens</li></ul> | <ul><li>min: 0.0</li><li>mean: 0.3</li><li>max: 1.0</li></ul> |
+* Approximate statistics based on the first 1000 samples:
+  |         | sentence_0                                                                           | sentence_1                                                                          | label                                                          |
+  |:--------|:-------------------------------------------------------------------------------------|:------------------------------------------------------------------------------------|:---------------------------------------------------------------|
+  | type    | string                                                                               | string                                                                              | float                                                          |
+  | details | <ul><li>min: 46 tokens</li><li>mean: 161.25 tokens</li><li>max: 256 tokens</li></ul> | <ul><li>min: 46 tokens</li><li>mean: 162.4 tokens</li><li>max: 256 tokens</li></ul> | <ul><li>min: 0.0</li><li>mean: 0.32</li><li>max: 1.0</li></ul> |
 * Samples:
-  | sentence_0                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | sentence_1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | label            |
-  |:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-----------------|
-  | <code>Determine the average price of all Toyota car models listed in the FIPE database by first retrieving the full list of available car brands to confirm Toyota's presence, then using the brand name to fetch all Toyota car models and their prices, and finally computing the average price across those models. Return the result as a JSON object with the keys 'brand', 'model_count', and 'average_price_brl'.</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | <code>You are building a crypto breakout detection report for three OKX instruments: BTC-USDT, ETH-USDT, and ADA-USDT. Perform the following steps in sequence and output a JSON summary for each instrument with fields: instrument, current_price, avg_24h_price, deviation_pct, trend_15m, volume_change_5m, breakout_signal. 1. For each instrument (BTC-USDT, ETH-USDT, ADA-USDT): a. Call OKX Exchange:get_price to fetch the latest price as current_price. b. Call OKX Exchange:get_candlesticks with bar="1H" and limit=24 to fetch the past 24 one-hour candlesticks. Compute avg_24h_price (the arithmetic mean of each candlestick’s close). c. Compute deviation_pct = (current_price - avg_24h_price) / avg_24h_price × 100. If |deviation_pct| ≤ 2.0, set breakout_signal = false and skip to the next instrument; otherwise proceed. 2. For each instrument where |deviation_pct| > 2.0: a. Call OKX Exchange:get_candlesticks with bar="15m" and limit=50 to fetch the past 50 fifteen-minute candlesticks. Compute trend_15m...</code> | <code>0.0</code> |
-  | <code>First, perform a health check on the OKX Exchange server to confirm it is operational. If the health check passes, retrieve the latest price for the BTC-USDT instrument. Then, using the same instrument, fetch the last 96 candlesticks with a 1-hour interval (covering the past 4 days). Based on this data, calculate the percentage change between the latest price and the closing price of the oldest candlestick in the retrieved set. Return a JSON object containing: {"health_status": boolean, "latest_price": number, "oldest_candle_close": number, "percent_change": number}, where percent_change is rounded to two decimal places.</code>                                                                                                                                                                                                                                                                                       | <code>Perform a bibliomantic consultation using Philip K. Dick's method on the question: 'Should I accept a new job offer in the next 3 months?' Then, use the I Ching divination tool to generate a hexagram for the same question. Extract the hexagram number from the result and retrieve its full traditional interpretation. Finally, compile a comparative guidance report that includes: (1) the bibliomantic insight, (2) the generated hexagram number and its name, and (3) the detailed traditional interpretation of that hexagram.</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | <code>0.0</code> |
-  | <code>Perform a multi-step unit conversion pipeline that begins with converting an angle from degrees to radians, then uses that result as part of a derived length calculation. Specifically: (1) Convert 90 degrees to radians. (2) Use the resulting radian value as the angular displacement in a circular arc formula (arc length = radius × angle in radians) assuming a radius of 5 meters, yielding an arc length in meters. (3) Convert that arc length from meters to inches. (4) Separately, convert a mass of 2.5 kilograms to pounds. (5) Convert a temperature of 100 degrees Celsius to Fahrenheit. (6) Convert a volume of 3.785 liters (equivalent to 1 US gallon) to cubic inches. (7) Convert a data size of 8192 megabytes to gigabytes. (8) Convert a time duration of 90 minutes to seconds. Finally, package all eight results into a single structured JSON object with clearly labeled keys corresponding to each step.</code> | <code>Find up to 5 academic conferences in the next 3 months that have issued a call for papers related to 'large language models' and 'agent systems'. Return a structured list containing each conference's name, deadline (if available in the tool response), and a brief description.</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | <code>0.0</code> |
+  | sentence_0                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | sentence_1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | label            |
+  |:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-----------------|
+  | <code>Can you put together a detailed space weather and planetary observation report covering the last 7 days? I need it to include all significant solar activity—specifically coronal mass ejections (CMEs), solar flares (FLRs), and geomagnetic storms (GSTs)—with their exact dates and full event details. For each of those events, please include the corresponding scientific data tied to their occurrence dates. Also, add the WSA+Enlil model forecast summary for that same week to show how predictions aligned with actual conditions. On the astronomy side, I’d like NASA’s Picture of the Day for each of the past 7 days (from 7 days ago through yesterday), including the image metadata and captions. And as a planetary highlight, please include the very latest photo taken by the Curiosity rover on Mars, along with the sol number and camera information. Put everything into one organized JSON file with clear sections: space weather events with types, dates, and data; the 7 astronomy images; the newest C...</code> | <code>I'm planning a Pacific Northwest trip through California, Oregon, and Washington and want to visit national parks where I can both hike and camp. Can you give me a detailed report on all such parks in those three states? For each park, please include: the park name and a brief description; any current alerts that mention the word “closure”; the names and operating hours of all open visitor centers; the names of available campgrounds along with their amenities (like restrooms, potable water, etc.); and a list of upcoming events scheduled in the next 30 days, including event titles and dates. I’d like everything compiled clearly so I can compare options and plan accordingly. Please make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.</code>                                                                                                               | <code>0.0</code> |
+  | <code>A research team is investigating recent advances in federated learning applied to healthcare diagnostics. They need a consolidated report of relevant preprints and peer-reviewed literature from the past 30 days across multiple repositories. First, search bioRxiv and medRxiv for 'federated learning' to capture health-focused preprints. Then, use those results to refine a broader query for PubMed (to find peer-reviewed clinical studies) and arXiv (for foundational algorithmic work). Finally, run a Semantic Scholar search with the same core query but filtered to the last month to cross-validate coverage and identify highly cited emerging papers. Deliver a structured JSON list of up to 15 unique papers, each with source repository, title, publication/preprint date, and a one-sentence summary of its contribution to healthcare-oriented federated learning.</code>                                                                                                                                               | <code>I need help with a multi-part unit conversion and calculation task. First, convert 98.6°F to Kelvin. Then, using that temperature as the final value (assuming the initial temperature is 0°C), calculate the thermal energy required to heat 2 kg of water, given water’s specific heat capacity is 1 calorie/(gram·°C). For this, convert the water mass to grams and treat the temperature difference in Celsius (remembering that a change of 1 K equals a change of 1°C). Next, convert the resulting energy from kilocalories to joules. Separately, convert 60 miles per hour to meters per second, and also convert 5 acres to square meters. Please provide all intermediate and final values in a clear summary with these exact labels: body_temperature_K, water_mass_g, delta_T_C, thermal_energy_kcal, thermal_energy_J, speed_m_s, and area_sq_m. I’d like to see the actual numbers so I can verify each step.</code> | <code>0.0</code> |
+  | <code>I'm working on a cross-platform dashboard app and need to pick the right icons for four main navigation items: 'dashboard', 'user profile', 'notifications', and 'settings'. Can you check what’s available in the Hugeicons library, tell me how many total icons there are, and find the best matches for those four features? Then, please provide clear, ready-to-use implementation instructions for React, Vue, and Flutter so each frontend team can drop them in right away. I’d like all this info in a single JSON object with the total icon count, the matched icons per feature, and the platform-specific usage guidance.</code>                                                                                                                                                                                                                                                                                                                                                                                                     | <code>Perform a comprehensive health and data validation workflow for the Game Trends server, then generate a unified gaming trends report covering both Steam and Epic Games platforms. First, execute a local health check to confirm basic server functionality. Next, verify the external API health status. Only if both health checks pass, proceed to gather: (1) Steam's current top sellers, (2) Steam's most played games, (3) Steam's trending games, (4) Epic's current and upcoming free games (valid for the next 3 months), and (5) Epic's trending games. Finally, cross-validate these results by invoking the all-platforms trending data endpoint and compile a structured report listing the top 5 overlapping titles between Steam and Epic trending lists, along with sales rank, player count (if available), and free promotion status.</code>                                                                      | <code>0.0</code> |
 * Loss: [<code>CosineSimilarityLoss</code>](https://sbert.net/docs/package_reference/sentence_transformer/losses.html#cosinesimilarityloss) with these parameters:
   ```json
   {

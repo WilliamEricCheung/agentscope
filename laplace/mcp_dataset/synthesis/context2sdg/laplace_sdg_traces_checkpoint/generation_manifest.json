@@ -9,13 +9,13 @@
   "status": "in_progress",
   "generation_mode": "standalone_resumable",
   "started_at_utc": "2026-06-03T03:03:26+00:00",
-  "last_updated_at_utc": "2026-06-04T06:35:37+00:00",
+  "last_updated_at_utc": "2026-06-04T08:16:00+00:00",
   "artifact_paths": {
     "checkpoint_root": "/mnt/d/Project/agentscope/laplace/mcp_dataset/synthesis/context2sdg/laplace_sdg_traces_checkpoint",
     "prompt_dir": "/mnt/d/Project/agentscope/laplace/mcp_dataset/synthesis/context2sdg/laplace_sdg_traces_checkpoint/prompts",
     "trace_dir": "/mnt/d/Project/agentscope/laplace/mcp_dataset/synthesis/context2sdg/laplace_sdg_traces_checkpoint/traces",
-    "consolidated_trace_output": "/tmp/tmpk31epbpb/laplace_sdg_traces.json",
-    "transition_matrix_output": "/tmp/tmpk31epbpb/laplace_sdg_transition_matrices.json"
+    "consolidated_trace_output": "/tmp/tmpxg2_oknq/laplace_sdg_traces.json",
+    "transition_matrix_output": "/tmp/tmpxg2_oknq/laplace_sdg_transition_matrices.json"
   },
   "file_naming": {
     "prompt_file_pattern": "sdg_prompt_shard_{trace_index_start:05d}_to_{trace_index_end:05d}_of_{requested_trace_count:05d}.json",

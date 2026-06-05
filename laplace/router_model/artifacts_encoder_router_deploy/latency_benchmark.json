@@ -1,11 +1,11 @@
 {
   "model_name": "encoder",
-  "artifact_dir": "artifacts_encoder_router_deploy",
+  "artifact_dir": "/mnt/d/Project/agentscope/laplace/router_model/artifacts_encoder_router_deploy",
   "repeats": 20,
-  "query_source": "artifacts_retrieval_router_deploy/eval_samples.jsonl:dex_paprika_000",
-  "min_latency_ms": 2.767544,
-  "avg_latency_ms": 5.626751,
-  "max_latency_ms": 16.121036,
+  "query_source": "/mnt/d/Project/agentscope/laplace/router_model/artifacts_retrieval_router_deploy/eval_samples.jsonl:bibliomantic_002__fuzzy",
+  "min_latency_ms": 3.154896,
+  "avg_latency_ms": 7.822463,
+  "max_latency_ms": 9.686201,
   "threshold": 0.05,
   "top_k": 1
 }

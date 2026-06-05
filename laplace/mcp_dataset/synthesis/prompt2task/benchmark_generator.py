@@ -495,6 +495,9 @@ class BenchmarkTaskGenerator:
                         tools=tools,
                         server_name=server_name,
                         num_tasks=self.tasks_per_server,
+                        distraction_candidates=self._candidate_distraction_servers(
+                            [config.name for config in prepared_configs],
+                        ),
                     )
                     if not tasks:
                         raise RuntimeError("DashScope did not produce accepted tasks.")
@@ -889,12 +892,38 @@ class BenchmarkTaskGenerator:
             "task_description": task.get("task_description", ""),
             "fuzzy_description": task.get("fuzzy_description", ""),
             "dependency_analysis": task.get("dependency_analysis", ""),
-            "distraction_servers": self._select_distraction_servers(required_servers),
+            "distraction_servers": self._select_distraction_servers(
+                required_servers,
+                suggested_servers=task.get("distraction_servers", []),
+            ),
         }
+
+    def _candidate_distraction_servers(
+        self,
+        required_servers: list[str],
+        limit: int = 16,
+    ) -> list[str]:
+        """Build one candidate pool for hard-negative routing distractors.
+
+        Args:
+            required_servers (`list[str]`):
+                Servers already used by the task.
+            limit (`int`, optional):
+                Maximum number of candidate server names.
+
+        Returns:
+            `list[str]`:
+                Candidate server names sorted for prompt stability.
+        """
+        excluded = set(required_servers) | {"Time MCP"}
+        candidates = [name for name in self.all_server_names if name not in excluded]
+        candidates.sort()
+        return candidates[:limit]
 
     def _select_distraction_servers(
         self,
         required_servers: list[str],
+        suggested_servers: list[str] | None = None,
         count: int = 10,
     ) -> list[str]:
         """Select distraction servers for one task.
@@ -913,9 +942,26 @@ class BenchmarkTaskGenerator:
         candidates = [name for name in self.all_server_names if name not in excluded]
         if not candidates:
             return []
+        selected: list[str] = []
+        for name in suggested_servers or []:
+            normalized = str(name).strip()
+            if normalized not in candidates or normalized in selected:
+                continue
+            selected.append(normalized)
+        remaining = [name for name in candidates if name not in selected]
+        if len(selected) >= count:
+            selected = selected[:count]
+            selected.sort()
+            return selected
         import random
 
-        selected = random.sample(candidates, k=min(count, len(candidates)))
+        if remaining:
+            selected.extend(
+                random.sample(
+                    remaining,
+                    k=min(count - len(selected), len(remaining)),
+                ),
+            )
         selected.sort()
         return selected
 

@@ -45,6 +45,9 @@ from laplace.mcp_dataset.synthesis.prompt2task.generate_benchmark_tasks import (
     _filter_combinations_payload,
     _load_server_whitelist,
 )
+from laplace.mcp_dataset.synthesis.prompt2task.augment_laplace_single_runner_dataset import (
+    _build_gap_groups,
+)
 from laplace.mcp_dataset.synthesis.prompt2task.merge_single_runner_format import (
     merge_single_runner_files,
     merge_single_runner_payloads,
@@ -155,6 +158,63 @@ class TaskSynthesizerTest(IsolatedAsyncioTestCase):
         self.assertEqual(len(tasks), 1)
         self.assertEqual(tasks[0]["task_id"], "wikipedia_000")
         self.assertIn("fuzzy_description", tasks[0])
+
+    async def test_generate_tasks_keeps_validated_hard_negative_servers(self) -> None:
+        """Task synthesis should preserve valid hard-negative server hints."""
+        provider = _FakeLLMProvider(
+            responses=[
+                json.dumps(
+                    {
+                        "task_id": "task_000",
+                        "task_description": "Compare nearby museum exhibits and summarize the top findings.",
+                        "dependency_analysis": "Search results constrain the summary order.",
+                        "distraction_servers": ["Google Maps", "Wikipedia", "Invalid Server"],
+                    },
+                ),
+                "I need help comparing a few exhibit options and want specific facts.",
+                json.dumps(
+                    {
+                        "solvability_score": 9,
+                        "utility_score": 7,
+                        "solvability_feedback": "Enough tools.",
+                        "utility_feedback": "Useful task.",
+                    },
+                ),
+            ],
+        )
+        synthesizer = TaskSynthesizer(llm_provider=provider)
+        tasks = await synthesizer.generate_tasks(
+            tools={
+                "Metropolitan Museum:search": {
+                    "server": "Metropolitan Museum",
+                    "description": "Search museum objects.",
+                    "input_schema": {"type": "object"},
+                },
+            },
+            server_name="Metropolitan Museum",
+            num_tasks=1,
+            distraction_candidates=["Google Maps", "Wikipedia"],
+        )
+
+        self.assertEqual(tasks[0]["distraction_servers"], ["Google Maps", "Wikipedia"])
+
+
+class BalancedLaplaceAugmentationTest(TestCase):
+    """Tests for balanced laplace augmentation planning helpers."""
+
+    def test_build_gap_groups_only_includes_servers_below_target(self) -> None:
+        """Gap grouping should only include servers with a positive shortfall."""
+        groups = _build_gap_groups(
+            {
+                "A": 6,
+                "B": 4,
+                "C": 8,
+                "D": 1,
+            },
+            target_count=8,
+        )
+
+        self.assertEqual(groups, {2: ["A"], 4: ["B"], 7: ["D"]})
 
 
 class SDGTraceSynthesizerTest(IsolatedAsyncioTestCase):

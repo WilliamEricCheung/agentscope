@@ -1,14 +1,30 @@
 {
   "router_family": "encoder_sentence_transformer",
   "datasets": [
-    "mcpbench_tasks_single_runner_format.json",
-    "laplace_tasks_single_runner_format.json"
+    "/mnt/d/Project/agentscope/laplace/mcp_dataset/laplace_tasks_single_runner_format.json"
   ],
-  "joint_training": true,
+  "joint_training": false,
   "training_mode": "single_only",
-  "text_mode": "task",
+  "text_mode": "split_both",
   "train_ratio": 0.8,
   "seed": 42,
+  "eval_seed": 42,
+  "split_method": "grouped_by_server_similarity",
+  "dedupe_method": "exact_text_per_server",
+  "similarity_threshold": 0.8,
+  "split_audit": {
+    "split_method": "grouped_by_server_similarity",
+    "dedupe_method": "exact_text_per_server",
+    "similarity_threshold": 0.8,
+    "original_samples": 512,
+    "deduped_samples": 480,
+    "duplicates_removed": 32,
+    "grouped_cluster_count": 448,
+    "grouped_multi_sample_clusters": 16,
+    "skipped_eval_servers": [],
+    "train_samples": 383,
+    "eval_samples": 97
+  },
   "hyperparameters": {
     "model_name": "sentence-transformers/all-MiniLM-L6-v2",
     "epochs": 2,
@@ -18,9 +34,9 @@
     "negative_ratio": 2
   },
   "pair_stats": {
-    "positive_pairs": 145,
-    "negative_pairs": 346,
-    "total_pairs": 491
+    "positive_pairs": 351,
+    "negative_pairs": 766,
+    "total_pairs": 1117
   },
   "label_map": {
     "Bibliomantic": "Bibliomantic",
@@ -34,17 +50,21 @@
     "Google Maps": "Google Maps",
     "Huge Icons": "Huge Icons",
     "Hugging Face": "Hugging Face",
+    "Jupyter MCP": "Jupyter MCP",
     "Math MCP": "Math MCP",
     "Medical Calculator": "Medical Calculator",
     "Metropolitan Museum": "Metropolitan Museum",
+    "Milvus MCP": "Milvus MCP",
     "Movie Recommender": "Movie Recommender",
     "NASA Data": "NASA Data",
     "National Parks": "National Parks",
+    "Neo4j Cypher": "Neo4j Cypher",
     "NixOS": "NixOS",
     "OKX Exchange": "OKX Exchange",
     "OSINT Intelligence": "OSINT Intelligence",
     "OpenAPI Explorer": "OpenAPI Explorer",
     "Paper Search": "Paper Search",
+    "Playwright": "Playwright",
     "Reddit": "Reddit",
     "Scientific Computing": "Scientific Computing",
     "Time MCP": "Time MCP",
@@ -52,6 +72,6 @@
     "Weather Data": "Weather Data",
     "Wikipedia": "Wikipedia"
   },
-  "train_samples": 173,
-  "eval_samples": 44
+  "train_samples": 383,
+  "eval_samples": 97
 }

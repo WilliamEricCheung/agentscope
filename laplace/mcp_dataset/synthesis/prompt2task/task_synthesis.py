@@ -3,11 +3,15 @@
 from __future__ import annotations
 
 import json
+import logging
 import random
 import re
 from typing import Any
 
 from laplace.util.dashscope_provider import DashScopeCompletionProvider
+
+
+_logger = logging.getLogger(__name__)
 
 
 class TaskQualityEvaluator:
@@ -25,7 +29,7 @@ class TaskQualityEvaluator:
     def __init__(
         self,
         llm_provider: DashScopeCompletionProvider,
-        solvability_threshold: float = 8.5,
+        solvability_threshold: float = 8.0,
         utility_threshold: float = 5.0,
     ) -> None:
         """Initialize the evaluator.
@@ -134,6 +138,28 @@ Return exactly this JSON shape:
             for tool_name in tools
         )
 
+    @staticmethod
+    def _is_retrieval_only_toolset(tools: dict[str, dict[str, Any]]) -> bool:
+        """Check whether the active tools are limited to retrieval operations.
+
+        Args:
+            tools (`dict[str, dict[str, Any]]`):
+                Available MCP tool metadata.
+
+        Returns:
+            `bool`:
+                Whether every tool is a search, download, or read capability.
+        """
+        if not tools:
+            return False
+
+        return all(
+            tool_name.rsplit(":", maxsplit=1)[-1].startswith(
+                ("search_", "download_", "read_"),
+            )
+            for tool_name in tools
+        )
+
     def resolve_thresholds(
         self,
         tools: dict[str, dict[str, Any]],
@@ -152,6 +178,11 @@ Return exactly this JSON shape:
         solvability_threshold, utility_threshold = self._resolve_thresholds(
             tool_count=tool_count,
         )
+        if self._is_retrieval_only_toolset(tools):
+            # Retrieval-only paper servers often require orchestration across
+            # search, download, and read steps but still score around 6 on the
+            # evaluator's solvability rubric.
+            solvability_threshold = min(solvability_threshold, 6.0)
         if self._is_search_only_toolset(tools):
             # Search-only servers can still support useful benchmark tasks,
             # but they rarely satisfy the same dependency depth as richer
@@ -217,6 +248,7 @@ class TaskSynthesizer:
         tools: dict[str, dict[str, Any]],
         server_name: str,
         num_tasks: int = 5,
+        distraction_candidates: list[str] | None = None,
     ) -> list[dict[str, Any]]:
         """Generate multiple accepted tasks for one server group.
 
@@ -227,6 +259,9 @@ class TaskSynthesizer:
                 Active server name or combined multi-server name.
             num_tasks (`int`, optional):
                 Number of accepted tasks to generate.
+            distraction_candidates (`list[str] | None`, optional):
+                Candidate server names that should be treated as plausible hard
+                negatives for routing confusion.
 
         Returns:
             `list[dict[str, Any]]`:
@@ -238,36 +273,86 @@ class TaskSynthesizer:
         while len(generated) < num_tasks:
             attempt = 0
             accepted = False
+            _logger.info(
+                "[synthesis] %s — targeting accepted task %d/%d",
+                server_name,
+                len(generated) + 1,
+                num_tasks,
+            )
 
             while attempt < self.max_retries_per_task and not accepted:
-                detail = await self._generate_single_detailed_task(
-                    tools=tools,
-                    server_name=server_name,
-                    task_index=task_index,
+                _logger.info(
+                    "[synthesis] %s — task slot %d attempt %d/%d",
+                    server_name,
+                    task_index + 1,
+                    attempt + 1,
+                    self.max_retries_per_task,
                 )
-                fuzzy = await self._generate_fuzzy_version(
-                    detailed_task=detail["task_description"],
-                    tools=tools,
-                    server_name=server_name,
-                )
-                candidate = {
-                    **detail,
-                    "fuzzy_description": fuzzy,
-                }
-                evaluation = await self.quality_evaluator.evaluate_task_quality(
-                    task=candidate,
-                    tools=tools,
-                )
+                try:
+                    detail = await self._generate_single_detailed_task(
+                        tools=tools,
+                        server_name=server_name,
+                        task_index=task_index,
+                        distraction_candidates=distraction_candidates,
+                    )
+                    fuzzy = await self._generate_fuzzy_version(
+                        detailed_task=detail["task_description"],
+                        tools=tools,
+                        server_name=server_name,
+                    )
+                    candidate = {
+                        **detail,
+                        "fuzzy_description": fuzzy,
+                    }
+                    evaluation = await self.quality_evaluator.evaluate_task_quality(
+                        task=candidate,
+                        tools=tools,
+                    )
+                except Exception as exc:
+                    _logger.warning(
+                        "[synthesis] %s — task slot %d attempt %d failed: %s",
+                        server_name,
+                        task_index + 1,
+                        attempt + 1,
+                        exc,
+                    )
+                    attempt += 1
+                    continue
+
                 if self.quality_evaluator.meets_quality_threshold(
                     evaluation=evaluation,
                     tools=tools,
                 ):
                     generated.append(candidate)
                     accepted = True
+                    _logger.info(
+                        "[synthesis] %s — accepted task %d/%d on attempt %d (solvability=%.1f, utility=%.1f)",
+                        server_name,
+                        len(generated),
+                        num_tasks,
+                        attempt + 1,
+                        float(evaluation.get("solvability_score", 0.0)),
+                        float(evaluation.get("utility_score", 0.0)),
+                    )
+                else:
+                    _logger.info(
+                        "[synthesis] %s — rejected task slot %d attempt %d (solvability=%.1f, utility=%.1f)",
+                        server_name,
+                        task_index + 1,
+                        attempt + 1,
+                        float(evaluation.get("solvability_score", 0.0)),
+                        float(evaluation.get("utility_score", 0.0)),
+                    )
                 attempt += 1
 
             task_index += 1
             if task_index > num_tasks * self.max_retries_per_task * 2:
+                _logger.warning(
+                    "[synthesis] %s — reached task index cap without enough accepted tasks (%d/%d)",
+                    server_name,
+                    len(generated),
+                    num_tasks,
+                )
                 break
 
         return generated
@@ -277,6 +362,7 @@ class TaskSynthesizer:
         tools: dict[str, dict[str, Any]],
         server_name: str,
         task_index: int,
+        distraction_candidates: list[str] | None = None,
     ) -> dict[str, Any]:
         """Generate one detailed task draft.
 
@@ -303,11 +389,19 @@ class TaskSynthesizer:
             if len(tools) > 1
             else "- can be solved coherently with the single available tool;"
         )
+        candidate_text = ""
+        if distraction_candidates:
+            formatted = ", ".join(distraction_candidates[:20])
+            candidate_text = (
+                "Potentially confusable alternative servers for routing hard negatives: "
+                f"{formatted}\n"
+            )
 
         prompt = f"""You are designing an MCP benchmark task.
 
 Active servers: {server_name}
 {special_notice}
+{candidate_text}
 
 Available tools:
 {_format_tools(tools, limit=30)}
@@ -318,13 +412,20 @@ Create one complex, self-contained task that:
 - does not rely on local files, external URLs, hidden databases, or user follow-up;
 - uses relative dates such as "past 7 days" or "next 3 months" when dates matter;
 - includes all concrete values needed for execution;
+- reads like a realistic end-user scenario rather than a benchmark checklist;
+- contains mild natural ambiguity or surface wording that could superficially fit a few other servers, but still has one correct routing target;
+- is not just a templated imperative command sequence;
 - ends with a structured deliverable requirement.
+
+When possible, choose 3 to 6 hard-negative servers from the candidate list above.
+They should be servers a naive router might confuse with this task based on surface wording, domain overlap, or user phrasing.
 
 Return JSON only with this shape:
 {{
   "task_id": "task_{task_index:03d}",
   "task_description": "",
-  "dependency_analysis": ""
+    "dependency_analysis": "",
+    "distraction_servers": []
 }}"""
 
         response = await self.llm.get_completion(
@@ -337,6 +438,10 @@ Return JSON only with this shape:
         )
         task = self.llm.clean_and_parse_json(response)
         task["task_id"] = f"{_normalize_server_id(server_name)}_{task_index:03d}"
+        task["distraction_servers"] = self._sanitize_distraction_servers(
+            task.get("distraction_servers", []),
+            distraction_candidates or [],
+        )
         return task
 
     async def _generate_fuzzy_version(
@@ -368,6 +473,8 @@ Rules:
 - keep all critical factual constraints and numeric values;
 - do not mention tool names, server names, MCP, or implementation steps;
 - sound like a real person asking for help;
+- avoid robotic checklist phrasing or benchmark-style wording;
+- keep a little natural ambiguity or contextual noise that could mislead a shallow router, while preserving one correct routing target;
 - keep the task answerable without further clarification;
 - naturally ask for concrete evidence, numbers, or verifiable support.
 
@@ -388,6 +495,34 @@ Return plain text only."""
                 "specific data, concrete numbers, or verifiable sources."
             )
         return fuzzy
+
+    @staticmethod
+    def _sanitize_distraction_servers(
+        suggested_servers: Any,
+        candidates: list[str],
+    ) -> list[str]:
+        """Filter LLM-suggested hard negatives against allowed candidates.
+
+        Args:
+            suggested_servers (`Any`):
+                Raw server suggestions returned by the model.
+            candidates (`list[str]`):
+                Allowed confusion candidates.
+
+        Returns:
+            `list[str]`:
+                Unique validated server names.
+        """
+        allowed = {name for name in candidates if str(name).strip()}
+        output: list[str] = []
+        if not isinstance(suggested_servers, list):
+            return output
+        for item in suggested_servers:
+            server_name = str(item).strip()
+            if not server_name or server_name not in allowed or server_name in output:
+                continue
+            output.append(server_name)
+        return output
 
 
 def _format_tools(

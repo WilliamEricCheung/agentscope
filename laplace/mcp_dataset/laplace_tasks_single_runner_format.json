@@ -1,21 +1,11 @@
 {
   "generation_info": {
-    "timestamp": "2026-06-04T14:47:17.044594",
+    "timestamp": "2026-06-04T17:53:47.213677",
     "successful_servers": 32,
     "failed_servers": 0,
     "runtime_unhealthy_servers": [],
     "generation_model": "qwen3-max",
-    "status": "completed",
-    "merged_from_files": [
-      "/mnt/d/Project/agentscope/laplace/mcp_dataset/benchmark_tasks_single_04231516_runner_format.json",
-      "/mnt/d/Project/agentscope/laplace/mcp_dataset/benchmark_tasks_single_20260420_runner_format.json",
-      "/mnt/d/Project/agentscope/laplace/mcp_dataset/benchmark_tasks_single_20260423_runner_format.json",
-      "laplace/mcp_dataset/synthesis/prompt2task/generated_20260604/benchmark_tasks_Playwright_06041423_runner_format.json",
-      "laplace/mcp_dataset/synthesis/prompt2task/generated_20260604/benchmark_tasks_Jupyter_MCP_06041424_runner_format.json",
-      "laplace/mcp_dataset/synthesis/prompt2task/generated_20260604/benchmark_tasks_Neo4j_Cypher_06041418_runner_format.json",
-      "laplace/mcp_dataset/synthesis/prompt2task/generated_20260604/benchmark_tasks_Milvus_MCP_06041433_runner_format.json"
-    ],
-    "source_file_count": 7
+    "status": "completed"
   },
   "server_tasks": [
     {
@@ -132,6 +122,42 @@
             "NixOS",
             "Scientific Computing",
             "Wikipedia"
+          ]
+        },
+        {
+          "task_id": "biomcp_006",
+          "task_description": "A clinical researcher is investigating the molecular basis of resistance to BRAF inhibitors in metastatic melanoma patients who initially responded but later relapsed. Begin by performing structured reasoning about known resistance mechanisms involving secondary mutations in NRAS, MEK1 (MAP2K1), or alternative pathway activation. Then, search for recent peer-reviewed articles (published in the past 18 months) that report genomic findings from post-progression tumor biopsies in patients treated with dabrafenib plus trametinib. For any identified recurrent variants (e.g., in MAP2K1), retrieve comprehensive variant database records to assess population frequency and clinical significance. Fetch full details of the most relevant article, including its abstract and any supplementary genomic data mentioned. Separately, identify ongoing phase 2 or 3 clinical trials testing next-generation RAF or ERK inhibitors in BRAF-mutant melanoma that are actively recruiting in the United States. For one such trial, obtain its full protocol, outcome measures, and list of participating sites. Finally, synthesize all findings into a concise clinical research brief that includes: (1) key resistance-associated variants with functional annotations, (2) summary of supporting literature, and (3) opportunities for patient enrollment in relevant trials.",
+          "fuzzy_description": "I'm a clinical researcher studying why some metastatic melanoma patients who initially respond to dabrafenib plus trametinib eventually relapse. I need help pulling together the latest evidence on molecular resistance mechanisms—especially secondary mutations in genes like NRAS or MEK1 (MAP2K1), or signs of alternative pathway activation. Could you find peer-reviewed papers from the last 18 months that report genomic data from tumor biopsies taken after disease progression on this combo therapy?  \n\nFor any recurrent variants they identify—say, specific MAP2K1 mutations—I’d like detailed info from variant databases: population frequency, predicted functional impact, and any clinical interpretations. Also, please get the full text (including abstract and supplementary genomic tables) of the most relevant recent paper on this topic.  \n\nSeparately, are there any active phase 2 or 3 trials in the U.S. testing next-gen RAF or ERK inhibitors in BRAF-mutant melanoma? If so, I’d appreciate the full protocol details for one of them—primary endpoints, eligibility criteria, outcome measures, and a list of enrolling sites.  \n\nFinally, could you synthesize all this into a short research brief that highlights: (1) the key resistance variants with their functional annotations, (2) a summary of the supporting literature, and (3) concrete trial opportunities where eligible relapsed patients might enroll? I need this to inform both our lab work and potential clinical referrals.",
+          "dependency_analysis": "This task requires sequential use of BioMCP tools with clear dependencies: (1) 'think' must be used first to frame the biological question and plan searches; (2) 'search' or 'article_searcher' is needed to find recent literature on resistance mechanisms; (3) 'fetch' or 'article_getter' retrieves full article details; (4) 'variant_searcher' or domain='variant' queries assess genomic alterations; (5) 'trial_searcher' identifies relevant clinical studies; (6) specialized trial getters (protocol, outcomes, locations) extract trial specifics; and (7) synthesis integrates all data. No other active servers are present, so all tool usage must be within BioMCP. The task explicitly avoids external resources and provides all necessary parameters (e.g., drug names, time window, disease context).",
+          "distraction_servers": [
+            "Bibliomantic",
+            "Call for Papers",
+            "DEX Paprika",
+            "FruityVice",
+            "Game Trends",
+            "Hugging Face",
+            "Math MCP",
+            "Medical Calculator",
+            "Movie Recommender",
+            "Wikipedia"
+          ]
+        },
+        {
+          "task_id": "biomcp_007",
+          "task_description": "A clinical researcher is investigating resistance mechanisms in metastatic melanoma patients who initially responded to BRAF inhibitor therapy but later relapsed. They want a comprehensive report that: (1) identifies the most common secondary mutations in the MAPK pathway associated with acquired resistance, (2) retrieves recent literature (past 6 months) discussing these variants, (3) finds ongoing or recently completed Phase 2/3 clinical trials testing combination therapies targeting these resistance mechanisms, and (4) includes FDA drug label information for any repurposed agents mentioned in those trials. The final deliverable should be a structured summary listing each resistance variant, its clinical significance, supporting publications, relevant trials (with NCT IDs), and key prescribing considerations from FDA labels.",
+          "fuzzy_description": "I'm a clinical researcher studying metastatic melanoma patients who initially responded well to BRAF inhibitors but later relapsed. I need a detailed, organized summary that pulls together the latest evidence on how resistance develops—specifically, which secondary mutations in the MAPK pathway show up most often in these cases. For each key mutation, I’d like recent papers from the last six months that discuss its role in resistance, plus any Phase 2 or 3 clinical trials (completed or ongoing) testing combo therapies aimed at overcoming it—please include the NCT numbers. If those trials involve repurposed drugs, I also need the relevant FDA label info for those agents, especially dosing and safety considerations. The goal is a clear, evidence-backed overview I can use to inform next steps in our research planning.",
+          "dependency_analysis": "This task requires sequential use of BioMCP tools with clear dependencies: First, 'think' must be used to plan the research strategy. Then, 'variant_searcher' or unified 'search' identifies resistance-associated variants in genes like NRAS, MEK1/2, or alternative splicing events in BRAF. Next, 'article_searcher' finds recent papers about these variants. Concurrently, 'trial_searcher' locates relevant trials using interventions like BRAF+MEK inhibitors or ERK inhibitors in melanoma. For drugs appearing in trials but not standard care (e.g., repurposed kinase inhibitors), 'openfda_label_searcher' retrieves prescribing info. Finally, 'fetch' or specialized getters obtain full details on key variants, articles, trials, and labels to synthesize the report.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "Call for Papers",
+            "Game Trends",
+            "Huge Icons",
+            "Hugging Face",
+            "Math MCP",
+            "Medical Calculator",
+            "Movie Recommender",
+            "NASA Data",
+            "Unit Converter"
           ]
         }
       ]
@@ -251,6 +277,42 @@
             "OpenAPI Explorer",
             "Scientific Computing"
           ]
+        },
+        {
+          "task_id": "bibliomantic_006",
+          "task_description": "I’ve been reflecting on a major career decision—whether to accept a leadership role in a new city or stay in my current position—and I’d like guidance that blends intuitive wisdom with structured insight. First, perform a bibliomantic consultation using Philip K. Dick’s method, framing my dilemma as: 'Should I relocate for the new leadership opportunity?' Then, use the resulting I Ching hexagram from that consultation to retrieve its full traditional interpretation. Finally, cross-reference that hexagram’s meaning with a fresh three-coin I Ching divination performed today (without a specific query) to see if the cosmic currents have shifted in the past week. Compile all findings into a single reflective summary that compares the two readings and explains how the hexagram’s ancient symbolism speaks to my modern crossroads.",
+          "fuzzy_description": "I’ve been wrestling with a big life decision—whether to take a leadership role that would require moving to a new city or stay put in my current job—and I’m looking for some deeper insight. A while back, I did a bibliomantic reading using Philip K. Dick’s approach, asking specifically, “Should I relocate for the new leadership opportunity?” That process led me to an I Ching hexagram, which I’d like interpreted in full using its traditional meaning. Separately, just this morning, I cast the I Ching again using three coins (no specific question this time, just an open reading), and it gave me another hexagram. I’m curious whether the energy around this decision has shifted since last week. Could you pull together a thoughtful summary that compares both hexagrams—the one from the bibliomancy session and today’s fresh cast—and explain how their ancient symbolism might speak to my modern dilemma? Please include the actual hexagram numbers and any relevant line judgments so I can reflect on them myself.",
+          "dependency_analysis": "The task requires a strict sequence: (1) bibliomantic_consultation must be called first with the user’s specific query to generate an initial hexagram; (2) get_hexagram_details must then be invoked using the hexagram number returned from step 1 to obtain its canonical interpretation; (3) i_ching_divination must be called next (with no query) to produce a second, independent hexagram representing current energies; (4) the final output synthesizes both readings. All tools are from the Bibliomantic server, which is the only active server, so routing is unambiguous despite surface-level phrasing like 'career decision' or 'leadership role' that might superficially suggest tools from Call for Papers, Game Trends, or Metropolitan Museum.",
+          "distraction_servers": [
+            "Call for Papers",
+            "Context7",
+            "Game Trends",
+            "Google Maps",
+            "Jupyter MCP",
+            "Medical Calculator",
+            "Metropolitan Museum",
+            "Movie Recommender",
+            "OKX Exchange",
+            "Scientific Computing"
+          ]
+        },
+        {
+          "task_id": "bibliomantic_007",
+          "task_description": "I’ve been reflecting on a major career decision—whether to leave my stable job to start a creative writing project—and I’d like guidance rooted in both ancient wisdom and literary intuition, similar to how characters in Philip K. Dick’s 'The Man in the High Castle' sought clarity. First, perform a bibliomantic consultation using my question: 'Should I leave my job to pursue writing full-time?' Then, based on the hexagram returned from that consultation, retrieve its full traditional interpretation. Finally, run a fresh I Ching divination with no specific query to see if the universe offers a confirming or contrasting signal. Compile all three results into a single reflective summary that compares the two hexagrams, explains their meanings in the context of my dilemma, and includes metadata about the divination system used.",
+          "fuzzy_description": "I’ve been wrestling with a big life choice: whether to walk away from my secure job to dive into writing full-time. It’s the kind of crossroads that feels both thrilling and terrifying—like those moments in *The Man in the High Castle* where characters turn to ancient texts for signs. I’d really appreciate your help doing something meaningful with that impulse.\n\nCould you first do a bibliomantic reading using my exact question—“Should I leave my job to pursue writing full-time?”—and tell me which I Ching hexagram comes up? Then, please share the full traditional interpretation of that hexagram, including its name, number, and core meaning. After that, run a second, completely open-ended I Ching divination (no question attached) to see if it echoes or challenges the first result. \n\nFinally, weave all that together into one thoughtful reflection: compare the two hexagrams, explain what they might mean specifically for my situation, and include basic metadata about the divination method used—like which version of the I Ching it draws from and how the casting was done. I’m looking for something grounded, not vague—so if there are line numbers, changing lines, or historical sources involved, please include those details too.",
+          "dependency_analysis": "The task requires (1) a bibliomantic consultation via Bibliomantic:bibliomantic_consultation with a specific query, which internally generates a hexagram; (2) extraction of that hexagram number to call Bibliomantic:get_hexagram_details for deep interpretation; and (3) an independent Bibliomantic:i_ching_divination with no query to produce a second hexagram for comparison. The final output depends on all three tool responses and must include system context from Bibliomantic:server_statistics to fulfill the metadata requirement. Execution order is constrained: step 1 must precede step 2, while step 3 can run in parallel but must be included in the final synthesis.",
+          "distraction_servers": [
+            "Call for Papers",
+            "Car Price Evaluator",
+            "Context7",
+            "Game Trends",
+            "Hugging Face",
+            "Metropolitan Museum",
+            "Movie Recommender",
+            "NASA Data",
+            "OSINT Intelligence",
+            "Reddit"
+          ]
         }
       ]
     },
@@ -368,6 +430,42 @@
             "Reddit",
             "Scientific Computing",
             "Unit Converter"
+          ]
+        },
+        {
+          "task_id": "call_for_papers_006",
+          "task_description": "I'm preparing a grant proposal on multimodal foundation models and need to justify the timing by showing that major AI/ML conferences with relevant CFPs have recently opened. Find all conferences in the past 7 days that mention 'foundation models', 'multimodal learning', or 'large language models' in their call for papers. Return a list of conference names, submission deadlines (if available), and direct links to their CFP pages.",
+          "fuzzy_description": "Hey, I’m putting together a grant proposal on multimodal foundation models and need to show that now’s the right moment to pursue this—ideally by pointing to recent calls for papers from top AI/ML conferences. Could you check if any major conferences opened their CFPs in the last 7 days that specifically mention “foundation models,” “multimodal learning,” or “large language models”? If so, I’d really appreciate a list with the conference names, their submission deadlines (if listed), and direct links to the CFP pages so I can reference them in the proposal.",
+          "dependency_analysis": "This task requires querying recent calls for papers using specific technical keywords related to AI research. The only active server capable of fulfilling this is 'Call for Papers', which provides the get_events tool to search conferences by keywords. Although the query mentions 'models' and 'learning'—terms that might superficially relate to Hugging Face, BioMCP, or Math MCP—the core intent is clearly about academic conference deadlines, not model hosting, biological computation, or mathematical problem solving. The use of relative time ('past 7 days') and request for CFP links further anchors the task to conference metadata retrieval.",
+          "distraction_servers": [
+            "BioMCP",
+            "Context7",
+            "DEX Paprika",
+            "Hugging Face",
+            "Jupyter MCP",
+            "Math MCP",
+            "Milvus MCP",
+            "OKX Exchange",
+            "Unit Converter",
+            "Wikipedia"
+          ]
+        },
+        {
+          "task_id": "call_for_papers_007",
+          "task_description": "I'm compiling a list of upcoming academic conferences in the field of multimodal machine learning that have issued calls for papers in the past 7 days. Please find up to 8 such events, prioritizing those with submission deadlines within the next 3 months. Return a JSON array where each entry includes the conference name, deadline (if available), and a brief description.",
+          "fuzzy_description": "Hey, could you help me find some upcoming academic conferences in multimodal machine learning that just opened their call for papers—like, within the last week? I’m especially interested in ones where the submission deadline is coming up in the next three months. If you could list up to eight of them, that’d be great. For each, please include the conference name, the deadline (if it’s been announced), and a short description of what the event is about. Thanks!\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "This task requires querying recent calls for papers using domain-specific keywords ('multimodal machine learning') and temporal constraints ('past 7 days', 'next 3 months'). The only active server capable of retrieving conference call-for-paper data is 'Call for Papers', via its get_events tool. No other active servers provide this functionality. The task is self-contained, uses relative dates, and specifies all necessary parameters (keywords, limit=8).",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "Context7",
+            "Google Maps",
+            "Hugging Face",
+            "Medical Calculator",
+            "Milvus MCP",
+            "Movie Recommender",
+            "Neo4j Cypher",
+            "Playwright"
           ]
         }
       ]
@@ -487,6 +585,42 @@
             "Paper Search",
             "Reddit"
           ]
+        },
+        {
+          "task_id": "car_price_evaluator_006",
+          "task_description": "I'm helping my cousin compare new car options across major brands available in Brazil. Start by listing all car brands supported by the pricing system. Then, for each of the top five brands by market presence—Volkswagen, Toyota, Fiat, Chevrolet, and Honda—fetch their current vehicle models and official reference prices. Finally, cross-check whether any of these brands also appear in the motorcycles or trucks categories, and compile a summary showing brand overlap across vehicle types along with average price ranges per brand for cars only.",
+          "fuzzy_description": "Hey, I’m helping my cousin figure out which new car to buy in Brazil, and we’re trying to compare options across the biggest brands. Could you first tell me all the car brands that are officially listed in the current pricing guides there? Then, for the five most common ones—Volkswagen, Toyota, Fiat, Chevrolet, and Honda—I’d really appreciate it if you could pull up their latest car models along with the official reference prices for each.  \n\nAlso, while you’re at it, can you check if any of those same brands (like Toyota or Honda, maybe?) also show up in the motorcycle or truck sections? I’m curious whether they sell more than just cars. If so, a quick summary showing which brands overlap across vehicle types would be super helpful—and for the car side only, maybe include the average price range per brand so we can get a sense of where each one sits cost-wise. Just want to make sure we’re comparing apples to apples!\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "The task requires first calling get_car_brands to obtain the full list of supported brands. Then, for each of the five specified brands, search_car_price must be invoked to retrieve model and pricing data. Separately, get_vehicles_by_type must be called for 'motos' and 'caminhoes' to identify if any of the five brands appear in those categories. The final deliverable depends on aggregating results from all three tools, establishing clear sequential and parallel dependencies: brand enumeration → per-brand car pricing → non-car vehicle type checks → synthesis.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "FruityVice",
+            "Game Trends",
+            "Google Maps",
+            "Huge Icons",
+            "Metropolitan Museum",
+            "Movie Recommender",
+            "National Parks",
+            "Scientific Computing"
+          ]
+        },
+        {
+          "task_id": "car_price_evaluator_007",
+          "task_description": "I'm helping my cousin compare vehicle options across different categories—specifically cars, motorcycles, and trucks—for a small delivery business she's launching next month. First, get a list of all available car brands from the official pricing database. Then, for each of the three vehicle types (cars, motorcycles, and trucks), retrieve the full list of available models. After that, pick one representative brand from the car list—say, 'Toyota'—and look up its current market prices. Compile all this information into a structured summary that includes: (1) the complete car brand list, (2) counts of available models per vehicle type, and (3) the detailed price data for Toyota vehicles. Deliver this as a JSON object with keys 'car_brands', 'vehicle_type_counts', and 'toyota_prices'.",
+          "fuzzy_description": "Hey, I’m helping my cousin plan out her new local delivery business, and she’s trying to figure out what kind of vehicles to buy—cars, motorcycles, or small trucks. Could you pull together some up-to-date info for her? Specifically, she needs:  \n\nFirst, a full list of all car brands currently in the official pricing database. Then, for each of the three vehicle types—cars, motorcycles, and trucks—how many models are actually available right now? And finally, since she’s leaning toward Toyota for reliability, could you get the current market prices for all Toyota vehicles on record?  \n\nShe’d like all this compiled neatly so she can compare options side by side—ideally as a JSON with clear sections for the car brands, the model counts by vehicle type, and the Toyota price details. Just want to make sure we’re working with real, verifiable numbers from the latest data.",
+          "dependency_analysis": "The task requires three sequential tool calls from the Car Price Evaluator server: first, get_car_brands to obtain the list of car brands; second, get_vehicles_by_type called three times (for 'carros', 'motos', and 'caminhoes') to count models per type; third, search_car_price with brand_name='Toyota' to fetch pricing details. The output of the first step informs the selection of 'Toyota' as a valid brand, and the vehicle type queries are independent but collectively required for the final summary. All steps must succeed to produce the deliverable.",
+          "distraction_servers": [
+            "Context7",
+            "DEX Paprika",
+            "FruityVice",
+            "Game Trends",
+            "Google Maps",
+            "Huge Icons",
+            "Movie Recommender",
+            "NixOS",
+            "OpenAPI Explorer",
+            "Weather Data"
+          ]
         }
       ]
     },
@@ -605,6 +739,42 @@
             "Unit Converter",
             "Wikipedia"
           ]
+        },
+        {
+          "task_id": "context7_006",
+          "task_description": "I'm evaluating whether to adopt the 'react-query' library for our new dashboard project. Can you find the official Context7-compatible library ID for 'react-query', then retrieve its documentation focused on 'data fetching and caching strategies'? Limit the documentation to 8,000 tokens. Based on that, summarize how it handles cache invalidation and background refetching, and compare it briefly to common alternatives like SWR or Apollo Client—but only using information from the retrieved docs.",
+          "fuzzy_description": "Hey, I’m trying to decide if we should use react-query for our new dashboard. Could you look up the official Context7-compatible library ID for react-query and pull its documentation specifically about data fetching and caching strategies—keeping it under 8,000 tokens? From that, I’d really appreciate a clear summary of how it handles cache invalidation and background refetching. Also, if the docs mention or imply comparisons to alternatives like SWR or Apollo Client, could you briefly highlight those differences? Just stick to what’s actually in the retrieved material—I want to base this on solid, documented behavior, not assumptions.",
+          "dependency_analysis": "This task requires first calling 'Context7:resolve-library-id' with libraryName='react-query' to obtain a valid Context7 library ID (e.g., '/tanstack/react-query'). Only after resolving the ID can 'Context7:get-library-docs' be invoked with that ID, topic='data fetching and caching strategies', and tokens=8000. The final summary must be derived solely from the fetched documentation, fulfilling a realistic developer evaluation scenario.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "Game Trends",
+            "Hugging Face",
+            "Jupyter MCP",
+            "Math MCP",
+            "Milvus MCP",
+            "Movie Recommender",
+            "OKX Exchange",
+            "Paper Search",
+            "Scientific Computing"
+          ]
+        },
+        {
+          "task_id": "context7_007",
+          "task_description": "I'm evaluating whether to adopt the 'react-query' library for our new frontend dashboard. Can you find the official Context7 entry for it, confirm it's actively maintained with good documentation coverage, and then retrieve detailed documentation about its caching and mutation APIs? Focus on patterns used in production apps over the past year, and summarize best practices for optimistic updates using at most 8,000 tokens of documentation.",
+          "fuzzy_description": "Hey, I’m trying to decide if we should use react-query for our new frontend dashboard. Before committing, I’d like to check if it’s still actively maintained and has solid docs—especially around caching and mutations. Could you look up the official Context7 entry for react-query and verify its maintenance status and documentation coverage?  \n\nIf it checks out, I’d really appreciate a summary of how caching and mutation APIs are actually used in real production apps over the last year. Specifically, I’m curious about best practices for optimistic updates—what patterns are teams using successfully? Just stick to what’s well-documented; no need to go beyond about 8,000 tokens of source material. And if you could point to concrete examples or stats that back up the recommendations, that’d be super helpful.",
+          "dependency_analysis": "This task requires first resolving the ambiguous package name 'react-query' to a valid Context7 library ID using 'resolve-library-id', as the user did not provide an ID in '/org/project' format. Only after obtaining the correct ID (e.g., '/tanstack/react-query') can 'get-library-docs' be called with the topic 'caching and mutation APIs' and token limit 8000. The query implies evaluation criteria (maintenance status, doc coverage) that must be assessed during resolution, satisfying the selection process requirements.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "Game Trends",
+            "Google Maps",
+            "Hugging Face",
+            "Math MCP",
+            "Movie Recommender",
+            "Neo4j Cypher",
+            "NixOS",
+            "OSINT Intelligence",
+            "Scientific Computing"
+          ]
         }
       ]
     },
@@ -721,6 +891,42 @@
             "National Parks",
             "OpenAPI Explorer",
             "Weather Data",
+            "Wikipedia"
+          ]
+        },
+        {
+          "task_id": "dex_paprika_006",
+          "task_description": "I'm investigating a sudden price swing in the WBTC/ETH liquidity pool on Ethereum that occurred over the past 7 days. First, confirm which networks are supported, then identify the top DEXes on Ethereum. Locate the WBTC/ETH pool with the highest 24-hour trading volume, retrieve its detailed metrics, and pull hourly OHLCV data for the last 7 days to analyze volatility patterns. Finally, get the 10 most recent swap transactions in that pool to see if any large trades correlate with price movements. Deliver a summary including: (1) pool address, (2) total volume over the period, (3) max single-hour price change, and (4) count of transactions exceeding $500k in value.",
+          "fuzzy_description": "Hey, I’ve been looking into a weird price spike in the WBTC/ETH pool on Ethereum over the last week and need some help digging into the data. Can you check which chains are supported first? Then, among the top DEXes on Ethereum, find the WBTC/ETH liquidity pool with the highest 24-hour volume. I’d like to get its full metrics, plus hourly OHLCV data for the past 7 days so I can spot any volatility patterns. Also, pull the 10 most recent swaps in that pool—I’m trying to see if any big trades line up with the price moves.  \n\nIn your response, please include: the pool’s contract address, total trading volume during those 7 days, the biggest price swing in a single hour (as a percentage), and how many of those recent swaps were worth more than $500k.",
+          "dependency_analysis": "This task requires a strict sequence: (1) call getNetworks to confirm 'ethereum' is available; (2) use getNetworkDexes to enumerate DEXes on Ethereum; (3) call getNetworkPools on Ethereum sorted by volume_usd to find the top WBTC/ETH pool; (4) extract the pool address and use getPoolDetails for metadata; (5) invoke getPoolOHLCV with start='7 days ago', end='now', interval='1h' for price history; (6) call getPoolTransactions to fetch recent swaps. All steps depend on prior outputs—especially network ID and pool address—and must use DEX Paprika exclusively.",
+          "distraction_servers": [
+            "Context7",
+            "Google Maps",
+            "Huge Icons",
+            "Hugging Face",
+            "Jupyter MCP",
+            "Math MCP",
+            "Medical Calculator",
+            "NASA Data",
+            "OSINT Intelligence",
+            "Reddit"
+          ]
+        },
+        {
+          "task_id": "dex_paprika_007",
+          "task_description": "I'm investigating a sudden price swing in the WBTC/ETH liquidity pool on Ethereum that occurred in the past 7 days. First, confirm Ethereum is a supported network. Then identify which DEXes host WBTC/ETH pools on Ethereum and find the specific pool address with the highest 24-hour trading volume. Retrieve detailed metadata for that pool, including token addresses, and get the OHLCV data for the last 7 days at 1-hour intervals to analyze intraday volatility. Finally, pull the 50 most recent transactions from that pool to check for large swaps that might explain the price movement. Deliver a summary containing: (1) the pool address, (2) the DEX it belongs to, (3) the maximum hourly price deviation during the period, and (4) the count of transactions exceeding $100k in value.",
+          "fuzzy_description": "I’ve been tracking a sharp price swing in the WBTC/ETH liquidity pool on Ethereum over the past week and need help digging into what caused it. First, can you confirm Ethereum is supported for this kind of data? Then, I’d like to know which decentralized exchanges actually have WBTC/ETH pools there—and among them, which specific pool had the highest trading volume in the last 24 hours.  \n\nFor that top pool, I need its full details: the exact pool address, which DEX it’s on, and the underlying token addresses. Also, pull the hourly OHLCV data for the last 7 days so I can see how volatile prices got within each day. And while you’re at it, grab the 50 most recent transactions from that pool—I’m especially looking for any big swaps that might’ve triggered the move.  \n\nIn your summary, please include:  \n1) the pool address,  \n2) the DEX it belongs to,  \n3) the biggest hourly price deviation (as a percentage) during that 7-day window, and  \n4) how many of those recent transactions were worth more than $100,000.  \n\nI’m trying to figure out if this was just normal volatility or if a few large trades shook things up—so concrete numbers and verifiable data points are key.",
+          "dependency_analysis": "This task requires a strict sequence: (1) call getNetworks to validate 'ethereum' as a network; (2) use search or getTokenPools to locate WBTC and ETH token addresses on Ethereum; (3) use getNetworkDexes or getTokenPools to identify DEXes hosting WBTC/ETH pairs; (4) call getNetworkPools or getDexPools to find the highest-volume WBTC/ETH pool; (5) use getPoolDetails to confirm composition and retrieve token details if needed; (6) call getPoolOHLCV with start='7 days ago', interval='1h'; (7) call getPoolTransactions with limit=50. All steps depend on outputs from prior calls, especially network and pool identifiers. The final deliverable synthesizes quantitative results from multiple tool responses.",
+          "distraction_servers": [
+            "Context7",
+            "Google Maps",
+            "Hugging Face",
+            "Jupyter MCP",
+            "Math MCP",
+            "Medical Calculator",
+            "Milvus MCP",
+            "Movie Recommender",
+            "Playwright",
             "Wikipedia"
           ]
         }
@@ -841,6 +1047,42 @@
             "NASA Data",
             "Wikipedia"
           ]
+        },
+        {
+          "task_id": "fruityvice_006",
+          "task_description": "A nutritionist is preparing a seasonal fruit guide for clients with diabetes and needs detailed nutritional profiles for three specific fruits: 'dragonfruit', 'kiwano (horned melon)', and 'feijoa'. For each fruit, retrieve its full nutritional information—including calories, sugar content, fiber, and glycemic impact—using the most authoritative source available. Compile the results into a comparison table that highlights which fruit is lowest in net carbs and highest in vitamin C. Deliver the final output as a markdown-formatted table with columns: Fruit, Calories (per 100g), Sugar (g), Fiber (g), Vitamin C (mg), and Net Carbs (g).",
+          "fuzzy_description": "I'm working on a seasonal fruit guide for clients managing diabetes, and I need reliable, detailed nutrition info for three less-common fruits: dragonfruit, kiwano (also called horned melon), and feijoa. Could you pull together a clear comparison showing calories, sugar, fiber, and vitamin C per 100 grams from the most trustworthy source available? I’d especially like to know which one has the lowest net carbs (total carbs minus fiber) and which packs the most vitamin C. Please present it as a clean markdown table with these columns: Fruit, Calories (per 100g), Sugar (g), Fiber (g), Vitamin C (mg), and Net Carbs (g). Accurate numbers matter here—this will directly inform dietary recommendations.",
+          "dependency_analysis": "This task explicitly requires retrieving nutritional data for specific fruits, which directly maps to the FruityVice:get_fruit_nutrition tool. No other active servers are present, so the requirement to use all active servers is satisfied by using FruityVice. The task includes concrete fruit names, specifies required nutritional fields (which the tool provides), and demands a structured deliverable. It avoids external dependencies and uses no absolute dates, making it self-contained.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "Google Maps",
+            "Hugging Face",
+            "Medical Calculator",
+            "Metropolitan Museum",
+            "Neo4j Cypher",
+            "NixOS",
+            "Weather Data",
+            "Wikipedia"
+          ]
+        },
+        {
+          "task_id": "fruityvice_007",
+          "task_description": "I'm planning a week-long wellness retreat focused on natural energy and cognitive clarity for participants. As part of the meal planning, I need to compare the nutritional profiles of three specific fruits—kiwi, blueberry, and papaya—to determine which offers the best balance of vitamin C, fiber, and natural sugars per 100g serving. Please retrieve detailed nutritional data for each of these fruits and compile a side-by-side comparison table that includes calories, carbohydrates, fiber, sugar, vitamin C (in mg), and any notable health notes mentioned in the source. Deliver the final output as a markdown-formatted table with a one-sentence summary highlighting the top recommendation based on the stated criteria.",
+          "fuzzy_description": "I'm organizing a week-long wellness retreat centered around natural energy and mental clarity, and I’m finalizing the fruit options for our meals. Could you help me compare kiwi, blueberry, and papaya based on their nutritional content per 100g? Specifically, I’d like to see how they stack up in terms of calories, carbs, fiber, natural sugars, and vitamin C (in milligrams), plus any brief health notes that might be relevant—like antioxidant properties or digestion benefits. If possible, please present this as a clean markdown table and end with a short sentence recommending which fruit best balances high vitamin C and fiber with moderate natural sugars.",
+          "dependency_analysis": "This task requires retrieving structured nutritional information for specific fruits, which is exclusively supported by the FruityVice:get_fruit_nutrition tool. The request involves concrete fruit names (kiwi, blueberry, papaya) and asks for standard nutritional metrics—all within the scope of the available tool. No other active servers are present, so FruityVice is the sole dependency. The task is self-contained, uses no external resources, and specifies all needed inputs explicitly.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "Call for Papers",
+            "Car Price Evaluator",
+            "Game Trends",
+            "Hugging Face",
+            "Medical Calculator",
+            "Metropolitan Museum",
+            "National Parks",
+            "OSINT Intelligence"
+          ]
         }
       ]
     },
@@ -958,6 +1200,42 @@
             "OSINT Intelligence",
             "Unit Converter",
             "Wikipedia"
+          ]
+        },
+        {
+          "task_id": "game_trends_006",
+          "task_description": "I'm preparing a weekly gaming industry brief for my team. Please gather the most played games on Steam over the past 7 days, the current free offerings on the Epic Games Store, and cross-reference them with the overall trending titles across both platforms. Before pulling any data, verify that the underlying gaming analytics API is responsive and healthy. Compile a ranked list of the top 5 games that appear in at least two of these three categories (most played, free this week, or cross-platform trending), and include for each: title, platform(s), and primary trend signal (e.g., 'most played', 'free promotion', or 'trending').",
+          "fuzzy_description": "Hey, can you help me put together a quick snapshot of what’s hot in PC gaming right now? I need the top games that are actually making waves across both Steam and the Epic Games Store this week. Specifically, I’m looking for titles that show up in at least two of these buckets: the most-played games on Steam over the last 7 days, whatever’s currently free on Epic, or the overall trending games across both platforms.  \n\nBefore diving in, just make sure the data sources are up and reliable—wouldn’t want to base our brief on stale info. Then, give me a ranked top 5 list of the overlapping titles, each with its name, which platform(s) it’s on, and what’s driving its visibility (like “most played,” “free this week,” or “trending”). Numbers and clear signals only—no guesswork!",
+          "dependency_analysis": "The task requires first checking API health via get_api_health as a prerequisite to ensure reliable data. Then, it needs three parallel data pulls: get_steam_most_played (for recent player stats), get_epic_free_games (for current free promotions), and get_all_trending_games (for cross-platform trends). The final deliverable depends on aggregating and intersecting results from these three tool calls, making the health check an upstream dependency and the three data-fetching tools interdependent for synthesis.",
+          "distraction_servers": [
+            "Call for Papers",
+            "Context7",
+            "DEX Paprika",
+            "Huge Icons",
+            "Hugging Face",
+            "Jupyter MCP",
+            "Movie Recommender",
+            "NASA Data",
+            "Neo4j Cypher",
+            "Paper Search"
+          ]
+        },
+        {
+          "task_id": "game_trends_007",
+          "task_description": "I'm preparing a weekly gaming industry briefing for my team. Compile a report that includes: (1) the current top-selling games on Steam, (2) the most-played Steam titles right now, (3) what’s trending across both Steam and Epic Games Store combined, and (4) which games are currently free or upcoming as free promotions on Epic. Before gathering this data, verify that the underlying gaming analytics API is healthy, and confirm the local service instance is responsive. Deliver a structured JSON object listing each category with game names, brief metadata (like current player count for most-played or promotion end date for free Epic games), and a timestamp of when the data was fetched.",
+          "fuzzy_description": "Hey, can you pull together a quick gaming industry snapshot for our team meeting tomorrow? I need the latest on what’s hot across PC stores—specifically: what games are selling best on Steam right now, which ones have the highest active player counts on Steam at this moment, and what titles are trending overall when you combine both Steam and the Epic Games Store. Also, it’d be super helpful to know which games are currently free on Epic or coming up as free giveaways soon (and when those offers end).  \n\nBefore you grab all that, just make sure the data sources are actually up and responding—no point pulling stale or broken info. When you send it over, please include a timestamp so we know how fresh everything is, along with key details like current player numbers or promotion end dates where relevant. A clean JSON format would be perfect for plugging into our briefing doc.",
+          "dependency_analysis": "The task requires first checking system readiness via 'get_api_health' and 'health_check'. Only after confirming both are operational should the agent proceed to fetch platform-specific data: 'get_steam_top_sellers', 'get_steam_most_played', 'get_epic_free_games', and finally aggregate cross-platform trends using 'get_all_trending_games' (which may internally rely on prior granular calls). The deliverable must synthesize results from all active Game Trends tools into one coherent output.",
+          "distraction_servers": [
+            "BioMCP",
+            "Call for Papers",
+            "Context7",
+            "Google Maps",
+            "Huge Icons",
+            "Hugging Face",
+            "Medical Calculator",
+            "Metropolitan Museum",
+            "Movie Recommender",
+            "OpenAPI Explorer"
           ]
         }
       ]
@@ -1077,6 +1355,42 @@
             "Reddit",
             "Wikipedia"
           ]
+        },
+        {
+          "task_id": "google_maps_006",
+          "task_description": "I'm planning a weekend hiking trip to the Blue Ridge Mountains near Asheville, North Carolina, and need to identify a trailhead that’s both highly rated (minimum 4.3 stars) and currently open. Start by geocoding 'Asheville, NC' to get its coordinates. Then, search for nearby places with the keyword 'trailhead' within a 25-kilometer radius, filtering for those open now and with a rating of at least 4.3. From the results, pick the top-rated trailhead and retrieve its full details—especially operating hours and contact info. Next, calculate the walking directions from downtown Asheville (use '1 Pack Square, Asheville, NC' as origin) to that trailhead, assuming departure at 8:00 AM this Saturday. Finally, determine the elevation at both the trailhead and the midpoint of the route to assess terrain difficulty. Deliver a JSON object containing: (1) trailhead name and rating, (2) walking duration and distance, (3) elevation at trailhead and midpoint (in meters), and (4) whether the trailhead is confirmed open this Saturday based on its hours.",
+          "fuzzy_description": "I'm heading out for a weekend hike near Asheville this Saturday and want to find the best trailhead close by. Can you help me locate the highest-rated one within about 25 kilometers of downtown Asheville that’s actually open this weekend? I’m looking for something with at least 4.3 stars. Once you find it, I’d like to know the name and exact rating, how long it would take me to walk there from 1 Pack Square (starting at 8 a.m. Saturday), and the walking distance. Also, could you check the elevation at the trailhead and halfway along the walking route—just so I have a sense of how tough the approach might be? And importantly, confirm whether the trailhead’s hours say it’ll be open this Saturday. If you could pull all that into a clear summary with the numbers, that’d be awesome!",
+          "dependency_analysis": "This task requires a strict sequence: first, geocoding 'Asheville, NC' to establish a search center; then using that location to search for qualifying trailheads; selecting one result to fetch detailed place info; using both the downtown address and the selected trailhead to compute walking directions; extracting coordinates from the route to query elevation data at two points. All steps rely exclusively on Google Maps tools—geocoding, nearby search, place details, directions, and elevation—with no external inputs needed. Dates are handled relatively ('this Saturday') but concretely enough for tool use via ISO formatting during execution.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "Call for Papers",
+            "Game Trends",
+            "Metropolitan Museum",
+            "Milvus MCP",
+            "NASA Data",
+            "OKX Exchange",
+            "OpenAPI Explorer",
+            "Reddit"
+          ]
+        },
+        {
+          "task_id": "google_maps_007",
+          "task_description": "I'm planning a weekend hiking trip to the Lake District next month and want to identify accessible trailheads near Windermere that are currently open, highly rated (at least 4.2 stars), and within a 5-kilometer radius of the town center. For the top three trailheads, I need their full details—especially operating hours and contact info—and the walking directions from Windermere train station to each, including estimated duration. Also, since some trails climb steeply, please fetch the elevation at each trailhead’s coordinates so I can assess difficulty. Deliver a JSON report with: (1) trailhead names and ratings, (2) walking durations from the station, and (3) elevation in meters.",
+          "fuzzy_description": "Hey! I’m heading to the Lake District for a weekend hike next month and staying near Windermere. Could you help me find the best trailheads that are actually open right now? I’m looking for ones within 5 km of Windermere town center, with at least a 4.2-star rating. For the top three options, I’d really appreciate full details—especially their current opening hours and contact info—and clear walking directions from Windermere train station, including how long it should take to get there on foot. Since I’m watching my fitness level, it’d also be super helpful to know the elevation (in meters) at each trailhead’s exact location—that’ll give me a sense of how steep the start might be. If you could pull all this together in a clean summary with the trail names, ratings, walk times from the station, and elevations, that’d be perfect!\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "This task requires multiple chained calls to Google Maps tools: first, geocode 'Windermere town center' and 'Windermere train station' to obtain coordinates; then use search_nearby with the town center coordinates, keyword='trailhead' or 'hiking', radius=5000, minRating=4.2, and openNow=true to find qualifying locations; for each of the top three results, call get_place_details using their placeId to extract operating hours and contact info; simultaneously, use maps_directions with origin as the train station coordinates and destination as each trailhead’s coordinates, mode='walking', to get duration; finally, extract the trailhead coordinates from the search results and pass them to maps_elevation to retrieve elevation data. All steps depend exclusively on Google Maps tools, with clear sequential and parallel dependencies.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "Context7",
+            "FruityVice",
+            "Game Trends",
+            "Huge Icons",
+            "Metropolitan Museum",
+            "Movie Recommender",
+            "NASA Data",
+            "NixOS",
+            "Weather Data"
+          ]
         }
       ]
     },
@@ -1195,6 +1509,42 @@
             "Scientific Computing",
             "Wikipedia"
           ]
+        },
+        {
+          "task_id": "huge_icons_006",
+          "task_description": "I'm building a cross-platform design system for a new productivity app and need to standardize our iconography. First, get a full list of all available icons from Huge Icons to assess coverage. Then, search specifically for 'calendar, task, reminder, sync, settings' to verify we have core productivity symbols. Finally, retrieve platform-specific usage instructions for React, Vue, and Flutter so our frontend teams can implement them consistently. Deliver a markdown table summarizing: (1) total icon count, (2) whether all five searched icons are present, and (3) key integration notes per platform.",
+          "fuzzy_description": "Hey, I’m putting together a design system for our new productivity app and need to lock down our icon set. Can you check what’s available from Huge Icons and let me know how comprehensive it is? Specifically, I want to confirm we’ve got the essentials: calendar, task, reminder, sync, and settings icons—those are non-negotiable for our core features.  \n\nAlso, since we’re shipping on web and mobile, I’ll need clear guidance on how to use these icons in React, Vue, and Flutter so each team implements them the same way.  \n\nCould you summarize everything in a markdown table with:  \n- The total number of icons they offer,  \n- Whether all five of those key icons are actually included (just yes/no is fine), and  \n- A short note per platform highlighting any important integration details or gotchas?  \n\nThanks—this’ll help us move fast without reinventing the wheel!",
+          "dependency_analysis": "The task requires three sequential tool calls on the Huge Icons server: first list_icons to get the total count, then search_icons with the specified query to confirm presence of key icons, and finally three separate get_platform_usage calls (for react, vue, flutter) to gather integration details. The final deliverable depends on aggregating results from all these calls.",
+          "distraction_servers": [
+            "Context7",
+            "FruityVice",
+            "Game Trends",
+            "Google Maps",
+            "Hugging Face",
+            "Jupyter MCP",
+            "Math MCP",
+            "OKX Exchange",
+            "Reddit",
+            "Scientific Computing"
+          ]
+        },
+        {
+          "task_id": "huge_icons_007",
+          "task_description": "I'm building a cross-platform design system for a new productivity app and need to standardize our iconography. First, get a full list of all available icons from Huge Icons to assess coverage. Then, search specifically for icons related to 'calendar, task, reminder, sync, cloud-upload' to support core app features. Finally, retrieve platform-specific usage instructions for React, Vue, and Flutter so our frontend teams can implement them consistently. Deliver a structured summary that includes: (1) total icon count, (2) whether all five queried icon types are available, and (3) the exact integration code snippet format for each of the three platforms.",
+          "fuzzy_description": "Hey, I’m working on a new productivity app and need to lock down our icon set across platforms. Can you check what’s available from Huge Icons overall—like, how many icons do they actually have in total? Then, specifically see if they cover the essentials we need: calendar, task, reminder, sync, and cloud-upload. We’ll need those for core features.  \n\nAlso, since we’re building with React, Vue, and Flutter, could you grab the exact code snippets or usage examples for each of those platforms so all our teams implement the icons the same way? Just want to make sure we’ve got everything covered before finalizing the design system.",
+          "dependency_analysis": "The task requires three sequential tool calls from the same server (Huge Icons): first list_icons to get total count, then search_icons with a specific multi-term query to verify feature coverage, and finally three separate get_platform_usage calls (for react, vue, flutter) to gather implementation details. The final deliverable depends on aggregating results from all these steps—none can be skipped or reordered arbitrarily.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "Context7",
+            "FruityVice",
+            "Game Trends",
+            "Google Maps",
+            "Jupyter MCP",
+            "Medical Calculator",
+            "Movie Recommender",
+            "Neo4j Cypher",
+            "OSINT Intelligence"
+          ]
         }
       ]
     },
@@ -1311,6 +1661,42 @@
             "Reddit",
             "Scientific Computing",
             "Unit Converter",
+            "Wikipedia"
+          ]
+        },
+        {
+          "task_id": "hugging_face_006",
+          "task_description": "I'm preparing a literature review on recent advances in multimodal large language models. Start by fetching the list of papers Hugging Face curated in the past 7 days. For each paper that mentions 'multimodal' or 'vision-language' in its title or abstract, retrieve its full details using its arXiv ID. Then, for every such paper that has an associated model on Hugging Face Hub (e.g., referenced in the paper), search for that model by name and get its full metadata. Additionally, check if any public Spaces demonstrate these models—search Spaces using the model name as a query—and retrieve info for any matching Space built with Gradio. Finally, compile a report listing each relevant paper (with arXiv ID and title), its associated model (with ID and task tags), and any linked Gradio Space (with URL and author).",
+          "fuzzy_description": "I'm working on a literature review about the latest progress in multimodal large language models—especially those that combine vision and language. Could you help me find all the relevant papers from the last 7 days that Hugging Face has highlighted? Specifically, I’m looking for ones that mention “multimodal” or “vision-language” in either the title or abstract.  \n\nFor each of those papers, I’d like to get the full details using their arXiv ID. If the paper references a model hosted on Hugging Face Hub, please pull the model’s complete metadata, including its ID and task tags. Also, check whether there’s a public Gradio demo (a Space) for any of these models—search using the model name—and if so, grab the Space’s URL and author info.  \n\nIn the end, I need a concise report listing each qualifying paper (with arXiv ID and title), its associated model (with ID and task tags), and any linked Gradio Space (with URL and author). I want to make sure everything is traceable and verifiable, so please include the specific identifiers and sources.",
+          "dependency_analysis": "The task begins with Hugging Face:get-daily-papers to obtain recent papers. Each paper must then be inspected via Hugging Face:get-paper-info to confirm relevance and extract arXiv IDs and model references. Next, Hugging Face:search-models is used to locate models mentioned in those papers, followed by Hugging Face:get-model-info to gather model metadata. Concurrently, Hugging Face:search-spaces filters for Spaces using the model name and sdk='gradio', and Hugging Face:get-space-info retrieves details for matches. All steps depend exclusively on Hugging Face tools, forming a clear chain: daily papers → paper details → model search → model info → space search → space info.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "Call for Papers",
+            "Context7",
+            "Math MCP",
+            "Metropolitan Museum",
+            "Movie Recommender",
+            "National Parks",
+            "Reddit",
+            "Wikipedia"
+          ]
+        },
+        {
+          "task_id": "hugging_face_007",
+          "task_description": "I'm preparing a literature review on recent advances in multimodal large language models. Start by retrieving the list of papers Hugging Face curated in the past 7 days. For each paper that mentions 'multimodal' or 'vision-language' in its title or abstract, get its full paper details using its arXiv ID. Then, for every such paper that has an associated model on Hugging Face Hub, search for that model by name, retrieve its detailed info, and also check if there’s a public demo Space linked to it—search Spaces using the model name as a query and filter by Gradio SDK. Finally, compile a report listing each qualifying paper with its arXiv ID, publication date, associated model ID (if any), model license, and a link to its demo Space (or 'none' if unavailable).",
+          "fuzzy_description": "I’m working on a literature review about the latest progress in multimodal large language models—especially those that combine vision and language. Could you help me find all the relevant papers from the past week that were highlighted by Hugging Face? For each one that actually mentions “multimodal” or “vision-language” in the title or abstract, I’d like to know the full details: the arXiv ID, when it was published, and if there’s a corresponding model on Hugging Face Hub. If there is a model, please also check whether it has a public demo built with Gradio, and include a link to that demo (or just say “none” if there isn’t one). Oh, and don’t forget to note the model’s license too—I need that for compliance. A clean summary with all this info would be super helpful!\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "The task begins with Hugging Face:get-daily-papers to fetch recent papers. Each relevant paper must be passed to Hugging Face:get-paper-info to extract metadata and confirm multimodal relevance. If a model is referenced, Hugging Face:search-models is used to locate it, followed by Hugging Face:get-model-info for licensing and architecture details. Separately, Hugging Face:search-spaces (filtered by sdk='gradio') uses the model name to find demos, and Hugging Face:get-space-info confirms validity and retrieves URLs. All steps depend on prior outputs; no external data is needed.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "Call for Papers",
+            "Car Price Evaluator",
+            "Context7",
+            "Math MCP",
+            "Medical Calculator",
+            "Movie Recommender",
+            "OpenAPI Explorer",
             "Wikipedia"
           ]
         }
@@ -1431,6 +1817,42 @@
             "Weather Data",
             "Wikipedia"
           ]
+        },
+        {
+          "task_id": "math_mcp_006",
+          "task_description": "I'm analyzing my weekly grocery spending over the past 7 days. Here are the amounts I spent each day: [42.50, 38.99, 55.00, 29.75, 63.20, 47.80, 51.45]. First, calculate the total amount spent. Then find the average daily spend, and determine the highest and lowest single-day expenditures. Round the average to the nearest dollar for a quick budget summary. Finally, tell me how much more I spent on my highest day compared to my lowest day.",
+          "fuzzy_description": "I’ve been tracking my grocery spending this past week and jotted down what I spent each day: $42.50, $38.99, $55.00, $29.75, $63.20, $47.80, and $51.45. Can you help me figure out the total I spent over the seven days? Also, what’s my average daily spend—just round it to the nearest dollar so it’s easier for my budget notes? And while you’re at it, tell me which day was my most expensive and which was my cheapest, plus exactly how much more I spent on that highest day compared to the lowest one.\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "The task requires multiple sequential math operations: (1) sum the 7 numbers to get total spend; (2) compute the mean of the same list; (3) round that mean to the nearest integer; (4) find the max and min values from the list; (5) subtract the min from the max to get the difference. All tools used belong exclusively to the Math MCP server, satisfying the requirement to use all active servers (only Math MCP is active). The steps form a clear dependency chain: sum → mean → round, and min/max → subtraction. All input values are explicitly provided, no external data or follow-up needed.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "Call for Papers",
+            "Car Price Evaluator",
+            "Context7",
+            "FruityVice",
+            "Medical Calculator",
+            "OKX Exchange",
+            "OpenAPI Explorer",
+            "Unit Converter"
+          ]
+        },
+        {
+          "task_id": "math_mcp_007",
+          "task_description": "A small business owner is reconciling last week’s cash register logs. On Monday through Sunday (the past 7 days), the daily totals were: $245.60, $312.85, $298.40, $0 (closed Wednesday), $376.20, $410.95, and $355.30. First, compute the sum of all non-zero daily revenues. Then calculate the mean and median of those active days. Round the mean to the nearest dollar, and separately round the median down to the nearest integer using floor. Finally, add the rounded mean and floored median together to produce a single reconciliation benchmark value.",
+          "fuzzy_description": "Hey, I’m trying to reconcile last week’s cash register totals for my shop. We were closed on Wednesday, but the other days brought in: $245.60 on Monday, $312.85 Tuesday, $298.40 Thursday, $376.20 Friday, $410.95 Saturday, and $355.30 Sunday. Can you help me figure out the average daily revenue for the days we were actually open—rounded to the nearest dollar—and also find the median of those same days, but rounded down to the nearest whole number? I need to add those two final numbers together for my reconciliation sheet, so please show me the exact values you used and how you got the total.",
+          "dependency_analysis": "The task requires multiple sequential math operations: (1) filtering out zero values implicitly by summing only non-zero entries (handled via explicit inclusion in the numbers array), (2) computing the sum of active-day revenues using 'sum', (3) calculating the mean and median of the same active-day list using 'mean' and 'median', (4) rounding the mean with 'round' and the median with 'floor', and (5) adding those two results using 'add'. All tools are from the Math MCP server, satisfying the requirement to use all active servers (only Math MCP is active). The dependencies form a clear chain: sum/mean/median → round/floor → add.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "Call for Papers",
+            "Context7",
+            "Huge Icons",
+            "Hugging Face",
+            "Jupyter MCP",
+            "Medical Calculator",
+            "OKX Exchange",
+            "Reddit",
+            "Wikipedia"
+          ]
         }
       ]
     },
@@ -1548,6 +1970,42 @@
             "NASA Data",
             "National Parks",
             "Weather Data"
+          ]
+        },
+        {
+          "task_id": "medical_calculator_006",
+          "task_description": "A 68-year-old male patient presents with suspected chronic kidney disease. His labs show serum creatinine of 1.8 mg/dL, serum cystatin C of 2.1 mg/L, and serum albumin of 3.2 g/dL. He is 170 cm tall and weighs 78 kg. Calculate his eGFR using both the 2021 CKD-EPI creatinine-only and creatinine-cystatin C equations. Then, use the lower of the two eGFR values to compute his 10-year cardiovascular disease risk using the PREVENT model, assuming he has type 2 diabetes, is a current smoker, has total cholesterol of 5.6 mmol/L, HDL of 1.1 mmol/L, systolic BP of 148 mmHg, is on antihypertensives but not statins, and has no known CVD. Also calculate his BMI and body surface area for context. Finally, provide a summary that includes all calculated metrics, the derived CVD risk category, and whether the dual-marker eGFR meaningfully changed risk stratification compared to the creatinine-only estimate.",
+          "fuzzy_description": "I’m reviewing a 68-year-old male patient with suspected chronic kidney disease and need help interpreting his risk profile. His labs show serum creatinine of 1.8 mg/dL, cystatin C of 2.1 mg/L, and albumin of 3.2 g/dL. He’s 170 cm tall and weighs 78 kg. Could you calculate his eGFR using both the standard creatinine-only method and the combined creatinine–cystatin C equation from the 2021 CKD-EPI guidelines?  \n\nThen, using the lower of those two eGFR values, please estimate his 10-year cardiovascular disease risk with the PREVENT model. For that, he has type 2 diabetes, is a current smoker, total cholesterol is 5.6 mmol/L, HDL is 1.1 mmol/L, systolic blood pressure is 148 mmHg, he’s on antihypertensive meds but not taking statins, and he has no history of cardiovascular disease.  \n\nAlso, while you’re at it, could you include his BMI and body surface area for context?  \n\nFinally, I’d appreciate a clear summary that lists all the calculated numbers, states his resulting CVD risk category, and explains whether using the dual-marker eGFR (instead of just creatinine) actually shifted his risk classification in a meaningful way.",
+          "dependency_analysis": "The task requires multiple chained medical calculations: (1) BMI/BSA from height/weight; (2) eGFR via egfr_epi (creatinine-only); (3) eGFR via egfr_epi_cr_cys (creatinine + cystatin C); (4) selection of the lower eGFR; (5) input of that eGFR into prevent_cvd_risk with additional clinical parameters. All tools belong to the Medical Calculator server, satisfying the 'all active servers' requirement (only one is active). The workflow has clear data dependencies: BMI/BSA are standalone but contextual; both eGFRs depend on lab values and demographics; CVD risk depends on the lower eGFR plus other inputs. All required values are explicitly provided, and the deliverable is a structured clinical summary.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "Context7",
+            "Hugging Face",
+            "Jupyter MCP",
+            "Math MCP",
+            "Movie Recommender",
+            "National Parks",
+            "OpenAPI Explorer",
+            "Weather Data"
+          ]
+        },
+        {
+          "task_id": "medical_calculator_007",
+          "task_description": "A 68-year-old male patient presents for preoperative evaluation prior to elective abdominal aortic aneurysm repair. His serum creatinine is 1.4 mg/dL, weight is 82 kg, height is 70 inches, and he has type 2 diabetes treated with insulin. He reports no history of heart failure or stroke but has known coronary artery disease managed medically. His last menstrual period is irrelevant (he’s male), but his last blood pressure reading was 152/88 mmHg, total cholesterol is 210 mg/dL, HDL is 42 mg/dL, and he is a current smoker. He is not on statins but is taking antihypertensives. Calculate his Revised Cardiac Risk Index score first. Then, use his creatinine to compute eGFR via the 2021 CKD-EPI creatinine equation (not cystatin C). With that eGFR, age, sex, lipid profile, smoking status, diabetes status, and antihypertensive use, calculate his 10-year cardiovascular disease risk using the PREVENT model. Finally, determine his ideal and adjusted body weight for dosing considerations. Return a structured preoperative risk summary containing: (1) RCRI score and risk category, (2) eGFR value, (3) 10-year CVD risk percentage, and (4) ideal and adjusted body weights in kilograms.",
+          "fuzzy_description": "I’m preparing for an elective abdominal aortic aneurysm repair on a 68-year-old male patient and need a comprehensive preoperative risk assessment. He weighs 82 kg, is 70 inches tall, has type 2 diabetes managed with insulin, and known coronary artery disease treated medically—no prior heart failure or stroke. His serum creatinine is 1.4 mg/dL, blood pressure was last recorded at 152/88 mmHg, total cholesterol is 210 mg/dL, HDL is 42 mg/dL, and he’s a current smoker. He’s on antihypertensives but not on a statin.\n\nCould you please calculate his Revised Cardiac Risk Index score and tell me what risk category that puts him in? Also, using his creatinine, age, sex, and the 2021 CKD-EPI creatinine equation (not the one with cystatin C), determine his eGFR. With that eGFR plus his age, sex, lipid levels, smoking status, diabetes, and antihypertensive use, estimate his 10-year cardiovascular disease risk using the PREVENT model. Lastly, figure out his ideal body weight and adjusted body weight for dosing purposes.\n\nI’d appreciate it if you could pull all this together into a clear summary with the actual numbers: RCRI score and category, eGFR value, 10-year CVD risk percentage, and both ideal and adjusted weights in kilograms.",
+          "dependency_analysis": "The task requires sequential tool usage: (1) 'revised_cardiac_risk_index' depends only on clinical boolean inputs; (2) 'egfr_epi' requires age, sex, and serum creatinine from the case; (3) 'prevent_cvd_risk' explicitly requires the eGFR output from step 2 along with other demographic and lab data; (4) 'ibw_abw_calculator' needs weight, height in inches, and sex—all provided. All tools belong to the 'Medical Calculator' server, satisfying the single active server requirement while maintaining internal dependencies. No external data or user follow-up is needed.",
+          "distraction_servers": [
+            "BioMCP",
+            "Call for Papers",
+            "Context7",
+            "Hugging Face",
+            "Jupyter MCP",
+            "Math MCP",
+            "NASA Data",
+            "National Parks",
+            "Playwright",
+            "Unit Converter"
           ]
         }
       ]
@@ -1667,6 +2125,42 @@
             "Unit Converter",
             "Wikipedia"
           ]
+        },
+        {
+          "task_id": "metropolitan_museum_006",
+          "task_description": "Identify a lesser-known 18th-century European painting in the Met Museum’s collection that depicts a mythological scene, has a publicly available image, and belongs to the European Paintings department. Retrieve its full metadata and image for inclusion in an upcoming academic lecture slide deck on neoclassical iconography.",
+          "fuzzy_description": "I’m preparing an academic lecture on neoclassical iconography and need a high-quality image of a lesser-known 18th-century European painting from the Met Museum’s collection. It should depict a mythological scene, be part of their European Paintings department, and have a publicly available image I can legally include in my slides. Could you find one that fits and send me the full metadata along with the image?",
+          "dependency_analysis": "First, list all departments to confirm the department ID for 'European Paintings'. Then, search museum objects using that department ID with query terms like 'mythological' and filtering for items with images. From the results, select one object ID corresponding to an 18th-century work and retrieve its full details and image.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "Call for Papers",
+            "Context7",
+            "FruityVice",
+            "Google Maps",
+            "Hugging Face",
+            "Movie Recommender",
+            "National Parks",
+            "OSINT Intelligence",
+            "Reddit"
+          ]
+        },
+        {
+          "task_id": "metropolitan_museum_007",
+          "task_description": "Identify a lesser-known 18th-century European painting in the Met Museum’s collection that depicts a mythological scene, has a high-resolution image available, and belongs to the European Paintings department. First, list all departments to confirm the correct department ID. Then, search for objects with 'mythological' in the metadata, restricted to that department and requiring images. From the results, select one object ID and retrieve its full details including the image. Deliver a JSON object containing the artwork’s title, artist, creation date, repository department name, and a reference to the retrieved image resource.",
+          "fuzzy_description": "I’m looking for a somewhat obscure 18th-century European painting from the Met Museum that shows a scene from mythology. It has to be part of their European Paintings collection and available as a high-res image online. Can you find one like that and give me its title, artist, when it was made, the exact department name at the Met, and a link or reference to the image? I’d like to see something not too famous—maybe something you wouldn’t immediately recognize—but still clearly mythological in subject.\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "The task requires first calling list-departments to obtain the department ID for 'European Paintings'. This ID is then used in search-museum-objects with query 'mythological', hasImages=true, and title=false to find relevant works. One resulting object ID is passed to get-museum-object with returnImage=true to fetch complete metadata and image. Each step depends on output from the prior.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "Context7",
+            "DEX Paprika",
+            "Huge Icons",
+            "Hugging Face",
+            "Math MCP",
+            "Medical Calculator",
+            "Movie Recommender",
+            "Paper Search"
+          ]
         }
       ]
     },
@@ -1784,6 +2278,42 @@
             "Paper Search",
             "Scientific Computing",
             "Unit Converter"
+          ]
+        },
+        {
+          "task_id": "movie_recommender_006",
+          "task_description": "I’m planning a retro sci-fi movie night for my friends next weekend and want to feature films that blend space exploration with philosophical themes—think '2001: A Space Odyssey' or 'Solaris.' Can you suggest five movies released in the past 30 years that match this vibe? Include the title and release year for each, and make sure none are documentaries or animated features.",
+          "fuzzy_description": "Hey! I’m putting together a retro sci-fi movie night for my friends next weekend, and I really want to focus on films that capture that classic space-exploration-meets-deep-questions vibe—like *2001: A Space Odyssey* or *Solaris*. Could you recommend five live-action movies from the last 30 years (so, 1994 or later) that fit this mood? Just need the title and year for each, and please skip anything animated or documentary-style. Thanks!\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "This task requires semantic understanding of thematic keywords ('space exploration,' 'philosophical themes') and filtering by release timeframe (past 30 years), format (non-documentary, non-animated), and genre. The only available tool, Movie Recommender:get_movies, can be invoked with a keyword like 'philosophical space exploration sci-fi' to retrieve relevant suggestions. The output must then be post-processed by the agent to filter by release year and exclude unwanted formats, using only the metadata presumably returned by the tool. No other active servers are present, so the requirement to use all active servers is satisfied trivially.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "Call for Papers",
+            "Context7",
+            "Game Trends",
+            "Google Maps",
+            "Hugging Face",
+            "Math MCP",
+            "Metropolitan Museum",
+            "NixOS",
+            "Scientific Computing"
+          ]
+        },
+        {
+          "task_id": "movie_recommender_007",
+          "task_description": "I’m planning a retro sci-fi movie night for my friends next weekend and want to feature films that blend space exploration with philosophical themes—think '2001: A Space Odyssey' meets 'Arrival.' Can you suggest at least five movies released in the past 20 years that match this vibe? Please return a JSON list of movie titles along with their release years.",
+          "fuzzy_description": "Hey! I’m putting together a retro sci-fi movie night for my friends next weekend, and I really want to show films that mix space exploration with deep philosophical questions—kind of like *2001: A Space Odyssey* crossed with *Arrival*. Could you help me out by listing at least five movies from the last 20 years that fit this vibe? If you could include each movie’s title and its release year in a clean list (maybe JSON-style?), that’d be awesome—I want to double-check the dates before I finalize the lineup.\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "This task requires semantic understanding of thematic keywords ('retro sci-fi,' 'space exploration,' 'philosophical themes') and temporal filtering ('past 20 years'). The only available tool, Movie Recommender:get_movies, accepts a keyword string and can be used by formulating an appropriate query like 'philosophical space exploration sci-fi'. Although the user mentions 'next weekend,' it’s context for intent and doesn’t require calendar or mapping tools. The deliverable is a structured JSON list of titles and years, which can be extracted from the tool’s response.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "Context7",
+            "Game Trends",
+            "Google Maps",
+            "Huge Icons",
+            "Hugging Face",
+            "Metropolitan Museum",
+            "Scientific Computing",
+            "Unit Converter",
+            "Wikipedia"
           ]
         }
       ]
@@ -1903,6 +2433,42 @@
             "NixOS",
             "OpenAPI Explorer"
           ]
+        },
+        {
+          "task_id": "nasa_data_006",
+          "task_description": "I’m preparing a public science briefing on recent near-Earth asteroid activity and space weather events over the past 7 days. Start by retrieving all asteroids that had their closest approach to Earth during this period. For each asteroid listed, look up its detailed orbital and physical characteristics using its NASA JPL ID. Then, gather all space weather notifications from the same 7-day window—including solar flares, coronal mass ejections, and geomagnetic storms—and cross-reference them with WSA+Enlil simulation data to assess potential impacts on Earth’s magnetosphere. Finally, compile a summary that pairs notable asteroid flybys with concurrent space weather disturbances, highlighting any dates where both phenomena occurred within 24 hours of each other.",
+          "fuzzy_description": "Hey—can you help me put together a clear summary of what’s been happening in near-Earth space over the last week? I’m drafting a public science update and need to know which asteroids made their closest approach to Earth in the past 7 days, along with their key details like size, speed, and orbit (using their official NASA JPL IDs). At the same time, I’d like to see what space weather events occurred during that same window—things like solar flares, coronal mass ejections, or geomagnetic storms—and how they might have affected Earth’s magnetosphere based on current solar wind modeling. Most importantly, flag any dates where an asteroid flyby happened within 24 hours of a significant space weather disturbance, and include specific timestamps and supporting data so I can verify everything.",
+          "dependency_analysis": "The task begins with 'get_asteroids_feed' using a start_date of 7 days ago and end_date of today to identify recent close approaches. Each resulting asteroid must be individually queried via 'get_asteroid_lookup' using its JPL ID—creating a clear dependency chain. Concurrently, 'get_notifications' with notification_type='all' over the same date range retrieves space weather alerts. To contextualize these, 'get_wsa_enlil_simulation' is called over the same interval. The final deliverable requires synthesizing outputs from both asteroid and space weather toolchains, ensuring all tools are used and interdependent through shared temporal scope.",
+          "distraction_servers": [
+            "BioMCP",
+            "Call for Papers",
+            "Context7",
+            "Hugging Face",
+            "Math MCP",
+            "Milvus MCP",
+            "Neo4j Cypher",
+            "NixOS",
+            "Scientific Computing",
+            "Wikipedia"
+          ]
+        },
+        {
+          "task_id": "nasa_data_007",
+          "task_description": "I’m preparing a public science briefing on recent near-Earth asteroid activity and space weather events over the past 7 days. First, retrieve all asteroids that had their closest approach to Earth during this period. For each asteroid returned, look up its detailed orbital and physical characteristics using its NASA JPL ID. Then, gather all coronal mass ejections (CMEs), solar flares (FLRs), and geomagnetic storms (GSTs) observed in the same 7-day window. Cross-reference these space weather events with any DONKI notifications issued during that time, filtering specifically for CME, FLR, and GST alerts. Finally, compile a timeline that pairs each significant asteroid flyby with concurrent space weather phenomena and associated official notifications, highlighting any potential observational impacts on ground-based astronomy.",
+          "fuzzy_description": "Hey—could you help me put together a clear overview of what’s been happening in near-Earth space over the last week? I’m drafting a public science update and need to connect two things: any asteroids that made their closest pass by Earth in the past 7 days, along with detailed info like size, speed, and orbit (preferably using their official NASA JPL IDs), and all the major space weather events during the same window—specifically coronal mass ejections, solar flares, and geomagnetic storms.  \n\nI’d also like to know if any official alerts were issued for those space weather events (like CME, flare, or storm notifications) and whether any of them overlapped in time with the asteroid flybys. The goal is to see if there were moments when both were happening at once, possibly affecting ground-based telescope observations. If you can pull exact dates, event magnitudes, and references to real alerts or data sources, that’d be really helpful!",
+          "dependency_analysis": "The task begins with get_asteroids_feed using a start_date of 7 days ago and end_date of today to identify recent near-Earth objects. Each asteroid’s ID from this feed is then passed to get_asteroid_lookup for detailed metadata—creating a one-to-many dependency. In parallel, get_coronal_mass_ejection, get_solar_flare, and get_geomagnetic_storm are called with the same 7-day date range to collect space weather data. These results inform the final step: get_notifications with notification_type='CME', 'FLR', and 'GST' (requiring three separate calls or one with 'all' followed by filtering) over the same interval. The structured deliverable—a correlated timeline—depends on successful execution of all these tools; none can be skipped without compromising the output.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "Call for Papers",
+            "Context7",
+            "DEX Paprika",
+            "FruityVice",
+            "Hugging Face",
+            "Metropolitan Museum",
+            "OKX Exchange",
+            "Scientific Computing"
+          ]
         }
       ]
     },
@@ -2017,6 +2583,42 @@
             "Math MCP",
             "Medical Calculator",
             "Movie Recommender",
+            "NixOS",
+            "Paper Search",
+            "Unit Converter"
+          ]
+        },
+        {
+          "task_id": "national_parks_006",
+          "task_description": "I'm planning a multi-stop road trip through the Pacific Northwest next month and want to camp in national parks that offer both hiking and stargazing. First, find all national parks in Washington, Oregon, and Idaho that support these activities. For each matching park, retrieve its full details, check for any current alerts about fire bans or trail closures, list all available campgrounds with their amenities, and find visitor centers with operating hours so I know where to get maps. Finally, compile a summary table with park name, key alerts (if any), campground names, and visitor center hours for my itinerary.",
+          "fuzzy_description": "I'm planning a road trip through the Pacific Northwest next month and want to camp in national parks across Washington, Oregon, and Idaho that are great for both hiking and stargazing. Can you help me find which parks fit that? For each one, I’d like to know if there are any current alerts—like fire bans or trail closures—plus a list of all the campgrounds with what amenities they offer (like water, restrooms, etc.). Also, I’ll need info on visitor centers: where they are and their operating hours so I can pick up maps when I arrive. If you could put it all together in a clear table showing the park name, any key alerts, campground names, and visitor center hours, that’d be super helpful for planning my itinerary.\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "The task requires a clear sequence: (1) Use findParks with stateCode='WA,OR,ID' and activities='hiking,stargazing' to identify candidate parks; (2) For each returned parkCode, call getParkDetails to get official names and descriptions; (3) Use those parkCodes to fetch current alerts via getAlerts, filtering for hazards like fire bans or closures; (4) Retrieve campgrounds via getCampgrounds for each park; (5) Fetch visitor centers with getVisitorCenters to obtain operating hours. All steps depend on outputs from prior tool calls, especially the parkCode values. The final deliverable is a structured table synthesizing data from all five tool responses per park.",
+          "distraction_servers": [
+            "Call for Papers",
+            "Context7",
+            "DEX Paprika",
+            "FruityVice",
+            "Game Trends",
+            "Google Maps",
+            "Huge Icons",
+            "Math MCP",
+            "Reddit",
+            "Unit Converter"
+          ]
+        },
+        {
+          "task_id": "national_parks_007",
+          "task_description": "I'm planning a two-week road trip through the Pacific Northwest next month and want to visit national parks that offer both hiking and stargazing. First, find all national parks in Washington, Oregon, and Idaho that support these activities. For each matching park, retrieve its full details—including elevation, size, and typical weather—and check for any current alerts related to wildfires, trail closures, or air quality. Then, identify which of these parks have campgrounds with astronomy-related programs or night-sky viewing areas by searching upcoming events in the next three months for terms like 'stargazing', 'night sky', or 'astronomy'. Finally, compile a ranked list of the top three recommended parks based on accessibility (via visitor center hours), safety (no active severe alerts), and availability of night-sky events, and output this as a JSON object with park name, code, key amenities, alert summary, and event highlights.",
+          "fuzzy_description": "I'm heading on a two-week road trip through the Pacific Northwest next month and really want to hit up national parks where I can both hike during the day and stargaze at night. Can you help me figure out which parks in Washington, Oregon, and Idaho actually support both activities? For each one that fits, I’d like to know the basics—like elevation, total size, and what the typical weather’s like this time of year—but also whether there are any current issues I should worry about, such as wildfires, trail closures, or poor air quality.  \n\nAlso, I’ve heard some parks run special night-sky programs—do any of these have upcoming stargazing, astronomy, or night-sky events scheduled over the next three months? If so, what exactly do they offer?  \n\nBased on all that, could you give me a shortlist of your top three recommendations? I’m especially looking for places that are easy to access (so check visitor center hours), safe right now (no major active alerts), and actually have those astronomy-related nighttime activities. Please share the final list in a structured format with each park’s name, official code, key features, a quick summary of any alerts, and highlights from their night-sky events.\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "The task begins with a broad search using findParks filtered by state codes (WA,OR,ID) and activities (hiking,stargazing). The resulting park codes feed into three parallel tool calls: getParkDetails for baseline info, getAlerts (with q='wildfire|closure|air quality') for safety context, and getEvents (date range covering next 3 months, q='stargazing|night sky|astronomy') for program availability. Visitor center info from getVisitorCenters informs accessibility assessment. All data is synthesized to rank parks—requiring outputs from every National Parks tool except getCampgrounds (which is implicitly covered via event and amenity analysis). No external data or user input is needed; relative date ranges are concretely defined.",
+          "distraction_servers": [
+            "Context7",
+            "FruityVice",
+            "Game Trends",
+            "Google Maps",
+            "Huge Icons",
+            "Hugging Face",
+            "Metropolitan Museum",
             "NixOS",
             "Paper Search",
             "Unit Converter"
@@ -2139,6 +2741,42 @@
             "OpenAPI Explorer",
             "Unit Converter"
           ]
+        },
+        {
+          "task_id": "nixos_006",
+          "task_description": "I'm setting up a reproducible development environment on NixOS for a team project that requires Python 3.11.9 and Git with specific Home Manager configurations. First, confirm which NixOS channels are currently available. Then, verify that Python 3.11.9 exists in the 'unstable' channel by finding its exact nixpkgs commit hash. Next, search Home Manager options related to 'git' and identify the exact name of the option that enables Git globally. Retrieve detailed info about that option. Finally, produce a structured summary containing: (1) the list of active NixOS channels, (2) the commit hash for Python 3.11.9, and (3) the full Home Manager option name and description for enabling Git.",
+          "fuzzy_description": "Hey, I’m trying to get a consistent dev setup going for my team on NixOS, and we specifically need Python 3.11.9 along with Git configured through Home Manager. Before I finalize everything, I’d like to double-check a few things:  \n\nFirst, what NixOS channels are currently active on the system?  \nSecond, can you confirm that Python 3.11.9 is actually available in the 'unstable' channel—and if so, what’s the exact nixpkgs commit hash where it shows up?  \nLastly, I remember there’s a Home Manager option to enable Git globally, but I can’t recall the precise name. Could you look up the exact option name related to enabling Git and give me its full description?  \n\nI’d really appreciate a clear summary with those three pieces: the list of channels, the commit hash for Python 3.11.9, and the correct Home Manager option details for Git.",
+          "dependency_analysis": "The task begins with listing NixOS channels using nixos_channels. This informs the channel context for subsequent lookups. Next, nixhub_find_version is used to locate Python 3.11.9 in the 'unstable' channel and obtain its commit hash—this depends on knowing that 'unstable' is a valid channel (from step 1). Separately, home_manager_search is used to find Git-related options, which then feeds into home_manager_info to get details about the correct option (e.g., 'programs.git.enable'). All steps rely exclusively on NixOS-family tools (NixOS, Home Manager, NixHub), forming two parallel dependency chains that converge in the final structured output.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "Call for Papers",
+            "FruityVice",
+            "Game Trends",
+            "Hugging Face",
+            "Jupyter MCP",
+            "Math MCP",
+            "OpenAPI Explorer",
+            "Scientific Computing"
+          ]
+        },
+        {
+          "task_id": "nixos_007",
+          "task_description": "I'm setting up a reproducible development environment on NixOS for a team project that requires Python 3.11.9 and Git with specific Home Manager configurations. First, confirm which NixOS channels are currently available and their stability status. Then, use the unstable channel to search for the 'python311' package and retrieve its detailed info. Next, verify that version 3.11.9 is actually available by querying NixHub for that exact version. Simultaneously, look up Home Manager options related to 'programs.git'—list all options under that prefix, then get detailed info on 'programs.git.enable' and 'programs.git.userEmail'. Finally, compile a configuration snippet that pins the correct Python version via flake reference (search flakes for community-maintained Python dev environments) and includes the Git settings, ensuring everything is compatible with the latest unstable channel as of the past 7 days.",
+          "fuzzy_description": "Hey, I’m trying to set up a shared dev environment on NixOS for our team, and we need Python 3.11.9 specifically—no newer or older patch versions—and Git configured through Home Manager with proper user settings. Before I finalize the config, I’d like to double-check a few things:  \n\nFirst, what NixOS channels are currently active, and which ones are considered stable vs. unstable? I’m planning to pull from the unstable channel since we need recent packages, but I want to make sure it’s actually been updated in the last week.  \n\nThen, can you confirm that python311 in the unstable channel really includes version 3.11.9? I’ve heard sometimes the package name lags behind the actual version, so I’d appreciate seeing concrete proof—maybe from a reliable package index—that 3.11.9 is truly available there.  \n\nAlso, for Home Manager, I need to configure Git. Could you list all the available options under `programs.git`, and then give me the exact details (like type, default value, and description) for `programs.git.enable` and `programs.git.userEmail`?  \n\nFinally, I’d love a minimal, ready-to-use Nix snippet that pins Python 3.11.9 using a flake (ideally from a well-maintained community source for Python dev setups) and sets up those Git options correctly—all while being compatible with the latest unstable channel as of the past seven days. Just want to avoid any hidden mismatches!",
+          "dependency_analysis": "The task begins with listing NixOS channels (nixos_channels) to inform subsequent channel choices. It then uses nixos_search and nixos_info on 'python311' in the unstable channel, followed by nixhub_find_version to confirm 3.11.9 exists. In parallel, it uses home_manager_options_by_prefix for 'programs.git', then home_manager_info on two specific options. Flake search (nixos_flakes_search) is used to find relevant Python dev environments. All steps depend on NixOS-family tools; no step can be fulfilled by non-NixOS servers. The final deliverable integrates outputs from all tool categories: system packages, Home Manager, flakes, and version verification.",
+          "distraction_servers": [
+            "BioMCP",
+            "Call for Papers",
+            "Context7",
+            "Hugging Face",
+            "Jupyter MCP",
+            "Math MCP",
+            "Metropolitan Museum",
+            "Movie Recommender",
+            "Paper Search",
+            "Wikipedia"
+          ]
         }
       ]
     },
@@ -2257,6 +2895,42 @@
             "Reddit",
             "Wikipedia"
           ]
+        },
+        {
+          "task_id": "okx_exchange_006",
+          "task_description": "I'm evaluating whether to rebalance my crypto portfolio ahead of the upcoming market volatility expected in the next week. First, confirm that the OKX Exchange service is responsive. Then, fetch the latest price for ETH-USDT. Using that instrument, retrieve the last 96 hourly candlesticks (covering the past 4 days) to analyze recent price action. Based on this data, determine if the current price is within 5% of the 4-day high. Return a structured response with: {\"service_status\": \"ok\" or \"error\", \"current_price\": number, \"four_day_high\": number, \"within_5_percent\": boolean, \"candlestick_count\": integer}.",
+          "fuzzy_description": "Hey, I’m thinking about adjusting my crypto holdings because things might get shaky in the market next week. Can you check if everything’s running smoothly with the exchange first? Then, grab the latest ETH-USDT price and pull the last 96 hourly price candles—that’s roughly the past four days—so I can see how it’s been moving. I want to know if the current price is within 5% of the highest point it hit during that period. Just give me a clear breakdown with the service status, current price, the four-day high, whether it’s within that 5% range, and how many candlesticks were actually retrieved.\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "The task requires a strict sequence: (1) health_check must succeed before any market data tools are called; (2) get_price provides the current ETH-USDT price needed for comparison; (3) get_candlesticks with bar='1H' and limit=96 supplies the historical highs over ~4 days (96 hours). The final deliverable depends on aggregating outputs from all three tool calls.",
+          "distraction_servers": [
+            "BioMCP",
+            "Context7",
+            "DEX Paprika",
+            "Game Trends",
+            "Hugging Face",
+            "Math MCP",
+            "Medical Calculator",
+            "Milvus MCP",
+            "National Parks",
+            "NixOS"
+          ]
+        },
+        {
+          "task_id": "okx_exchange_007",
+          "task_description": "I'm evaluating whether to rebalance my crypto portfolio based on recent market volatility. First, confirm the OKX Exchange service is responsive. Then, get the latest price for ETH-USDT. Using that instrument, fetch the last 96 hourly candlesticks (covering the past 4 days) to analyze short-term trends. Based on the closing prices in that dataset, calculate the 24-hour rolling volatility (standard deviation of log returns) and determine if it exceeds 5%. Return a JSON object with: {\"service_healthy\": boolean, \"current_price\": number, \"volatility_exceeds_threshold\": boolean, \"volatility_value\": number}.",
+          "fuzzy_description": "Hey, I’m thinking about rebalancing my crypto holdings because things have felt really shaky lately. Can you check if everything’s running smoothly with the exchange first? Then, grab the current ETH-USDT price and pull the last 96 hours of hourly price data—so that’s four full days. Using those closing prices, figure out the 24-hour rolling volatility (as the standard deviation of log returns) and tell me whether it’s above 5%. I’d like a clear answer with the actual numbers so I can decide what to do next.",
+          "dependency_analysis": "The task requires a strict sequence: (1) health_check must succeed before any data retrieval; (2) get_price provides context but isn't strictly required for get_candlesticks—however, confirming the instrument exists via price fetch adds robustness; (3) get_candlesticks supplies the raw time-series data needed to compute volatility, which is the core analytical step. All tools are from the single active server (OKX Exchange), satisfying the 'all active servers' requirement trivially since only one is active.",
+          "distraction_servers": [
+            "BioMCP",
+            "Car Price Evaluator",
+            "Context7",
+            "DEX Paprika",
+            "Game Trends",
+            "Hugging Face",
+            "Math MCP",
+            "NASA Data",
+            "Paper Search",
+            "Reddit"
+          ]
         }
       ]
     },
@@ -2337,6 +3011,78 @@
             "NixOS",
             "OSINT Intelligence",
             "Unit Converter",
+            "Weather Data"
+          ]
+        },
+        {
+          "task_id": "openapi_explorer_004",
+          "task_description": "You're evaluating whether to integrate the official X (Twitter) API into a social listening dashboard. Start by retrieving an overview of the X API specification using its known identifier. Then, examine the details of the 'create_tweet' operation to understand required parameters, authentication scopes, and rate limits. Separately, validate the structural correctness of the same X API specification using the swagger-validator tool. Finally, synthesize a comparison report that includes: (1) the API’s base URL and supported OAuth flows from the overview, (2) the HTTP method, request body schema, and response codes for 'create_tweet', and (3) whether the swagger-validator returned any errors or warnings. Return this as a structured JSON object with keys 'api_overview', 'operation_details', and 'validation_result'.",
+          "fuzzy_description": "I'm building a social listening dashboard and need to decide if we should use the official X (Twitter) API. Can you pull together everything I’d need to assess that? Specifically, I want: the API’s base URL and which OAuth flows it supports; full details on how the 'create_tweet' endpoint works—including the HTTP method, what the request body must include, and all possible response codes; and whether the API spec itself is structurally valid (like if it passes standard OpenAPI validation). Just give me this info in a clean JSON with those three sections—no fluff, but make sure all the exact values and requirements are there so I can verify them myself.",
+          "dependency_analysis": "The task requires three sequential steps with clear dependencies: first, getApiOverview must be called on the 'x' API identifier to obtain foundational metadata; second, getApiOperation must use that same identifier along with the operation name 'create_tweet' to extract endpoint specifics; third, swagger-validator must be invoked on the same X API spec (implied via shared identifier) to assess conformance. All steps rely on the OpenAPI Explorer server except validation, which uses swagger-validator—both are active. No external resources or user input are needed, as 'x' is a known ID and 'create_tweet' is a standard operation in the X API spec.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "Context7",
+            "FruityVice",
+            "Huge Icons",
+            "Milvus MCP",
+            "Movie Recommender",
+            "OKX Exchange",
+            "Playwright",
+            "Unit Converter",
+            "Weather Data"
+          ]
+        },
+        {
+          "task_id": "openapi_explorer_005",
+          "task_description": "A developer is evaluating the OpenAI API for integration into a customer support automation system. They need to understand the overall structure of the OpenAI REST API and then specifically analyze the operation used to create chat completions. First, retrieve an overview of the OpenAI API specification using its known identifier. Then, use that context to fetch detailed information about the 'createChatCompletion' operation. Based on the returned schema, parameters, and security requirements, produce a summary that includes: (1) the HTTP method and path, (2) required authentication scheme, (3) key request body properties, and (4) whether streaming is supported as indicated in the spec.",
+          "fuzzy_description": "I'm looking into using OpenAI's API for a customer support chatbot and need to get a clear picture of how their chat completion endpoint actually works. Can you pull up the official API docs and tell me specifically: what HTTP method and URL path are used for creating chat completions, what kind of authentication is required, which fields are essential in the request body, and whether the API supports streaming responses according to the specification? I’d like this based directly on the published API schema—no guesswork, just what’s concretely defined there.",
+          "dependency_analysis": "The task requires two sequential tool calls from the OpenAPI Explorer server: first getApiOverview with id='openai' to obtain the API’s general structure and locate the correct operation identifier or route, then getApiOperation with id='openai' and operationIdOrRoute='createChatCompletion' (or equivalent path like '/chat/completions') to extract detailed metadata. The second call depends entirely on context from the first—though the operation name is given, confirming its existence and exact path requires the overview. No other servers are active, so all steps must use OpenAPI Explorer tools exclusively.",
+          "distraction_servers": [
+            "Call for Papers",
+            "Context7",
+            "FruityVice",
+            "Hugging Face",
+            "Jupyter MCP",
+            "Movie Recommender",
+            "NASA Data",
+            "Paper Search",
+            "Playwright",
+            "Unit Converter"
+          ]
+        },
+        {
+          "task_id": "openapi_explorer_006",
+          "task_description": "I'm evaluating whether to integrate the official X (Twitter) API into our social listening dashboard. Before writing any code, I need a clear understanding of its authentication requirements and rate limits. Start by retrieving an overview of the X API specification using its known identifier. Then, examine the details of the 'create_tweet' operation to determine what OAuth scopes are required and whether it supports JSON payloads. Finally, produce a concise technical summary that includes: (1) the base URL of the API, (2) whether OAuth 2.0 is mandatory, (3) the exact request payload format for creating a tweet, and (4) any documented rate limits for that endpoint.",
+          "fuzzy_description": "Hey, I'm trying to figure out if we can use the official X (Twitter) API for our social listening dashboard—specifically to post tweets programmatically. Before diving into code, I need to confirm a few technical details from the actual API docs. Can you help me find:  \n\n- The base URL for the X API,  \n- Whether OAuth 2.0 is strictly required (or if there’s another auth method),  \n- Exactly what the request body should look like when creating a tweet (e.g., is it JSON? what fields are needed?), and  \n- Any specific rate limits tied to that tweet-creation endpoint?  \n\nI’d really appreciate it if you could pull this info straight from the official spec—especially the exact scopes needed and hard numbers on rate limits, not just general guidance.",
+          "dependency_analysis": "The task requires first calling getApiOverview on the 'x' API identifier to obtain general metadata and structure. Only after that can getApiOperation be used with the operationIdOrRoute 'create_tweet' (or equivalent route like '/2/tweets') to extract specific details about authentication, payload schema, and rate limiting. Both tool calls must target the OpenAPI Explorer server, as the task is purely about analyzing the OpenAPI spec—not invoking the actual X API or using alternative services like Brandwatch or Hootsuite for social data.",
+          "distraction_servers": [
+            "Call for Papers",
+            "Context7",
+            "Game Trends",
+            "Google Maps",
+            "Huge Icons",
+            "Math MCP",
+            "NixOS",
+            "Reddit",
+            "Scientific Computing",
+            "Weather Data"
+          ]
+        },
+        {
+          "task_id": "openapi_explorer_007",
+          "task_description": "You're evaluating whether to integrate the Stripe API into your SaaS platform and need a detailed technical assessment. Start by retrieving an overview of the Stripe OpenAPI specification to understand its structure and available endpoints. Then, examine two specific operations: one for creating a customer (route: POST /v1/customers) and another for generating an invoice (operation ID: create_invoice). For each operation, extract the required parameters, request body schema, and possible response codes. Finally, compile a comparison table that contrasts authentication methods, rate limits, and error handling patterns between these two endpoints based solely on the OpenAPI spec.",
+          "fuzzy_description": "I'm trying to decide whether to bring Stripe into our SaaS product and need a clear, technical breakdown before committing. Can you pull up the Stripe OpenAPI spec and walk me through how it’s organized? Specifically, I’d like a close look at two things: creating a customer (that’s the POST /v1/customers endpoint) and generating an invoice (the one with operation ID create_invoice). For each, I need to know exactly what parameters are required, what the request body should look like structurally, and what HTTP response codes they might return—like 200, 400, 429, etc.  \n\nOnce you’ve got those details, could you put together a side-by-side comparison of how these two endpoints differ in terms of authentication requirements, their rate limits (if specified), and how errors are handled? Just stick to what’s actually documented in the OpenAPI spec—no guessing or external sources. I’m looking for concrete evidence from the spec itself, including any specific numbers or defined patterns.",
+          "dependency_analysis": "This task requires using OpenAPI Explorer:getApiOverview first with id='stripe' to load the specification. Only after obtaining the overview can the agent correctly interpret and fetch the two specific operations via OpenAPI Explorer:getApiOperation—one using a route path ('/v1/customers') and the other an operation ID ('create_invoice'). The final deliverable depends entirely on data extracted from these sequential tool calls; no external resources or user input are needed.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "Call for Papers",
+            "Car Price Evaluator",
+            "Context7",
+            "DEX Paprika",
+            "Math MCP",
+            "Medical Calculator",
+            "OSINT Intelligence",
+            "Paper Search",
             "Weather Data"
           ]
         }
@@ -2457,6 +3203,42 @@
             "OKX Exchange",
             "Weather Data"
           ]
+        },
+        {
+          "task_id": "osint_intelligence_006",
+          "task_description": "A security analyst received an alert about potential phishing activity impersonating the official website 'secure-login.example.com'. The domain was first observed in the wild within the past 7 days. Investigate this domain comprehensively: begin with a broad OSINT overview to gather initial intelligence, then perform a WHOIS lookup to identify registration details, run DNS reconnaissance to map associated records, execute a dig query for authoritative name server responses, and conduct an nmap scan on any resolved IP addresses to assess exposed services. Finally, use dnstwist to discover visually similar domains that might be used in typosquatting campaigns. Compile all findings into a structured incident report listing registrant info, resolved IPs, open ports, DNS records, and a ranked list of detected lookalike domains with risk indicators.",
+          "fuzzy_description": "Hey, I just got an alert about a suspicious domain—secure-login.example.com—that’s supposedly mimicking our official login page. It only popped up in the last 7 days, so it’s super recent. Can you dig into this for me? I need a full picture: who registered it, what IPs it resolves to, what services are running on those IPs, and any DNS records tied to it. Also, check if there are other domains out there that look almost identical—like common typos or visual tricks—that could be part of a broader phishing campaign. Put everything together in a clear report with actual details: names, dates, IP addresses, open ports, and a prioritized list of those lookalike domains with reasons why they’re risky. I want hard evidence, not just guesses.",
+          "dependency_analysis": "The task requires a strict sequence: osint_overview provides initial context and may reveal IPs or subdomains; whois_lookup depends only on the domain but informs ownership context; dnsrecon_lookup and dig_lookup both require the domain and yield DNS data needed to resolve target IPs for nmap_scan; dnstwist_lookup operates solely on the original domain but complements the phishing assessment. nmap_scan must follow DNS resolution to have valid IP targets. All tools belong exclusively to the OSINT Intelligence server, satisfying the multi-tool, single-server requirement while maintaining interdependencies.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "Call for Papers",
+            "Context7",
+            "Game Trends",
+            "Google Maps",
+            "Hugging Face",
+            "Jupyter MCP",
+            "Medical Calculator",
+            "Metropolitan Museum",
+            "Neo4j Cypher"
+          ]
+        },
+        {
+          "task_id": "osint_intelligence_007",
+          "task_description": "A security analyst received an alert about potential phishing activity mimicking the official login portal of 'securebank.example.com'. The suspicious domain appears visually similar and was registered recently. Investigate this threat by first identifying any typosquatted domains resembling 'securebank.example.com' using domain permutation analysis. For any high-risk lookalike domains discovered, perform a comprehensive OSINT overview to gather registration, hosting, and DNS intelligence. Then, for each confirmed malicious domain, conduct a WHOIS lookup to determine registration details, run a DNS reconnaissance to map associated records, and execute an Nmap scan to identify open ports and services. Compile all findings into a structured incident report listing each lookalike domain, its registration date (if within the past 7 days), associated IP addresses, detected services, and risk assessment.",
+          "fuzzy_description": "I just got an alert about a possible phishing campaign targeting our customers by impersonating our official login page at securebank.example.com. The suspicious site looks almost identical and seems to have been registered very recently. Can you check if there are any domains out there that are slight misspellings or visual lookalikes of securebank.example.com—especially ones created in the last 7 days? For any high-risk matches you find, I need a clear summary of what you uncover: the domain name, when it was registered, what IP addresses it’s tied to, what services are running on those IPs, and why you think it’s malicious. Please include concrete details like registration dates and open ports so we can take action quickly.",
+          "dependency_analysis": "The task begins with dnstwist_lookup on 'securebank.example.com' to find potential typosquatting domains. Each candidate domain from that result must then be fed into osint_overview for initial profiling. Based on that overview, only domains exhibiting high-risk indicators (e.g., recent registration, suspicious hosting) proceed to whois_lookup (for registration metadata), dnsrecon_lookup (for DNS record enumeration), and nmap_scan (for service fingerprinting). The final deliverable depends on the full chain: dnstwist → osint_overview → (whois + dnsrecon + nmap) per malicious domain.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "Call for Papers",
+            "Context7",
+            "Game Trends",
+            "Google Maps",
+            "Hugging Face",
+            "Jupyter MCP",
+            "Metropolitan Museum",
+            "Milvus MCP",
+            "OpenAPI Explorer"
+          ]
         }
       ]
     },
@@ -2484,6 +3266,132 @@
             "NASA Data",
             "OKX Exchange",
             "OSINT Intelligence"
+          ]
+        },
+        {
+          "task_id": "paper_search_001",
+          "task_description": "A research team is investigating recent advances in federated learning for medical imaging, with a focus on privacy-preserving techniques. They need a consolidated report of relevant preprints and peer-reviewed literature published in the past 30 days. First, identify the most cited recent paper on this topic from Semantic Scholar. Then, use its title and key terms to search for related preprints in bioRxiv and medRxiv. Separately, find any foundational or cryptographic methods supporting privacy in federated learning by querying the IACR ePrint Archive. Finally, cross-reference all findings with PubMed to ensure no major clinical studies were missed. Deliver a ranked list of 10 papers total, annotated with source repository, publication date (relative to today), and a one-sentence relevance justification.",
+          "fuzzy_description": "I'm part of a research group looking into the latest privacy-preserving federated learning methods for medical imaging, and we need a quick but thorough roundup of the most relevant recent work. Could you pull together the top 10 papers from the last 30 days that are directly related to this topic? Start with the most cited recent paper on federated learning in medical imaging, then use its title and key terms to find closely related preprints on bioRxiv or medRxiv. Also, check if there are any new cryptographic or foundational privacy techniques in the IACR ePrint Archive that support federated learning in healthcare settings. Finally, cross-check everything against PubMed to make sure we’re not missing any important clinical studies. For each of the 10 papers, please include where it’s from (like arXiv, medRxiv, etc.), how many days ago it was posted or published (relative to today), and a one-sentence note explaining why it’s relevant to privacy-preserving federated learning in medical imaging.\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "The task requires an initial broad query to Semantic Scholar to establish a topical anchor (most cited recent paper), which informs subsequent targeted searches in domain-specific preprint servers (bioRxiv, medRxiv) and a specialized archive (IACR). PubMed serves as a validation step to capture peer-reviewed clinical work. All steps depend on prior outputs (e.g., keywords or title from Semantic Scholar guide later queries), and all active Paper Search tools must be used: Semantic Scholar for discovery, bioRxiv/medRxiv for biomedical preprints, IACR for cryptographic foundations, and PubMed for clinical literature.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "Context7",
+            "Huge Icons",
+            "Hugging Face",
+            "Medical Calculator",
+            "Movie Recommender",
+            "National Parks",
+            "OKX Exchange",
+            "Playwright"
+          ]
+        },
+        {
+          "task_id": "paper_search_002",
+          "task_description": "A biomedical researcher is investigating recent advances in mRNA vaccine stability for tropical climates. They need a consolidated report of preprints and peer-reviewed literature from the past 14 days that address thermostability challenges in lipid nanoparticle (LNP) formulations. First, retrieve the latest relevant preprints from bioRxiv and medRxiv. Then, use key terms from those results—such as specific LNP components or degradation pathways—to search PubMed for peer-reviewed validation studies. Finally, cross-reference high-impact findings with Semantic Scholar to identify any highly cited related work published in the last 6 months, even if not indexed in PubMed. Deliver a structured summary listing: (1) preprint titles with sources and dates, (2) corresponding peer-reviewed papers with DOIs, and (3) any high-citation (>50 cites) Semantic Scholar matches with citation counts and publication years.",
+          "fuzzy_description": "I'm working on a project about mRNA vaccine stability in hot, humid environments and need a quick but thorough update on the very latest findings. Could you pull together everything published in the last two weeks—both preprints and peer-reviewed papers—that specifically tackle thermostability issues in lipid nanoparticle (LNP) formulations? Start with recent preprints from bioRxiv and medRxiv, then use any key terms they mention (like specific lipids or degradation mechanisms) to find matching validation studies in the published literature. Also, check if any highly cited papers (say, over 50 citations) from the past six months touch on these points, even if they’re not in PubMed. I’d really appreciate a clear summary that lists: (1) the preprint titles, where they’re from, and their posting dates; (2) any corresponding peer-reviewed articles with DOIs; and (3) those high-impact papers with citation counts and publication years. Thanks!",
+          "dependency_analysis": "The task requires sequential tool usage: bioRxiv and medRxiv must be queried first to gather recent preprints; insights from those results inform the PubMed query for validation studies; finally, Semantic Scholar is used to contextualize impact via citation data. All steps depend on outputs from prior ones, and all active servers (Paper Search tools) are required.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "Context7",
+            "DEX Paprika",
+            "Game Trends",
+            "Hugging Face",
+            "Medical Calculator",
+            "Milvus MCP",
+            "Unit Converter",
+            "Weather Data"
+          ]
+        },
+        {
+          "task_id": "paper_search_003",
+          "task_description": "A biomedical researcher is investigating the latest preclinical evidence on mRNA-based cancer vaccines. They need a consolidated report that includes: (1) recent preprints from bioRxiv and medRxiv published in the past 14 days, (2) peer-reviewed studies from PubMed indexed in the last 30 days, and (3) any overlapping or foundational work from arXiv or Semantic Scholar that might inform mechanistic understanding. Compile all results into a single list sorted by publication date (newest first), deduplicating by title or DOI where possible, and include for each entry the source repository, title, authors, publication date, and abstract. Exclude clinical trial protocols and focus only on original research involving animal models or in vitro systems.",
+          "fuzzy_description": "I'm working on a project about mRNA cancer vaccines and need an up-to-date summary of the latest preclinical research. Could you pull together all relevant original studies from the past two weeks on bioRxiv and medRxiv, plus any peer-reviewed papers from PubMed published in the last 30 days? Also, if there’s related mechanistic work from arXiv or Semantic Scholar that helps explain how these vaccines work in animal models or cell-based systems, include that too—even if it’s a bit older. Please combine everything into one list sorted by publication date (newest first), remove duplicates based on title or DOI, and for each entry give me the source (like bioRxiv or PubMed), full title, authors, publication date, and abstract. Just skip anything that’s a clinical trial protocol—I only want lab or animal studies, not human trials.",
+          "dependency_analysis": "The task requires sequential and parallel use of all five tools under the Paper Search server. First, search_biorxiv and search_medrxiv must be called with a query like 'mRNA cancer vaccine' and implicit recency filtering (handled post-retrieval since these APIs lack native date filters). Simultaneously or subsequently, search_pubmed must be used with the same query to get recently indexed peer-reviewed literature. Then, search_arxiv and search_semantic are needed to capture cross-disciplinary or foundational computational/theoretical work; Semantic Scholar may also help identify highly cited background papers. Final synthesis requires merging, deduplication, and filtering based on content (e.g., excluding clinical trials), which depends on having all raw results from every tool. No step can be omitted without compromising coverage across preprint and peer-reviewed biomedical literature.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "Call for Papers",
+            "Context7",
+            "Hugging Face",
+            "Medical Calculator",
+            "Milvus MCP",
+            "NixOS",
+            "OSINT Intelligence",
+            "Scientific Computing"
+          ]
+        },
+        {
+          "task_id": "paper_search_004",
+          "task_description": "A research team is investigating recent advances in homomorphic encryption for privacy-preserving machine learning. They need a consolidated report of all relevant preprints and peer-reviewed literature published in the past 14 days. Begin by searching the IACR ePrint Archive for 'homomorphic encryption' with full details enabled. Then, use the same query to search bioRxiv and medRxiv to rule out any biomedical applications (even if unlikely). Next, query arXiv and Semantic Scholar for 'homomorphic encryption' with no year filter but limited to the most recent results (Semantic Scholar will naturally rank by recency). Finally, cross-check PubMed in case any clinical informatics papers have appeared. Compile all unique papers into a single list sorted by publication date (newest first), including title, source repository, and abstract. Exclude duplicates across repositories.",
+          "fuzzy_description": "Hey, could you help me pull together a list of the very latest research papers on homomorphic encryption—especially anything tied to privacy-preserving machine learning? I need everything that’s come out in the last 14 days across all the major preprint and journal archives. Please include the title, where it was posted (like arXiv, IACR, etc.), and the abstract for each, and sort them with the newest first. Be sure to weed out any duplicates that might show up in more than one place. Also, even though it’s probably unlikely, check if anything popped up in bioRxiv, medRxiv, or PubMed just in case there are biomedical or clinical informatics angles we shouldn’t miss. I’d really appreciate a clean, consolidated list with actual publication dates so we can track what’s truly new.\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "The task requires sequential and parallel use of all six tools under the Paper Search server. It starts with IACR (the primary venue for cryptography) using fetch_details=true, then proceeds to domain-specific preprint servers (bioRxiv, medRxiv) to explicitly exclude biomedical contexts, followed by general-purpose academic searchers (arXiv, Semantic Scholar, PubMed). The final deliverable depends on aggregating and deduplicating results from all sources, establishing clear data-flow dependencies: no step can be skipped, and the output must integrate findings from every tool call.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "Context7",
+            "DEX Paprika",
+            "Game Trends",
+            "Hugging Face",
+            "Math MCP",
+            "Medical Calculator",
+            "Milvus MCP",
+            "Neo4j Cypher"
+          ]
+        },
+        {
+          "task_id": "paper_search_005",
+          "task_description": "A research team is investigating recent advances in homomorphic encryption for privacy-preserving machine learning. They need a consolidated report of all relevant preprints and peer-reviewed literature published in the past 14 days. First, identify any new papers from the IACR ePrint Archive using a query about 'homomorphic encryption'. Then, use the titles and authors from those results to search Semantic Scholar for related peer-reviewed work, filtering to the last two weeks if possible. Next, check bioRxiv and medRxiv to rule out any biomedical applications of the technique—include a note if any are found. Finally, cross-reference with arXiv using a refined query combining 'homomorphic encryption' and 'machine learning' to capture interdisciplinary work. Deliver a structured JSON list of all unique papers found, grouped by source, each entry containing title, author(s), publication date, and abstract (or summary if abstract is unavailable).",
+          "fuzzy_description": "Hey, I’m part of a team looking into the latest developments in homomorphic encryption, especially as it applies to privacy-preserving machine learning. Could you pull together a comprehensive list of all relevant new papers from the past 14 days? We’re interested in anything that’s come out recently—preprints or peer-reviewed—so please check across the major archives.  \n\nStart by finding any new entries tagged with “homomorphic encryption” and then see if those same papers (or closely related ones by the same authors) appear in more formal venues. Also, just to be thorough, double-check bioRxiv and medRxiv in case there’s any biomedical angle we should be aware of—even if it’s a stretch—and mention it if you find anything.  \n\nFor completeness, also look for interdisciplinary work that explicitly ties homomorphic encryption to machine learning.  \n\nIn the end, we’d like a clean, structured list in JSON format, grouped by source, with each paper including its title, author(s), publication date, and abstract (or a short summary if no abstract is available). Make sure there are no duplicates across sources. Thanks!",
+          "dependency_analysis": "The task requires sequential tool usage: IACR ePrint results inform the Semantic Scholar query formulation and help refine the arXiv search; bioRxiv/medRxiv searches act as negative filters but must still be executed; all Paper Search sub-tools are used, fulfilling the requirement to engage every active server. The time-bound nature ('past 14 days') applies concretely to Semantic Scholar (via year filter approximation) and implicitly guides recency expectations for other sources. The final deliverable depends on aggregating outputs from all steps.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "Car Price Evaluator",
+            "Google Maps",
+            "Huge Icons",
+            "Hugging Face",
+            "Math MCP",
+            "Medical Calculator",
+            "Milvus MCP",
+            "Wikipedia"
+          ]
+        },
+        {
+          "task_id": "paper_search_006",
+          "task_description": "A research team is investigating recent advances in privacy-preserving machine learning, with a focus on cryptographic techniques like secure multi-party computation and homomorphic encryption. They need a consolidated report of relevant preprints and peer-reviewed literature published in the past 14 days. First, identify the latest papers from arXiv and bioRxiv that mention 'privacy-preserving machine learning' or 'secure federated learning'. Then, cross-reference those findings with recent publications in medRxiv to check for clinical applications. Separately, query the IACR ePrint Archive for any new cryptographic protocols related to 'secret sharing' or 'homomorphic encryption' released in the same timeframe. Finally, use Semantic Scholar to find highly cited foundational papers on this topic from 2018–2023 to provide context. Compile all results into a single structured bibliography that groups entries by source (arXiv, bioRxiv, medRxiv, IACR, Semantic Scholar), includes titles, authors, publication dates, and abstracts, and highlights which works are preprints versus peer-reviewed.",
+          "fuzzy_description": "I'm part of a research group diving into the latest developments in privacy-preserving machine learning, especially approaches that use cryptography—things like secure multi-party computation and homomorphic encryption. We’re trying to stay on top of what’s just come out, so I need help pulling together everything relevant published in the last 14 days.  \n\nSpecifically, can you find recent preprints from arXiv and bioRxiv that mention either “privacy-preserving machine learning” or “secure federated learning”? Also, check medRxiv to see if any of those ideas are being applied in clinical or medical contexts during the same period. Separately, I’d like to know if there are any new cryptographic protocols—especially around secret sharing or homomorphic encryption—that have appeared in the last two weeks.  \n\nTo round this out, it would be really helpful to include a few highly cited foundational papers from 2018 through 2023 that set the stage for this area, so we can contextualize the newer work.  \n\nPlease compile all of this into one organized bibliography, grouped by where each paper came from (like arXiv, bioRxiv, etc.), with titles, authors, dates, and abstracts. And if you could clearly note which entries are preprints versus peer-reviewed, that’d be great—we need to assess reliability as we go.",
+          "dependency_analysis": "The task requires sequential and parallel use of all six tools under the Paper Search server. Initial broad discovery occurs via arXiv, bioRxiv, and medRxiv using overlapping but distinct biomedical/technical queries. The IACR search targets a specialized cryptographic subdomain not covered by general repositories. Semantic Scholar provides historical context with a year range filter. All tool outputs feed into a unified deliverable; none can be omitted without losing critical information layers (recency, domain coverage, technical depth, or citation context).",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "Context7",
+            "Google Maps",
+            "Hugging Face",
+            "Math MCP",
+            "Medical Calculator",
+            "Metropolitan Museum",
+            "Milvus MCP",
+            "Weather Data"
+          ]
+        },
+        {
+          "task_id": "paper_search_007",
+          "task_description": "A research team is investigating recent advances in federated learning applied to healthcare diagnostics. They need a consolidated report of relevant preprints and peer-reviewed literature from the past 30 days across multiple repositories. First, search bioRxiv and medRxiv for 'federated learning' to capture health-focused preprints. Then, use those results to refine a broader query for PubMed (to find peer-reviewed clinical studies) and arXiv (for foundational algorithmic work). Finally, run a Semantic Scholar search with the same core query but filtered to the last month to cross-validate coverage and identify highly cited emerging papers. Deliver a structured JSON list of up to 15 unique papers, each with source repository, title, publication/preprint date, and a one-sentence summary of its contribution to healthcare-oriented federated learning.",
+          "fuzzy_description": "I'm part of a research group looking into how federated learning is being used in healthcare diagnostics lately. Could you pull together a concise list—up to 15 recent papers—from the last 30 days that are actually relevant to this intersection? We’re especially interested in preprints from bioRxiv and medRxiv, but also peer-reviewed clinical studies and foundational algorithmic work that ties back to healthcare applications. For each paper, please include where it was published (like arXiv, PubMed, etc.), the title, the date it came out, and a one-sentence summary explaining its specific contribution to federated learning in a healthcare context. We want to make sure we’re not missing any high-impact or widely cited new work, so if something’s already getting attention, that’s a plus.",
+          "dependency_analysis": "The task requires sequential and complementary use of all Paper Search tools: bioRxiv and medRxiv must be queried first to scope health-specific preprints; their results inform context (but not direct inputs) for targeted PubMed and arXiv searches; finally, Semantic Scholar provides a time-filtered, citation-aware synthesis. All steps are necessary to fulfill the deliverable’s comprehensiveness requirement, creating clear inter-tool dependencies based on domain and validation logic.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "Context7",
+            "Huge Icons",
+            "Hugging Face",
+            "Medical Calculator",
+            "OpenAPI Explorer",
+            "Reddit",
+            "Unit Converter",
+            "Weather Data"
           ]
         }
       ]
@@ -2603,6 +3511,42 @@
             "OpenAPI Explorer",
             "Unit Converter"
           ]
+        },
+        {
+          "task_id": "reddit_006",
+          "task_description": "A community manager for an indie game studio wants to understand recent player sentiment about roguelike deckbuilders on Reddit. Fetch the 15 hottest threads from r/roguelikedev and r/DeckbuildingGames over the past week (use hot sorting as a proxy). For any thread with 'feedback', 'review', or 'impressions' in the title, retrieve its full content including up to 30 top-level comments and a comment depth of 4 to capture nuanced discussion. Synthesize a summary that identifies recurring praise or criticism about gameplay mechanics, balance issues, or onboarding experiences mentioned in those threads. Deliver a structured JSON report listing each qualifying post ID, its title, sentiment label (positive/negative/mixed), and up to three representative quotes reflecting core feedback themes.",
+          "fuzzy_description": "Hey—I’m helping an indie studio get a pulse on what players are saying about roguelike deckbuilders lately. Could you pull the 15 hottest Reddit threads from the past week in r/roguelikedev and r/DeckbuildingGames? For any post with “feedback,” “review,” or “impressions” in the title, grab the full thread—including up to 30 top-level comments and replies nested up to four levels deep—so we can see how discussions unfold.  \n\nFrom those threads, I’d love a clear summary of recurring themes: what mechanics are people loving or hating, where balance feels off, or if new players are struggling to get into the games. Please package it as a structured JSON report with each qualifying post’s ID, title, an overall sentiment label (positive/negative/mixed), and up to three short quotes that really capture the core feedback. Need this grounded in actual comments—not just vibes—so we can act on real player input.\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "The task requires first calling Reddit:fetch_reddit_hot_threads on two specific subreddits (r/roguelikedev and r/DeckbuildingGames) with limit=15 to gather candidate posts. Then, for each post whose title matches the keyword filter ('feedback', 'review', 'impressions'), it must call Reddit:fetch_reddit_post_content with comment_limit=30 and comment_depth=4 to extract discussion details. The final output depends entirely on the results of these sequential tool calls—no step can be completed without the prior one.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "Context7",
+            "Game Trends",
+            "Hugging Face",
+            "Metropolitan Museum",
+            "NASA Data",
+            "Neo4j Cypher",
+            "OSINT Intelligence",
+            "Scientific Computing",
+            "Unit Converter"
+          ]
+        },
+        {
+          "task_id": "reddit_007",
+          "task_description": "I'm researching public sentiment around the recent surge in open-weight AI models like Llama 3 and Mistral. Specifically, I want to analyze discussions from the past week in r/MachineLearning and r/LocalLLaMA. First, fetch the top 15 hot threads from each subreddit. Then, for any thread with 'Llama 3' or 'open-weight' in the title, retrieve its full content including up to 30 top-level comments and a comment depth of 4 to capture nuanced debates. Synthesize a summary that identifies recurring themes, key concerns (e.g., licensing, performance, accessibility), and notable community reactions. Deliver a structured JSON object with fields: {\"subreddits_analyzed\": [...], \"relevant_threads\": [{\"post_id\": string, \"title\": string, \"theme_summary\": string}], \"overall_sentiment_trends\": string}.",
+          "fuzzy_description": "Hey, I’ve been tracking how people are reacting to the recent buzz around open-weight AI models—especially Llama 3 and Mistral. Could you pull together what’s being said in the last week on r/MachineLearning and r/LocalLLaMA? Specifically, grab the top 15 hottest threads from each subreddit, and for any post with “Llama 3” or “open-weight” in the title, dig into the full thread—including up to 30 top-level comments and replies nested up to four levels deep so we don’t miss the deeper takes. From that, I’d love a clear summary highlighting recurring themes, main concerns (like licensing issues, how well these models actually perform, or who can realistically use them), and any standout reactions from the community. Please package it all in a structured JSON with the subreddits covered, details on the relevant threads (post ID, title, and a short theme summary), and an overall take on sentiment trends.",
+          "dependency_analysis": "The task requires first calling Reddit:fetch_reddit_hot_threads on two subreddits (r/MachineLearning and r/LocalLLaMA) with limit=15 to get candidate posts. Then, based on title filtering ('Llama 3' or 'open-weight'), it conditionally invokes Reddit:fetch_reddit_post_content for matching post IDs with comment_limit=30 and comment_depth=4. The final output depends entirely on the data retrieved from these sequential and conditional tool calls, forming a clear dependency chain within the Reddit server.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "Google Maps",
+            "Hugging Face",
+            "Jupyter MCP",
+            "Math MCP",
+            "Metropolitan Museum",
+            "Movie Recommender",
+            "OpenAPI Explorer",
+            "Wikipedia"
+          ]
         }
       ]
     },
@@ -2720,6 +3664,42 @@
             "Unit Converter",
             "Weather Data",
             "Wikipedia"
+          ]
+        },
+        {
+          "task_id": "scientific_computing_006",
+          "task_description": "I'm analyzing the stability of a mechanical system modeled by the matrix A = [[4, -2], [1, 1]]. First, create this matrix as a tensor named 'system_matrix'. Then compute its eigenvalues and eigenvectors to assess dynamic behavior. Next, calculate the determinant and rank to verify invertibility and full rank. If the matrix is invertible, compute its inverse and multiply it by the original matrix to confirm you get the identity (within numerical tolerance). Finally, produce a 2D plot of the quadratic form xᵀAx over the domain x ∈ [-3, 3], y ∈ [-3, 3] to visualize the associated energy landscape. Return all computed results along with the plot.",
+          "fuzzy_description": "I'm studying a mechanical system described by the matrix A = [[4, -2], [1, 1]], and I need help analyzing its properties. Could you compute its eigenvalues and eigenvectors to understand the system's dynamic behavior? Also, check whether it's invertible by finding its determinant and rank—if it is invertible, go ahead and compute the inverse, then verify that multiplying it by the original matrix gives back the identity (allowing for small numerical errors). Finally, I’d like to visualize the associated energy landscape: please plot the quadratic form xᵀAx over the region where both x and y range from –3 to 3. Share all the numerical results along with the plot so I can review them.\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "The task requires creating a matrix (create_tensor), then performing eigenanalysis (compute_eigen), followed by determinant (determinant) and rank (rank) checks. If invertible (which it is), it requires matrix_inverse and multiply_matrices to verify A⁻¹A ≈ I. Finally, it needs plot_function to visualize the quadratic form xᵀAx = 4x² - 2xy + y² + xy = 4x² - xy + y² (simplified from [x y]·A·[x; y]). All steps are sequential and must use the Scientific Computing server; no external data or files are needed.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "Context7",
+            "Hugging Face",
+            "Jupyter MCP",
+            "Math MCP",
+            "Medical Calculator",
+            "Metropolitan Museum",
+            "NASA Data",
+            "OKX Exchange"
+          ]
+        },
+        {
+          "task_id": "scientific_computing_007",
+          "task_description": "I'm analyzing a mechanical stress field in a 3D elastic material described by the vector field F(x, y, z) = [x*z, y**2, x + y]. First, compute its divergence and curl symbolically. Then evaluate both at the point (1.5, -2.0, 0.5). Next, create a 3×3 matrix A with values [[2, -1, 0], [-1, 2, -1], [0, -1, 2]] and name it 'stiffness_matrix'. Compute its eigenvalues and eigenvectors, then use them to diagonalize the matrix via a change of basis. Finally, plot the original vector field over the region x∈[-2,2], y∈[-2,2], z∈[-1,1] with a grid resolution of 12 per axis, and return a summary that includes: (1) symbolic divergence and curl, (2) their numeric values at the given point, (3) eigenvalues of the stiffness matrix, and (4) confirmation that the plot was generated.",
+          "fuzzy_description": "I'm working on a mechanics problem involving a 3D elastic material with a stress field given by the vector function **F**(x, y, z) = [x·z, y², x + y]. Could you help me figure out a few things?\n\nFirst, I need the symbolic expressions for both the divergence and the curl of this field. Then, please evaluate those at the specific point (1.5, –2.0, 0.5)—I’d like the actual numbers.\n\nAlso, there’s a matrix that comes up in the stiffness formulation:  \n[[2, –1, 0],  \n [–1, 2, –1],  \n [0, –1, 2]]  \n—let’s call it *stiffness_matrix*. I’d like its eigenvalues and eigenvectors, and confirmation that it can be diagonalized using those (i.e., show the change of basis works).\n\nLastly, could you generate a 3D plot of the original vector field **F** over the box where x and y go from –2 to 2 and z from –1 to 1, using a 12×12×12 grid? Just so I can visualize the flow.\n\nWhen you’re done, a short summary would be great—including the symbolic divergence/curl, their numeric values at that point, the eigenvalues, and a note that the plot was produced.",
+          "dependency_analysis": "The task begins with symbolic vector calculus (divergence and curl) on a user-provided field, requiring 'divergence' and 'curl' tools. These results are then evaluated numerically at a specific point—already supported by those same tools. Next, a named tensor 'stiffness_matrix' must be created using 'create_tensor', followed by 'compute_eigen' to obtain eigenvalues/eigenvectors. Although the task mentions diagonalization via change of basis, the 'change_basis' tool requires an explicit new basis; however, since eigenvectors define the diagonalizing basis, the agent must extract them from the eigen decomposition output and format them as columns for 'change_basis'. Finally, 'plot_vector_field' is used with specified bounds and resolution. All steps rely exclusively on the Scientific Computing server; no external data or follow-up is needed. The workflow has clear sequential dependencies: calculus → evaluation → matrix creation → spectral analysis → basis transformation → visualization.",
+          "distraction_servers": [
+            "BioMCP",
+            "Call for Papers",
+            "Context7",
+            "Huge Icons",
+            "Hugging Face",
+            "Jupyter MCP",
+            "Math MCP",
+            "Metropolitan Museum",
+            "Milvus MCP",
+            "OSINT Intelligence"
           ]
         }
       ]
@@ -2839,6 +3819,42 @@
             "Reddit",
             "Wikipedia"
           ]
+        },
+        {
+          "task_id": "time_mcp_006",
+          "task_description": "A global team is finalizing the schedule for a recurring cross-timezone stand-up that must occur at 9:00 AM local time for each participant. The team has members in Tokyo, Berlin, and San Francisco. Determine what time the meeting would start in each location if it were held today, and then find a single UTC time that aligns with 9:00 AM in all three locations on the same day—concluding whether such a time exists within the next 7 days. If not, state that no feasible overlap exists. Deliver your answer as a JSON object listing the local 9:00 AM times converted to UTC for each city today, and a boolean field 'feasible_overlap' indicating if a common UTC time exists that maps to 9:00 AM in all three zones on any day in the next week.",
+          "fuzzy_description": "Hey, our team’s trying to lock in a recurring stand-up that hits 9:00 AM local time for everyone—but we’ve got folks in Tokyo, Berlin, and San Francisco. Can you check what time that would be in UTC for each city if we did it today? Also, is there actually any single UTC time in the next 7 days that would line up with 9:00 AM *on the same calendar day* for all three locations? If not, just say it’s impossible. I’d appreciate it if you could give me the UTC conversions for today and a clear yes/no on whether a shared time exists this week—maybe in a structured format so I can share it with the team.\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "The task requires first obtaining the current date context implicitly via time conversions (since 'today' and 'next 7 days' are relative), then using convert_time to translate 9:00 AM from each of the three timezones (Asia/Tokyo, Europe/Berlin, America/Los_Angeles) into UTC. This reveals whether the three 9:00 AM local times map to the same UTC moment (they won’t). The second part—checking feasibility over the next 7 days—is logically constrained by the fixed offset nature of timezones: since daylight saving changes don’t occur in this window for these zones, the UTC offsets remain stable, so no future day will yield alignment. Thus, only the Time MCP tools are needed: get_current_time isn’t strictly required because convert_time operates on clock time independent of date, but the phrasing 'today' and 'next 7 days' creates natural dependency on understanding the current temporal context, which the agent must handle using available tools. The core logic flows: convert 9:00 AM from each zone to UTC → compare → conclude infeasibility based on immutable offsets.",
+          "distraction_servers": [
+            "Context7",
+            "FruityVice",
+            "Google Maps",
+            "Huge Icons",
+            "Hugging Face",
+            "Jupyter MCP",
+            "Metropolitan Museum",
+            "OKX Exchange",
+            "OSINT Intelligence",
+            "Reddit"
+          ]
+        },
+        {
+          "task_id": "time_mcp_007",
+          "task_description": "A global team is finalizing the schedule for a recurring weekly sync that must occur every Thursday at 2:00 PM in each participant’s local time, but anchored to when it first occurs in Tokyo. Determine what time the meeting will be in London and New York on the upcoming Thursday (within the next 7 days), assuming the anchor time is 14:00 in Asia/Tokyo. Return a JSON object with keys 'tokyo_time', 'london_time', and 'new_york_time', each in HH:MM format.",
+          "fuzzy_description": "Our team runs a weekly sync every Thursday at 2:00 PM local time for everyone, but it’s anchored to when it first happens in Tokyo—that’s always 14:00 Asia/Tokyo. Can you figure out what time the meeting will actually be this coming Thursday (the one within the next 7 days) in London and New York? I’d like the times in HH:MM format, and please include Tokyo’s time too for reference—just so I can double-check everything lines up right.\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "First, use get_current_time to determine the current date and infer the date of the upcoming Thursday within the next 7 days—but since only time-of-day matters and the day is fixed as Thursday, the actual date isn't needed; only the time conversion logic applies. The task requires converting 14:00 from Asia/Tokyo to Europe/London and America/New_York using convert_time. Thus, get_current_time isn't strictly necessary for the conversion itself, but the phrasing 'upcoming Thursday (within the next 7 days)' implies awareness of the current week, making get_current_time a logical first step to confirm temporal context—even though the output only depends on time zones, not dates. This creates a mild dependency: the agent should recognize that while the absolute date doesn't affect the time conversion (as time zones are fixed), the scenario demands grounding in the present week, justifying one call to get_current_time (e.g., in Tokyo) before performing two conversions.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "Car Price Evaluator",
+            "Context7",
+            "Game Trends",
+            "Google Maps",
+            "Hugging Face",
+            "Jupyter MCP",
+            "Metropolitan Museum",
+            "Milvus MCP",
+            "Weather Data"
+          ]
         }
       ]
     },
@@ -2956,6 +3972,42 @@
             "Reddit",
             "Scientific Computing",
             "Wikipedia"
+          ]
+        },
+        {
+          "task_id": "unit_converter_006",
+          "task_description": "An aerospace engineer is finalizing a thermal and structural analysis report for a prototype drone that operates in extreme environments. The drone’s battery generates 250 watt-hours of energy during a standard flight cycle, and its casing experiences a peak force load of 450 newtons during high-wind maneuvers. During testing last week, the internal temperature reached 185 degrees Fahrenheit, while external ambient conditions were recorded at -10 degrees Celsius. The drone cruises at 62 kilometers per hour but must comply with aviation speed limits of 35 knots in certain zones. For the report, convert all these measurements into consistent SI units: energy to joules, force to kilonewtons, temperatures to kelvin, and speed to meters per second. Additionally, include conversions of the drone’s wing surface area (1.8 square yards) to square meters and its fuel tank volume (3.2 US gallons) to liters. Deliver a structured JSON object containing each original value, its unit, the target SI unit, and the converted result.",
+          "fuzzy_description": "Hey, I’m wrapping up a thermal and structural analysis report for a prototype drone designed to operate in really harsh conditions, and I need all the key performance metrics converted into standard SI units for consistency. Here’s what I’ve got: the battery outputs 250 watt-hours per flight cycle, the casing saw peak loads of 450 newtons during high-wind tests, internal temps hit 185°F while it was -10°C outside, and it cruises at 62 km/h—though it has to slow down to 35 knots in regulated airspace. Oh, and we also measured the wing area as 1.8 square yards and the fuel tank holds 3.2 US gallons.  \n\nCould you convert all of these into proper SI units—so energy in joules, force in kilonewtons, temperatures in kelvin, speed in meters per second, area in square meters, and volume in liters? I’d really appreciate it if you could return everything in a clean JSON format that shows each original value, its unit, the target SI unit, and the converted number. Just want to make sure the numbers are accurate and traceable for the final report.",
+          "dependency_analysis": "This task requires multiple unit conversions across distinct physical quantities—energy, force, temperature, speed, area, and volume—all of which must be handled by the Unit Converter server. Each conversion is independent but collectively necessary to produce the final deliverable. The task explicitly provides all numeric values and source/target units, eliminating ambiguity about required operations. No other active server is available, so all tools must come from Unit Converter. The conversions must use specific tools: convert_energy (watt-hours → joules), convert_force (newtons → kilonewtons), convert_temperature (Fahrenheit and Celsius → kelvin), convert_speed (km/h and knots → m/s), convert_area (square yards → square meters), and convert_volume (US gallons → liters). The final output must be a single structured JSON object aggregating all results.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "Car Price Evaluator",
+            "DEX Paprika",
+            "Game Trends",
+            "Hugging Face",
+            "Jupyter MCP",
+            "Math MCP",
+            "Medical Calculator",
+            "Paper Search"
+          ]
+        },
+        {
+          "task_id": "unit_converter_007",
+          "task_description": "I'm preparing a technical report comparing energy consumption across household appliances, transportation modes, and industrial processes. I need to normalize all values into kilowatt-hours (kWh) for consistency. Specifically: (1) Convert 2.5 therms (used by a gas furnace) to kWh; (2) Convert 8,640,000 joules (from a small electric motor running for 2 hours) to kWh; (3) Convert 5,000 Btu (from an old HVAC spec sheet) to kWh; and (4) Convert 15,000 kilocalories (from a food-energy analogy in the draft) to kWh. After conversion, list all source units used and confirm they belong to the energy category. Finally, present a table with original values, source units, and converted kWh values rounded to three decimal places.",
+          "fuzzy_description": "I'm working on a technical report that compares energy use across different things—like home appliances, cars, and factory equipment—and I want everything in the same unit: kilowatt-hours (kWh). Right now, I’ve got a few values in other units that need converting:\n\n- A gas furnace used 2.5 therms  \n- A small electric motor ran for 2 hours and used 8,640,000 joules  \n- An old HVAC system’s spec sheet lists 5,000 Btu  \n- And just for analogy in one section, I referenced 15,000 kilocalories (like food energy)\n\nCould you convert all of those into kWh? Please round each result to three decimal places. Also, after the conversions, list out what the original units were (therms, joules, etc.) and confirm they’re all actually units of energy—just so I can double-check I’m not mixing up categories by mistake. I’d really appreciate a clear table showing the original value, its unit, and the converted kWh number, backed by standard conversion factors.",
+          "dependency_analysis": "The task requires multiple energy unit conversions using 'convert_energy', followed by validation via 'list_supported_units' to confirm that 'therm', 'joule', 'Btu', and 'kilocalorie' are indeed supported under the 'energy' type. The conversions must be performed before the final tabular summary can be generated, creating a clear dependency: energy conversions → unit validation → structured output. All tools are from the Unit Converter server, satisfying the single active server requirement while still forming an internal tool chain.",
+          "distraction_servers": [
+            "BioMCP",
+            "Car Price Evaluator",
+            "FruityVice",
+            "Hugging Face",
+            "Math MCP",
+            "Medical Calculator",
+            "Milvus MCP",
+            "Movie Recommender",
+            "OSINT Intelligence",
+            "OpenAPI Explorer"
           ]
         }
       ]
@@ -3075,6 +4127,42 @@
             "OSINT Intelligence",
             "Unit Converter"
           ]
+        },
+        {
+          "task_id": "weather_data_006",
+          "task_description": "I'm planning a week-long hiking trip to the Lake District starting next Monday. Before finalizing my itinerary, I need to verify that conditions will be safe and comfortable. First, confirm the exact location by searching for 'Lake District' to disambiguate from other similarly named places. Then, get the current weather there to understand baseline conditions. Finally, pull a 7-day forecast to assess rain likelihood, temperature swings, and wind over the entire trip duration. Summarize your findings in a structured report with: (1) confirmed location name, (2) current temperature and conditions, and (3) daily high/low temperatures and precipitation chance for each of the next 7 days.",
+          "fuzzy_description": "I'm heading out on a week-long hiking trip to the Lake District starting next Monday and want to make sure the weather won’t ruin my plans—or worse, make things unsafe. Could you double-check exactly which “Lake District” this refers to (since I know there might be places with similar names) and then give me a clear picture of what to expect? Specifically, I’d like to know:  \n\n1. The confirmed name and location you’re referring to,  \n2. What the weather is like there right now—especially the current temperature and conditions—and  \n3. A day-by-day forecast for the next 7 days, including daily high and low temperatures and the chance of rain each day.  \n\nI’m trying to decide whether to pack my rain gear, how many layers to bring, and if I should adjust my route based on wind or storms, so precise numbers and reliable info would really help!",
+          "dependency_analysis": "The task requires first using search_locations_tool to resolve 'Lake District' to a specific city or region recognized by the weather API. The output of this step informs the city parameter for both get_current_weather_tool and get_weather_forecast_tool. The forecast must be for exactly 7 days as specified. All three tools from the Weather Data server are used in a chain: search → current weather → forecast.",
+          "distraction_servers": [
+            "BioMCP",
+            "Context7",
+            "FruityVice",
+            "Game Trends",
+            "Google Maps",
+            "Huge Icons",
+            "Metropolitan Museum",
+            "Movie Recommender",
+            "OpenAPI Explorer",
+            "Paper Search"
+          ]
+        },
+        {
+          "task_id": "weather_data_007",
+          "task_description": "I'm planning a week-long outdoor photography workshop in late October and need to finalize the location between Portland, OR and Asheville, NC. First, search for both cities to confirm their full location names. Then, get the current weather in each to assess immediate conditions. Finally, pull a 7-day forecast for both to compare expected rainfall, temperature swings, and cloud cover. Based on all this, produce a side-by-side comparison table that includes: city name, current temperature, current conditions, and daily high/low + precipitation chance for each of the next 7 days. Recommend the better location for outdoor photography based on stable, dry, and mild conditions.",
+          "fuzzy_description": "I'm trying to decide between Portland, Oregon, and Asheville, North Carolina for a week-long outdoor photography workshop I’m running in late October. Can you help me figure out which spot will give us the best shooting conditions?  \n\nFirst, just to be sure we’re talking about the right places—Portland, OR (not Maine) and Asheville, NC—could you check what the weather’s like there right now? Then, I really need a detailed 7-day forecast for both cities: daily highs and lows, chance of rain each day, and how cloudy it’s expected to be.  \n\nIf you could put all that side by side in a table—city name, current temp and conditions, plus the next week’s high/low temps and precipitation chances—that’d be super helpful. Based on that data, which location looks more reliable for clear, dry, and mild weather? I’m aiming to avoid big temperature swings, heavy clouds, or rain that could mess with gear or lighting.",
+          "dependency_analysis": "The task requires first using search_locations_tool to disambiguate or confirm city identities (e.g., distinguishing Portland, OR from Portland, ME). This output informs the city names used in subsequent calls. Next, get_current_weather_tool must be called for both confirmed cities to obtain present conditions. Finally, get_weather_forecast_tool is invoked with days=7 for each city to generate the forecast data. All three tool types from the Weather Data server are used in a sequential dependency chain: search → current weather → forecast. No other servers are needed, but phrasing like 'photography', 'location', and 'recommendation' could mislead a router toward Google Maps, Metropolitan Museum, or Context7.",
+          "distraction_servers": [
+            "Context7",
+            "DEX Paprika",
+            "FruityVice",
+            "Game Trends",
+            "Google Maps",
+            "Huge Icons",
+            "Metropolitan Museum",
+            "NASA Data",
+            "OKX Exchange",
+            "Reddit"
+          ]
         }
       ]
     },
@@ -3192,6 +4280,42 @@
             "OKX Exchange",
             "OSINT Intelligence",
             "Reddit"
+          ]
+        },
+        {
+          "task_id": "wikipedia_006",
+          "task_description": "I'm writing a comparative overview of renewable energy policies in Germany and Japan over the past five years. Start by searching Wikipedia for relevant articles on 'Renewable energy in Germany' and 'Renewable energy in Japan'. For each country, retrieve the full article, extract key facts specifically about policy changes since 2019, and summarize the 'Government policy and regulation' section (or the closest equivalent) in no more than 150 words. Then, get the list of sections from both articles to verify structural consistency, and identify three related topics per country that could inform future research directions. Deliver a structured report containing: (1) a side-by-side summary of each country’s policy section, (2) the extracted policy-focused key facts (3–5 per country), and (3) the combined list of six related topics.",
+          "fuzzy_description": "I'm working on a short comparative analysis of how Germany and Japan have updated their renewable energy policies since 2019. Could you pull the latest info from Wikipedia on “Renewable energy in Germany” and “Renewable energy in Japan,” then give me a concise side-by-side summary (under 150 words each) of their government policy sections? I’d also like 3–5 specific, verifiable policy changes or key facts from each country introduced since 2019—things like new laws, targets, or regulatory shifts with actual dates or numbers if possible. Finally, suggest three related topics per country that would help me dig deeper into future trends. Just make sure everything ties back to reliable details from those articles.",
+          "dependency_analysis": "The task requires first using Wikipedia:search_wikipedia to locate the correct article titles. Then, Wikipedia:get_article is implicitly needed to understand article structure before targeting sections, though the critical path uses Wikipedia:get_sections to confirm section names. Next, Wikipedia:summarize_article_section is used with the identified policy-related section title. Simultaneously, Wikipedia:extract_key_facts is called with topic_within_article='policy changes since 2019' to focus the extraction. Finally, Wikipedia:get_related_topics gathers broader context. All steps depend on prior retrieval or inspection of article metadata, creating clear sequential and conditional dependencies.",
+          "distraction_servers": [
+            "BioMCP",
+            "Call for Papers",
+            "Context7",
+            "Hugging Face",
+            "Math MCP",
+            "Medical Calculator",
+            "Metropolitan Museum",
+            "Milvus MCP",
+            "OpenAPI Explorer",
+            "Unit Converter"
+          ]
+        },
+        {
+          "task_id": "wikipedia_007",
+          "task_description": "I'm preparing a presentation on the historical evolution and current scientific understanding of black holes. Start by searching Wikipedia for articles related to 'black hole'. From the top three results, identify the most comprehensive article—likely titled 'Black hole'—and retrieve its full list of sections. Then, get a tailored summary of that article focused on the query 'how has our understanding of black holes changed since the 1970s?'. Next, extract five key facts specifically about observational evidence of black holes mentioned in the article. Finally, use the related topics tool on the main 'Black hole' article to suggest three adjacent concepts that could enrich my presentation, such as 'Event Horizon Telescope' or 'Hawking radiation'. Deliver a structured report containing: (1) the tailored summary, (2) the five key observational facts, and (3) the three related topic suggestions with brief justifications.",
+          "fuzzy_description": "I'm putting together a presentation on how our understanding of black holes has evolved, especially from the 1970s to today. Could you help me pull together a concise but thorough overview? I’d like a summary that specifically addresses how scientific views have changed since the 1970s, based on the most detailed and authoritative source available—probably the main article on black holes from Wikipedia.  \n\nFrom that same source, I also need five clear, verifiable facts about actual observational evidence for black holes (things like telescope data, detected events, or confirmed measurements—not just theory). And finally, could you suggest three closely related topics that would add depth to my talk? For each suggestion, just a sentence or two explaining why it’s relevant—maybe something like the Event Horizon Telescope or Hawking radiation, if they’re directly connected.  \n\nPlease organize your response into three parts: (1) the historical/evolutionary summary focused on post-1970s advances, (2) the five observational facts with enough detail to cite confidently, and (3) the three topic suggestions with brief justifications.",
+          "dependency_analysis": "The task begins with Wikipedia:search_wikipedia to find relevant articles. The top result ('Black hole') is used as input to Wikipedia:get_sections (to confirm comprehensiveness), Wikipedia:summarize_article_for_query (with a specific historical focus), Wikipedia:extract_key_facts (scoped to observational evidence), and Wikipedia:get_related_topics (to expand context). Each step depends on the title identified in the first search, creating a clear chain: search → validate/inspect structure → generate query-focused summary → extract domain-specific facts → discover related concepts.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "Context7",
+            "DEX Paprika",
+            "FruityVice",
+            "Hugging Face",
+            "Math MCP",
+            "Medical Calculator",
+            "Reddit",
+            "Scientific Computing"
           ]
         }
       ]
@@ -3311,6 +4435,42 @@
             "Reddit",
             "Scientific Computing"
           ]
+        },
+        {
+          "task_id": "playwright_006",
+          "task_description": "You are helping a colleague debug a flaky e-commerce checkout flow that intermittently fails when users apply promo codes. Navigate to https://shop.example.test (a test domain), add any item to the cart, proceed to checkout, and simulate entering the promo code 'SAVE10'. After applying it, wait for the discount confirmation message to appear. If a browser dialog pops up (e.g., alert or prompt), accept it. Then, capture the final order summary section as a screenshot named 'final_checkout.png', extract the total price using JavaScript evaluation, and list all network requests made during the promo application phase to identify any failed API calls. Finally, close the browser tab cleanly.",
+          "fuzzy_description": "Hey, can you help me figure out why the promo code 'SAVE10' sometimes breaks checkout on our test site? I’ve been seeing weird intermittent issues. Could you go to https://shop.example.test, add any product to the cart, head to checkout, and try applying that code? If a browser popup shows up—like an alert or prompt—just click OK. Once the discount confirmation appears, grab a screenshot of the whole order summary and save it as 'final_checkout.png'. Also, I need the exact final total price (pull it directly from the page with JS if possible) and a list of all network requests that fired while applying the promo—especially any that failed. Just close the tab when you’re done. Thanks!\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "The task requires sequential web interactions: navigation → adding to cart (implicit via click) → form filling (promo code) → dialog handling → waiting for UI feedback → screenshot capture → JavaScript evaluation for price extraction → network inspection → cleanup. Each step depends on the prior one completing successfully (e.g., you can’t apply a promo code before reaching checkout, and network analysis must occur after the promo action triggers requests). All tools used are from the Playwright server, which is the only active server.",
+          "distraction_servers": [
+            "Call for Papers",
+            "Car Price Evaluator",
+            "DEX Paprika",
+            "FruityVice",
+            "Google Maps",
+            "Hugging Face",
+            "Math MCP",
+            "Medical Calculator",
+            "NixOS",
+            "Weather Data"
+          ]
+        },
+        {
+          "task_id": "playwright_007",
+          "task_description": "You are investigating a sudden drop in user engagement on our internal analytics dashboard (https://analytics.internal.example.com). Navigate to the dashboard, log in using username 'analyst' and password 'securePass123!', then interact with the date range selector to view data for the past 7 days. After the chart loads, take a full-page screenshot named 'engagement_drop_evidence.png', capture an accessibility snapshot of the main metrics panel, and extract the exact numerical values of the 'Daily Active Users' and 'Session Duration (avg)' fields using JavaScript evaluation. Finally, list all network requests made during this session that hit '/api/metrics', retrieve the response body of the first such request, and save it alongside the screenshot and extracted values in a summary report.",
+          "fuzzy_description": "Hey, I’ve noticed a sharp drop in user engagement on our internal analytics dashboard and need your help digging into it. Can you log in as ‘analyst’ (password: securePass123!) and pull up the data for the last 7 days? Once the chart loads, grab a full-page screenshot called ‘engagement_drop_evidence.png’, and also get me the exact numbers shown for “Daily Active Users” and “Session Duration (avg)”. While you’re at it, could you check what data the dashboard actually fetched from the backend—specifically any requests to ‘/api/metrics’—and save the response from the first one? I’d like all this bundled together so we can figure out what’s going on.",
+          "dependency_analysis": "This task requires a strict sequence: (1) navigate to a URL, (2) fill a login form, (3) select a date range (likely via combobox or calendar widget), (4) wait for dynamic content to load, (5) take a screenshot, (6) capture a snapshot for element references, (7) evaluate JS to extract specific metric values, (8) list network requests filtered by endpoint, and (9) fetch the body of a specific API response. Each step depends on the successful completion of the prior one, especially DOM state changes after navigation and interaction.",
+          "distraction_servers": [
+            "BioMCP",
+            "Context7",
+            "DEX Paprika",
+            "Game Trends",
+            "Hugging Face",
+            "Jupyter MCP",
+            "Math MCP",
+            "Medical Calculator",
+            "OSINT Intelligence",
+            "Wikipedia"
+          ]
         }
       ]
     },
@@ -3429,6 +4589,42 @@
             "Reddit",
             "Weather Data"
           ]
+        },
+        {
+          "task_id": "jupyter_mcp_006",
+          "task_description": "I’ve been collaborating on a machine learning project in a Jupyter notebook called 'model_training.ipynb' located in the 'experiments/q3_eval/' directory. I need to verify that the notebook is using the latest evaluation logic. First, explore the file system to confirm the notebook exists and check if there are any other notebooks in that folder from the past 7 days that might contain updated code. Then, activate 'model_training.ipynb', read its cells in brief format to locate the evaluation section (likely around cell index 12–15), and inspect the exact source of the evaluation cell. If it still uses 'accuracy_score' as the sole metric, update it to also compute and print F1-score and AUC using sklearn.metrics. Insert a new markdown cell above the updated code cell explaining the change, execute the modified evaluation block, and return the output. Finally, list all active kernels to confirm no unintended sessions were spawned during this process.",
+          "fuzzy_description": "Hey, I’ve been working on a machine learning project with a teammate, and we’ve been using a notebook called `model_training.ipynb` in the `experiments/q3_eval/` folder. I’m pretty sure the evaluation part hasn’t been updated recently—it’s probably still just reporting accuracy—but I want to double-check and improve it.\n\nCan you look in that directory and see if there are any other notebooks modified in the last week that might have newer evaluation code? If not, go ahead and open `model_training.ipynb`. The evaluation logic should be somewhere around cells 12 to 15—just skim through to find it. If it’s only using `accuracy_score`, please update it to also compute and print the F1-score and AUC (using `sklearn.metrics`). Add a short markdown cell right above explaining that we’re expanding the metrics beyond accuracy for better model assessment.\n\nAfter making the change, run that updated code block and show me the actual output it produces. Oh, and once you're done, could you list all currently running notebook sessions? I just want to make sure we didn’t accidentally spin up any extra kernels while doing this.\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "The task begins with file system exploration using list_files to locate and validate the target notebook and check for recent alternatives. This is followed by use_notebook to activate the correct file. Reading the notebook structure (read_notebook in brief mode) enables targeted inspection via read_cell. The edit requires either overwrite_cell_source or edit_cell_source after identifying outdated content, plus insert_cell for documentation. Execution via execute_cell validates correctness, and list_kernels provides final system state verification. All steps are sequential and interdependent—e.g., you cannot edit a cell without first activating the notebook and locating the correct index.",
+          "distraction_servers": [
+            "BioMCP",
+            "Call for Papers",
+            "Car Price Evaluator",
+            "Game Trends",
+            "Huge Icons",
+            "Hugging Face",
+            "Math MCP",
+            "Movie Recommender",
+            "Neo4j Cypher",
+            "OSINT Intelligence"
+          ]
+        },
+        {
+          "task_id": "jupyter_mcp_007",
+          "task_description": "A data scientist has been experimenting with time-series forecasting in a Jupyter notebook called 'forecast_q3_sales.ipynb' located in the 'projects/sales/' directory. Over the past 7 days, they’ve added several prototype cells but now want to clean up the notebook: remove all markdown cells containing the phrase 'WIP – do not run', move the final evaluation code (currently at index 12) to the end, and insert a new code cell at the beginning that sets a consistent random seed using `np.random.seed(42)` for reproducibility. After these edits, execute the entire cleaned pipeline from start to finish and return the final output of the last cell, which should be a dictionary containing 'rmse' and 'mae' metrics.",
+          "fuzzy_description": "Hey, I’ve been tinkering with my Q3 sales forecast notebook (`projects/sales/forecast_q3_sales.ipynb`) all week and it’s gotten a bit messy. Could you help me clean it up? Specifically, I’d like to get rid of any markdown cells that say “WIP – do not run,” move the evaluation block (it’s currently cell 12) to the very end, and add a new code cell at the top that sets `np.random.seed(42)` so the results are reproducible. Once that’s done, please run the whole thing from start to finish and send me the final output—the last cell should spit out a dictionary with 'rmse' and 'mae' values. I need those numbers to check if the latest changes actually improved the model.",
+          "dependency_analysis": "This task requires navigating the file system to locate the notebook ('list_files'), activating it ('use_notebook'), inspecting its structure ('read_notebook' in brief mode), identifying and deleting specific markdown cells ('read_cell' + 'delete_cell'), moving a key code cell ('move_cell'), inserting a new initialization cell at the top ('insert_cell'), and then executing the revised workflow ('execute_cell' on multiple indices or via sequential execution). The final deliverable depends on correct sequencing: cleanup must precede execution, and cell movement must account for index shifts after deletions. All steps must occur within the Jupyter MCP server; no external data or APIs are needed.",
+          "distraction_servers": [
+            "BioMCP",
+            "Call for Papers",
+            "Car Price Evaluator",
+            "DEX Paprika",
+            "Game Trends",
+            "Google Maps",
+            "Hugging Face",
+            "Math MCP",
+            "Milvus MCP",
+            "Wikipedia"
+          ]
         }
       ]
     },
@@ -3545,6 +4741,42 @@
             "NASA Data",
             "NixOS",
             "Unit Converter",
+            "Wikipedia"
+          ]
+        },
+        {
+          "task_id": "neo4j_cypher_006",
+          "task_description": "Our research team is investigating collaboration patterns among authors who have published papers on graph neural networks in the past 6 months. Using our internal knowledge graph, first retrieve the database schema to understand how authors, papers, and topics are modeled. Then, identify all papers tagged with 'graph neural network' or 'GNN' published in the last 180 days, find their authors, and compute the number of co-authored papers between every pair of these authors. Finally, return a list of author pairs who have collaborated on at least two papers during this period, along with their institution affiliations and the titles of their joint works.",
+          "fuzzy_description": "Hey, I’m looking into how researchers are collaborating on graph neural network work lately. Could you pull up all the papers from the last 180 days that are tagged with either “graph neural network” or “GNN,” and then find every pair of authors who’ve co-authored at least two of those papers together? For each such pair, I’d also need their institutional affiliations and the actual titles of the papers they wrote together. Thanks!\n\nPlease make sure the final answer is backed by specific data, concrete numbers, or verifiable sources.",
+          "dependency_analysis": "The task begins by calling get_neo4j_schema to inspect the structure of the knowledge graph (e.g., node labels like :Paper, :Author, :Institution and relationships like :AUTHORED_BY, :AFFILIATED_WITH). This informs the construction of the subsequent read query. Then, read_neo4j_cypher is used to fetch recent GNN-related papers, their authors, and affiliations using relative date filtering (last 180 days). A second read query computes co-authorship frequencies and filters pairs with ≥2 collaborations. No write operations are needed, but schema understanding is essential for accurate querying.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "Call for Papers",
+            "Car Price Evaluator",
+            "Context7",
+            "Hugging Face",
+            "Math MCP",
+            "Metropolitan Museum",
+            "National Parks",
+            "Scientific Computing"
+          ]
+        },
+        {
+          "task_id": "neo4j_cypher_007",
+          "task_description": "A research team is investigating collaboration patterns among authors who published papers on large language models in the past 6 months. They suspect that co-authorship networks have evolved significantly during this period and want to identify emerging research clusters. Using the Neo4j graph database, first retrieve the current schema to understand how authors, papers, and affiliations are modeled. Then, write a Cypher query to create a new relationship type called :RECENTLY_COAUTHORED if two authors jointly published at least one paper in the last 180 days. Finally, execute a read query to return the top 5 author pairs with the highest number of recent co-authored papers, along with their institutional affiliations and publication counts. Deliver a JSON object containing these pairs, sorted by publication count descending.",
+          "fuzzy_description": "I'm part of a team studying how researchers are collaborating on large language model papers lately. We’ve heard that new groups are forming quickly, and we’d like to see who’s been co-authoring the most in the last six months. Can you pull data showing the top five pairs of authors who’ve published together the most since about 180 days ago? For each pair, we also need their current institutional affiliations and exactly how many joint papers they’ve released in that window—please sort them from highest to lowest by paper count and send it back as a clean JSON object.",
+          "dependency_analysis": "The task requires three sequential steps using only Neo4j Cypher tools: (1) get_neo4j_schema to inspect node/relationship structure before writing queries; (2) write_neo4j_cypher to materialize a new relationship based on temporal filtering of existing data; (3) read_neo4j_cypher to aggregate and rank results. The write step depends on schema understanding, and the final read depends on the newly created relationships.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "Call for Papers",
+            "Context7",
+            "DEX Paprika",
+            "Hugging Face",
+            "Metropolitan Museum",
+            "Movie Recommender",
+            "OpenAPI Explorer",
             "Wikipedia"
           ]
         }
@@ -3665,9 +4897,45 @@
             "OSINT Intelligence",
             "Scientific Computing"
           ]
+        },
+        {
+          "task_id": "milvus_mcp_006",
+          "task_description": "A research team has just finished a literature review on sustainable battery materials and wants to archive their findings in a new vector database. Create a collection named 'battery_materials_q3_2024' with fields for 'id', 'title', 'abstract', and a 768-dimensional 'embedding'. Insert the following three records: (1) title='Solid-State Electrolytes for Lithium Metal Batteries', abstract='Recent advances in sulfide-based solid electrolytes...', embedding=[0.1, -0.3, ..., 0.42] (768 dims); (2) title='Recycling Cathode Materials from Spent EV Batteries', abstract='Hydrometallurgical recovery of nickel and cobalt...', embedding=[-0.2, 0.5, ..., -0.11]; (3) title='Sodium-Ion Alternatives to Lithium-Ion Systems', abstract='Abundant sodium resources enable cost-effective grid storage...', embedding=[0.33, 0.01, ..., 0.87]. After insertion, load the collection into memory, then perform a hybrid search using the query text 'environmentally friendly battery recycling' against the 'abstract' field and the vector [0.25, -0.1, ..., 0.6] against the 'embedding' field to retrieve the most relevant document. Return the title and abstract of the top result.",
+          "fuzzy_description": "Our team just wrapped up a literature review on sustainable battery materials and needs to store three key papers in a new collection called 'battery_materials_q3_2024'. Each entry has an ID, title, abstract, and a 768-dimensional embedding vector. The papers are:  \n\n1. **Title**: \"Solid-State Electrolytes for Lithium Metal Batteries\"  \n   **Abstract**: \"Recent advances in sulfide-based solid electrolytes...\"  \n   **Embedding**: [0.1, -0.3, ..., 0.42]  \n\n2. **Title**: \"Recycling Cathode Materials from Spent EV Batteries\"  \n   **Abstract**: \"Hydrometallurgical recovery of nickel and cobalt...\"  \n   **Embedding**: [-0.2, 0.5, ..., -0.11]  \n\n3. **Title**: \"Sodium-Ion Alternatives to Lithium-Ion Systems\"  \n   **Abstract**: \"Abundant sodium resources enable cost-effective grid storage...\"  \n   **Embedding**: [0.33, 0.01, ..., 0.87]  \n\nOnce they’re stored, we’d like to run a hybrid search using the query text *\"environmentally friendly battery recycling\"* against the abstracts and the vector **[0.25, -0.1, ..., 0.6]** against the embeddings. Could you return the title and abstract of the top-matching paper? We need this to validate our retrieval setup before sharing results with collaborators.",
+          "dependency_analysis": "The task requires a strict sequence: (1) create a new collection with a specific schema; (2) insert structured data including dense vectors; (3) load the collection to enable search; (4) execute a hybrid search combining textual and vector queries. All steps must use Milvus MCP tools—no external data sources or user input are needed beyond the provided values. The final output depends on successful completion of all prior steps.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "Call for Papers",
+            "Car Price Evaluator",
+            "Context7",
+            "Hugging Face",
+            "Math MCP",
+            "OpenAPI Explorer",
+            "Paper Search",
+            "Weather Data"
+          ]
+        },
+        {
+          "task_id": "milvus_mcp_007",
+          "task_description": "I'm investigating whether recent technical documentation about transformer-based language models has been properly indexed in our vector database. First, list all available collections and identify any named 'tech_docs' or similar. If such a collection exists, get its schema to confirm it contains both a text field (e.g., 'content') and a vector field (e.g., 'embedding'). Then, load the collection into memory. Next, perform a hybrid search using the query text 'efficient fine-tuning of LLMs with low-rank adaptation' along with a provided 768-dimensional query vector (use [0.1, -0.2, 0.3, ..., alternating pattern normalized to unit length—assume this is given as a concrete 768-float array]) to find the top 5 most relevant documents from the past 14 days. Filter results to only include entries where the 'ingestion_date' field is within the last two weeks. Finally, return the document titles, ingestion dates, and similarity scores in a structured JSON table.",
+          "fuzzy_description": "Hey, can you check if our system has properly indexed the latest technical docs about transformer-based language models? Specifically, I’m looking for a collection that’s probably called something like “tech_docs”—if it exists, make sure it actually stores both the document text and its vector embedding. Assuming that’s all set, I’d like you to search within that collection for the top 5 most relevant documents from the last 14 days related to “efficient fine-tuning of LLMs with low-rank adaptation.” Use both the text query and this 768-dimensional query vector (it follows an alternating pattern like [0.1, -0.2, 0.3, …], normalized to unit length—I can provide the full array if needed). Only include results where the ingestion date falls within the past two weeks. Could you return the titles, ingestion dates, and similarity scores in a clean JSON table?",
+          "dependency_analysis": "The task requires: (1) listing collections to locate the correct one; (2) inspecting its schema via get_collection_info to validate field names; (3) loading it for search; (4) executing a hybrid search that combines both textual and vector inputs with a time-based filter; and (5) structuring the output. All steps must use Milvus MCP tools in sequence, with later steps depending on outcomes of earlier ones (e.g., field names from schema inspection inform the hybrid search parameters). The mention of 'documentation', 'LLMs', and 'embeddings' could superficially suggest Hugging Face or Jupyter MCP, but the core action—vector/text hybrid retrieval from a custom collection—is exclusive to Milvus.",
+          "distraction_servers": [
+            "Bibliomantic",
+            "BioMCP",
+            "DEX Paprika",
+            "Hugging Face",
+            "Jupyter MCP",
+            "Math MCP",
+            "Metropolitan Museum",
+            "Paper Search",
+            "Scientific Computing",
+            "Wikipedia"
+          ]
         }
       ]
     }
   ],
-  "total_tasks": 185
+  "total_tasks": 256
 }

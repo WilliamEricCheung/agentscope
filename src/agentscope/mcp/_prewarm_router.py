@@ -405,6 +405,12 @@ class MCPPrewarmKeywordRouter(MCPPrewarmRouter):
             # Returns e.g. ['playwright-mcp'] when prompt contains 'browser'
     """
 
+    _CONFIG_KEYS = {
+        "keyword_mapping",
+        "min_matches_per_client",
+        "max_candidates",
+    }
+
     def __init__(
         self,
         mapping: dict[str, list[str]] | str | None = None,
@@ -425,7 +431,26 @@ class MCPPrewarmKeywordRouter(MCPPrewarmRouter):
                 "Supported: 'keyword'.",
             )
         self.method = method
-        self._mapping = self._load_mapping(mapping)
+        self._min_matches_per_client = 1
+        self._max_candidates: int | None = None
+
+        mapping_payload: dict[str, list[str]] | str | None = mapping
+        if isinstance(mapping, dict) and any(
+            key in mapping for key in self._CONFIG_KEYS
+        ):
+            mapping_payload = mapping.get("keyword_mapping")
+            self._min_matches_per_client = max(
+                1,
+                int(mapping.get("min_matches_per_client", 1)),
+            )
+            max_candidates = mapping.get("max_candidates")
+            self._max_candidates = (
+                max(1, int(max_candidates))
+                if max_candidates is not None
+                else None
+            )
+
+        self._mapping = self._load_mapping(mapping_payload)
 
     # ------------------------------------------------------------------
     # Private helpers
@@ -522,15 +547,20 @@ class MCPPrewarmKeywordRouter(MCPPrewarmRouter):
 
         candidates: list[str] = []
         for client_name, keywords in self._mapping.items():
+            matched_keyword_count = 0
             for kw in keywords:
                 if kw in text:
-                    candidates.append(client_name)
+                    matched_keyword_count += 1
                     logger.debug(
                         "[PrewarmRouter] keyword '%s' matched -> '%s'",
                         kw,
                         client_name,
                     )
-                    break  # one match per client is enough
+            if matched_keyword_count >= self._min_matches_per_client:
+                candidates.append(client_name)
+
+        if self._max_candidates is not None:
+            candidates = candidates[: self._max_candidates]
 
         return candidates
 
@@ -684,6 +714,8 @@ class MCPPrewarmHybridRouter(MCPPrewarmRouter):
 
     _SEMANTIC_CONFIG_KEYS = {
         "keyword_mapping",
+        "keyword_min_matches_per_client",
+        "keyword_max_candidates",
         "semantic_mapping",
         "artifact_dir",
         "threshold",
@@ -713,6 +745,20 @@ class MCPPrewarmHybridRouter(MCPPrewarmRouter):
             if any(key in mapping for key in self._SEMANTIC_CONFIG_KEYS):
                 keyword_mapping = mapping.get("keyword_mapping")
                 semantic_mapping = mapping.get("semantic_mapping")
+
+                keyword_payload: dict[str, object] = {}
+                if keyword_mapping is not None:
+                    keyword_payload["keyword_mapping"] = keyword_mapping
+                if "keyword_min_matches_per_client" in mapping:
+                    keyword_payload["min_matches_per_client"] = mapping[
+                        "keyword_min_matches_per_client"
+                    ]
+                if "keyword_max_candidates" in mapping:
+                    keyword_payload["max_candidates"] = mapping[
+                        "keyword_max_candidates"
+                    ]
+                if keyword_payload:
+                    keyword_mapping = keyword_payload
 
                 if semantic_mapping is None:
                     semantic_payload = {

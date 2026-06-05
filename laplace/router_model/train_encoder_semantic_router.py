@@ -12,7 +12,7 @@ from _router_data import (
     load_samples_from_datasets,
     parse_dataset_paths,
     save_eval_samples,
-    split_samples,
+    split_samples_with_audit,
 )
 
 
@@ -40,16 +40,13 @@ def main() -> None:
     parser.add_argument(
         "--dataset",
         type=Path,
-        default=_DATASET_DIR / "mcpbench_tasks_single_runner_format.json",
+        default=_DATASET_DIR / "laplace_tasks_single_runner_format.json",
         help="Single-skill dataset path (used when --datasets is not provided)",
     )
     parser.add_argument(
         "--datasets",
         type=str,
-        default=(
-            f"{_DATASET_DIR / 'mcpbench_tasks_single_runner_format.json'},"
-            f"{_DATASET_DIR / 'laplace_tasks_single_runner_format.json'}"
-        ),
+        default=f"{_DATASET_DIR / 'laplace_tasks_single_runner_format.json'}",
         help="Comma-separated single-skill dataset paths",
     )
     parser.add_argument(
@@ -60,12 +57,31 @@ def main() -> None:
     )
     parser.add_argument(
         "--text-mode",
-        choices=["fuzzy", "task", "both"],
-        default="both",
+        choices=["fuzzy", "task", "both", "split_both"],
+        default="split_both",
         help="Which text field to use as training text",
     )
     parser.add_argument("--train-ratio", type=float, default=0.8)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--eval-seed", type=int, default=42)
+    parser.add_argument(
+        "--split-method",
+        choices=["stratified_by_server", "grouped_by_server_similarity"],
+        default="grouped_by_server_similarity",
+        help="How to split train/eval examples",
+    )
+    parser.add_argument(
+        "--dedupe-method",
+        choices=["none", "exact_text_per_server"],
+        default="exact_text_per_server",
+        help="Whether to remove exact duplicate texts before splitting",
+    )
+    parser.add_argument(
+        "--similarity-threshold",
+        type=float,
+        default=0.8,
+        help="Lexical Jaccard threshold used by grouped split",
+    )
     parser.add_argument("--threshold", type=float, default=0.35)
     parser.add_argument("--top-k", type=int, default=3)
     parser.add_argument("--ensure-non-empty", action="store_true")
@@ -99,10 +115,13 @@ def main() -> None:
         dataset_paths=dataset_paths,
         text_mode=args.text_mode,
     )
-    train_samples, eval_samples = split_samples(
+    train_samples, eval_samples, split_audit = split_samples_with_audit(
         all_samples,
         train_ratio=args.train_ratio,
-        seed=args.seed,
+        eval_seed=args.eval_seed,
+        split_method=args.split_method,
+        dedupe_method=args.dedupe_method,
+        similarity_threshold=args.similarity_threshold,
     )
 
     model, pair_stats = EncoderSemanticRouter.fit(
@@ -125,6 +144,11 @@ def main() -> None:
         "text_mode": args.text_mode,
         "train_ratio": args.train_ratio,
         "seed": args.seed,
+        "eval_seed": args.eval_seed,
+        "split_method": args.split_method,
+        "dedupe_method": args.dedupe_method,
+        "similarity_threshold": args.similarity_threshold,
+        "split_audit": split_audit.to_dict(),
         "hyperparameters": {
             "model_name": args.model_name,
             "epochs": args.epochs,

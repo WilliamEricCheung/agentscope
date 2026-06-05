@@ -1,10 +1,10 @@
 {
-  "samples": 44,
+  "samples": 97,
   "threshold": 0.35,
   "top_k": 3,
-  "micro_precision": 1.0,
-  "micro_recall": 0.977273,
-  "micro_f1": 0.988506,
-  "hit_rate": 0.977273,
-  "distraction_false_positive_count": 0
+  "micro_precision": 0.941748,
+  "micro_recall": 1.0,
+  "micro_f1": 0.97,
+  "hit_rate": 1.0,
+  "distraction_false_positive_count": 2
 }

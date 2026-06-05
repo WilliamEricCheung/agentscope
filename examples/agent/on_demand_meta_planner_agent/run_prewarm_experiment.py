@@ -70,7 +70,8 @@ def _default_output_paths(base_dir: Path | None = None) -> tuple[Path, Path, Pat
         `tuple[Path, Path, Path]`:
             Default JSONL, Markdown report, and plan file paths.
     """
-    output_dir = base_dir or Path(__file__).resolve().parent
+    output_dir = base_dir or (Path(__file__).resolve().parent / "result")
+    output_dir.mkdir(parents=True, exist_ok=True)
     date_prefix = time.strftime("%m%d", time.localtime())
     index = 0
 
@@ -217,6 +218,7 @@ def _sample_unique_server_tasks(
 
 def _build_router(
     mode: Literal["none", "keyword", "semantic", "hybrid"],
+    keyword_min_matches_per_client: int = 1,
 ) -> object | None:
     """Create one router for the given experiment mode.
 
@@ -235,11 +237,17 @@ def _build_router(
     if mode == "none":
         return None
     if mode == "keyword":
-        return MCPPrewarmKeywordRouter()
+        return MCPPrewarmKeywordRouter(
+            mapping={"min_matches_per_client": keyword_min_matches_per_client},
+        )
     if mode == "semantic":
         return MCPPrewarmSemanticRouter()
     if mode == "hybrid":
-        return MCPPrewarmHybridRouter()
+        return MCPPrewarmHybridRouter(
+            mapping={
+                "keyword_min_matches_per_client": keyword_min_matches_per_client,
+            },
+        )
     raise ValueError(f"Unsupported experiment mode: {mode}")
 
 
@@ -322,6 +330,7 @@ def _build_experiment_plan(
     modes: list[Literal["none", "keyword", "semantic", "hybrid"]],
     sampled_tasks: list[dict[str, str]],
     manifest_path: str | None,
+    keyword_min_matches_per_client: int,
 ) -> dict[str, Any]:
     """Build a persisted experiment plan for resumable execution.
 
@@ -352,6 +361,7 @@ def _build_experiment_plan(
         "repeats": repeats,
         "seed": seed,
         "modes": list(modes),
+        "keyword_min_matches_per_client": keyword_min_matches_per_client,
         "sampled_tasks": sampled_tasks,
     }
 
@@ -450,6 +460,7 @@ def _load_or_initialize_plan(
     seed: int,
     modes: list[Literal["none", "keyword", "semantic", "hybrid"]],
     manifest_path: str | None,
+    keyword_min_matches_per_client: int,
     resume: bool,
 ) -> dict[str, Any]:
     """Load an existing resumable plan or initialize a new one.
@@ -491,6 +502,7 @@ def _load_or_initialize_plan(
         "repeats": repeats,
         "seed": seed,
         "modes": list(modes),
+        "keyword_min_matches_per_client": keyword_min_matches_per_client,
     }
 
     if plan_path.exists():
@@ -518,6 +530,7 @@ def _load_or_initialize_plan(
         modes=modes,
         sampled_tasks=sampled_tasks,
         manifest_path=manifest_path,
+        keyword_min_matches_per_client=keyword_min_matches_per_client,
     )
     plan_path.write_text(
         json.dumps(plan, indent=2, ensure_ascii=False),
@@ -661,6 +674,7 @@ async def _run_single_trial(
     registration: _DockerMCPRegistrationConfig,
     registrations: list[_DockerMCPRegistrationConfig],
     speculative_executor: object,
+    keyword_min_matches_per_client: int,
 ) -> dict[str, Any]:
     """Run one prompt-prewarm trial.
 
@@ -685,7 +699,10 @@ async def _run_single_trial(
     await _cleanup_experiment_containers(registrations)
 
     prompt = task["fuzzy_description"]
-    router = _build_router(mode)
+    router = _build_router(
+        mode,
+        keyword_min_matches_per_client=keyword_min_matches_per_client,
+    )
     timing_run = _create_mcp_timing_run(
         task_description=prompt,
         prewarm=mode != "none",
@@ -838,22 +855,46 @@ def _build_mode_rows(records: list[dict[str, Any]]) -> list[list[str]]:
         if not group:
             continue
 
-        waits = [
+        waits_all = [
             float(record["summary"]["wait_for_mcp_ready_after_activation_ms"])
             for record in group
             if record.get("summary", {}).get("wait_for_mcp_ready_after_activation_ms")
             is not None
+        ]
+        waits_non_cold = [
+            float(record["summary"]["wait_for_mcp_ready_after_activation_ms"])
+            for record in group
+            if record.get("summary", {}).get("wait_for_mcp_ready_after_activation_ms")
+            is not None
+            and str(record.get("summary", {}).get("startup_mode") or "unknown")
+            != "cold"
+        ]
+        waits_cold = [
+            float(record["summary"]["wait_for_mcp_ready_after_activation_ms"])
+            for record in group
+            if record.get("summary", {}).get("wait_for_mcp_ready_after_activation_ms")
+            is not None
+            and str(record.get("summary", {}).get("startup_mode") or "unknown")
+            == "cold"
         ]
         matched_runs = sum(
             1
             for record in group
             if record.get("summary", {}).get("target_router_matched")
         )
+        mismatch_runs = len(group) - matched_runs
         effective_runs = sum(
             1
             for record in group
             if record.get("summary", {}).get("target_effective_prewarm")
         )
+        waits_mismatch = [
+            float(record["summary"]["wait_for_mcp_ready_after_activation_ms"])
+            for record in group
+            if record.get("summary", {}).get("wait_for_mcp_ready_after_activation_ms")
+            is not None
+            and not record.get("summary", {}).get("target_router_matched")
+        ]
         effective_route_counts: dict[str, int] = defaultdict(int)
         for record in group:
             summary = record.get("summary", {})
@@ -883,6 +924,7 @@ def _build_mode_rows(records: list[dict[str, Any]]) -> list[list[str]]:
                 str(len(group)),
                 str(matched_runs),
                 f"{(matched_runs / len(group)) * 100:.1f}%",
+                str(mismatch_runs),
                 str(effective_runs),
                 (
                     f"{(effective_runs / matched_runs) * 100:.1f}%"
@@ -890,9 +932,12 @@ def _build_mode_rows(records: list[dict[str, Any]]) -> list[list[str]]:
                     else "-"
                 ),
                 effective_route_breakdown,
-                _format_number(sum(waits) / len(waits) if waits else None),
-                _format_number(min(waits) if waits else None),
-                _format_number(max(waits) if waits else None),
+                _format_number(sum(waits_all) / len(waits_all) if waits_all else None),
+                _format_number(sum(waits_non_cold) / len(waits_non_cold) if waits_non_cold else None),
+                _format_number(sum(waits_cold) / len(waits_cold) if waits_cold else None),
+                _format_number(sum(waits_mismatch) / len(waits_mismatch) if waits_mismatch else None),
+                _format_number(min(waits_all) if waits_all else None),
+                _format_number(max(waits_all) if waits_all else None),
                 ", ".join(
                     f"{name}:{activation_modes[name]}"
                     for name in sorted(activation_modes)
@@ -1032,10 +1077,14 @@ def _build_report(
         "Runs",
         "Target Match Runs",
         "Target Match Rate",
+        "Route Mismatch Runs",
         "Effective Prewarm Runs",
         "Effectiveness Rate",
         "Effective Route Breakdown",
-        "Avg Wait After Activation (ms)",
+        "Avg Wait (All, ms)",
+        "Avg Wait (Non-Cold, ms)",
+        "Avg Wait (Cold, ms)",
+        "Avg Wait (Route Mismatch, ms)",
         "Min Wait (ms)",
         "Max Wait (ms)",
         "Activation Startup Modes",
@@ -1070,6 +1119,7 @@ def _build_report(
         f"> Sample size: `{len(sampled_tasks)}` distinct servers, repeats per mode: `{repeats}`, random seed: `{seed}`.",
         "> Each trial begins by forcibly removing all prewarm-ready Laplace MCP containers and their lifecycle state so speculative prewarm always starts from a clean container state.",
         "> `Target Match Rate` measures whether the router selected the actual server required by the sampled task. `Effectiveness Rate` is computed as `effective target prewarm runs / target matched runs`, aligned with the earlier timing-report definition but made target-specific for this experiment.",
+        "> Wait metrics are split by startup outcome: `Non-Cold` (startup_mode != cold), `Cold` (startup_mode == cold), and `Route Mismatch` (router did not select the target server).",
     ]
     if progress_rows:
         sections.extend(
@@ -1104,6 +1154,7 @@ async def run_experiment(
     resume: bool = True,
     reset_output: bool = False,
     plan_path: Path | None = None,
+    keyword_min_matches_per_client: int = 1,
 ) -> str:
     """Run the full prewarm experiment and save artifacts.
 
@@ -1150,6 +1201,7 @@ async def run_experiment(
         seed=seed,
         modes=modes,
         manifest_path=manifest_path,
+        keyword_min_matches_per_client=keyword_min_matches_per_client,
         resume=resume,
     )
     sampled_tasks = [
@@ -1202,6 +1254,7 @@ async def run_experiment(
                         registration=registration,
                         registrations=all_registrations,
                         speculative_executor=speculative_executor,
+                        keyword_min_matches_per_client=keyword_min_matches_per_client,
                     )
                     record["recorded_at"] = time.strftime(
                         "%Y-%m-%d %H:%M:%S",
@@ -1331,6 +1384,12 @@ def main() -> None:
         action="store_true",
         help="Delete any existing JSONL and plan artifacts before starting.",
     )
+    parser.add_argument(
+        "--keyword-min-matches-per-client",
+        type=int,
+        default=1,
+        help="Minimum keyword hits required for one L1 candidate. Increase to force more L2 fallback.",
+    )
     args = parser.parse_args()
 
     default_log_path, default_report_path, default_plan_path = _default_output_paths()
@@ -1355,6 +1414,7 @@ def main() -> None:
             resume=not args.no_resume,
             reset_output=args.reset_output,
             plan_path=plan_path,
+            keyword_min_matches_per_client=max(1, args.keyword_min_matches_per_client),
         ),
     )
     print(report)

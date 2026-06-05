@@ -7,8 +7,9 @@
 当前约定：
 
 - 三个模型都只做 `single-only`
-- 默认数据集为 `../mcp_dataset/mcpbench_tasks_single_runner_format.json` 和 `../mcp_dataset/laplace_tasks_single_runner_format.json`
-- 默认训练文本使用 `text_mode=both`
+- 默认数据集为 `../mcp_dataset/laplace_tasks_single_runner_format.json`
+- 默认训练文本使用 `text_mode=split_both`，即把 `fuzzy_description` 和 `task_description` 展开为两条样本
+- 可信 benchmark 推荐切分为 `grouped_by_server_similarity + exact_text_per_server + 固定 eval seed`
 - 推荐优先顺序：`retrieval` > `encoder` > `fasttext`
 
 ## 1. 目录说明
@@ -38,6 +39,13 @@ python benchmark_router_latency.py --repeats 20
 python generate_router_model_report.py
 ```
 
+更可信的单报告流程：
+
+```bash
+python run_router_benchmark_suite.py \
+	--text-modes split_both
+```
+
 ## 3. Retrieval Baseline
 
 目标：使用零新增重依赖的 TF-IDF 检索式基线训练 router。
@@ -46,10 +54,14 @@ python generate_router_model_report.py
 
 ```bash
 python train_retrieval_semantic_router.py \
-	--datasets ../mcp_dataset/mcpbench_tasks_single_runner_format.json,../mcp_dataset/laplace_tasks_single_runner_format.json \
+	--datasets ../mcp_dataset/laplace_tasks_single_runner_format.json \
 	--output-dir artifacts_retrieval_router_deploy \
-	--text-mode both \
+	--text-mode split_both \
 	--train-ratio 0.8 \
+	--eval-seed 42 \
+	--split-method grouped_by_server_similarity \
+	--dedupe-method exact_text_per_server \
+	--similarity-threshold 0.8 \
 	--max-features 20000 \
 	--char-ngram-min 3 \
 	--char-ngram-max 5 \
@@ -97,10 +109,14 @@ uv pip install -r requirements.txt
 
 ```bash
 python train_encoder_semantic_router.py \
-	--datasets ../mcp_dataset/mcpbench_tasks_single_runner_format.json,../mcp_dataset/laplace_tasks_single_runner_format.json \
+	--datasets ../mcp_dataset/laplace_tasks_single_runner_format.json \
 	--output-dir artifacts_encoder_router_deploy \
-	--text-mode both \
+	--text-mode split_both \
 	--train-ratio 0.8 \
+	--eval-seed 42 \
+	--split-method grouped_by_server_similarity \
+	--dedupe-method exact_text_per_server \
+	--similarity-threshold 0.8 \
 	--model-name sentence-transformers/all-MiniLM-L6-v2 \
 	--epochs 2 \
 	--batch-size 16 \
@@ -148,10 +164,14 @@ pip install fasttext
 
 ```bash
 python train_fasttext_semantic_router.py \
-	--datasets ../mcp_dataset/mcpbench_tasks_single_runner_format.json,../mcp_dataset/laplace_tasks_single_runner_format.json \
+	--datasets ../mcp_dataset/laplace_tasks_single_runner_format.json \
 	--output-dir artifacts_fasttext_router_deploy \
-	--text-mode both \
+	--text-mode split_both \
 	--train-ratio 0.8 \
+	--eval-seed 42 \
+	--split-method grouped_by_server_similarity \
+	--dedupe-method exact_text_per_server \
+	--similarity-threshold 0.8 \
 	--epoch 60 \
 	--lr 0.5 \
 	--word-ngrams 2 \
@@ -163,8 +183,9 @@ python train_fasttext_semantic_router.py \
 ```bash
 python grid_search_threshold_topk.py \
 	--artifact-dir artifacts_fasttext_router_deploy \
-	--thresholds 0.05,0.10,0.15,0.20,0.25,0.30,0.35,0.40,0.45,0.50,0.55,0.60 \
+	--thresholds 0.00,0.01,0.02,0.03,0.04,0.05,0.07,0.10,0.15,0.20 \
 	--topk-list 1,2,3 \
+	--argmax-top-k 1 \
 	--objective composite_score \
 	--composite-weight-f1 1.0 \
 	--composite-weight-distraction 0.3 \
@@ -180,8 +201,9 @@ python grid_search_threshold_topk.py \
 
 建议：
 
-- 追求召回时优先试 `top_k=2`
-- 追求稳定时优先试 `top_k=1`
+- `split_both` 会把每条任务扩成 `fuzzy` 和 `task` 两条样本，split 仍在展开后的样本集上执行
+- 先看 `argmax_baseline`，再看低阈值搜索是否能补充召回
+- `query-only` 只建议在显式做 `text_mode=fuzzy` 对照实验时使用
 - 主要用来做历史对照，不建议作为首选部署模型
 
 ## 6. 统一对比

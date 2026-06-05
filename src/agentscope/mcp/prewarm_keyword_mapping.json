@@ -30,6 +30,16 @@
     "仓库",
     "代码"
   ],
+  "laplace-jupyter-mcp": [
+    "jupyter",
+    "notebook",
+    "ipynb",
+    "kernel",
+    "cell",
+    "笔记本",
+    "单元格",
+    "内核"
+  ],
   "laplace-biomcp": [
     "braf",
     "melanoma",
@@ -44,6 +54,15 @@
     "divination",
     "philip"
   ],
+  "laplace-neo4j-cypher": [
+    "neo4j",
+    "cypher",
+    "graph database",
+    "property graph",
+    "图数据库",
+    "图查询",
+    "节点关系"
+  ],
   "laplace-call-for-papers": [
     "conferences",
     "academic",
@@ -54,6 +73,15 @@
   "laplace-car-price-evaluator": [
     "toyota",
     "fipe"
+  ],
+  "laplace-mcp-server-milvus": [
+    "milvus",
+    "vector database",
+    "vector search",
+    "ann",
+    "hnsw",
+    "向量数据库",
+    "向量检索"
   ],
   "laplace-context7": [
     "library",
@@ -99,7 +127,6 @@
   "laplace-huggingface": [
     "model",
     "dataset",
-    "arxiv",
     "collection",
     "space"
   ],

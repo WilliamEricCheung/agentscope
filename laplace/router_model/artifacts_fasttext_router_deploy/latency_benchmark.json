@@ -1,11 +1,11 @@
 {
   "model_name": "fasttext",
-  "artifact_dir": "artifacts_fasttext_router_deploy",
+  "artifact_dir": "/mnt/d/Project/agentscope/laplace/router_model/artifacts_fasttext_router_deploy",
   "repeats": 20,
-  "query_source": "artifacts_retrieval_router_deploy/eval_samples.jsonl:dex_paprika_000",
-  "min_latency_ms": 0.111456,
-  "avg_latency_ms": 0.133352,
-  "max_latency_ms": 0.169775,
-  "threshold": 0.05,
+  "query_source": "/mnt/d/Project/agentscope/laplace/router_model/artifacts_retrieval_router_deploy/eval_samples.jsonl:bibliomantic_002__fuzzy",
+  "min_latency_ms": 0.157791,
+  "avg_latency_ms": 0.171108,
+  "max_latency_ms": 0.211037,
+  "threshold": 0.07,
   "top_k": 1
 }

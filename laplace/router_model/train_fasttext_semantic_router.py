@@ -12,29 +12,24 @@ from __future__ import annotations
 
 import argparse
 import json
-import random
 import re
 import tempfile
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+
+from _router_data import (
+    Sample,
+    load_samples_from_datasets,
+    normalize_text,
+    parse_dataset_paths,
+    save_eval_samples,
+    split_samples_with_audit,
+)
 
 
 _LABEL_PREFIX = "__label__"
 _SCRIPT_DIR = Path(__file__).resolve().parent
 _DATASET_DIR = _SCRIPT_DIR.parent / "mcp_dataset"
-
-
-@dataclass
-class Sample:
-    """One training/evaluation sample."""
-
-    task_id: str
-    text: str
-    positive_servers: list[str]
-    distraction_servers: list[str]
-    source_dataset: str
-
 
 def _normalize_label(server_name: str) -> str:
     """Normalize server name into fastText-compatible label suffix."""
@@ -43,117 +38,9 @@ def _normalize_label(server_name: str) -> str:
     return normalized or "unknown"
 
 
-def _normalize_text(text: str) -> str:
-    """Normalize text for fastText line format."""
-    collapsed = re.sub(r"\s+", " ", text).strip()
-    return collapsed
-
-
-def _extract_text(task: dict[str, Any], text_mode: str) -> str:
-    """Extract text content from one task record."""
-    fuzzy = str(task.get("fuzzy_description") or "").strip()
-    exact = str(task.get("task_description") or "").strip()
-
-    if text_mode == "fuzzy":
-        return fuzzy or exact
-    if text_mode == "task":
-        return exact or fuzzy
-
-    both = "\n".join(part for part in [fuzzy, exact] if part)
-    return both
-
-
-def load_samples(dataset_path: Path, text_mode: str) -> list[Sample]:
-    """Load single-skill samples from MCP-Bench runner-format json file."""
-    with dataset_path.open("r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    samples: list[Sample] = []
-    for block in data.get("server_tasks", []):
-        block_servers = [str(s) for s in block.get("servers", []) if str(s).strip()]
-        if len(block_servers) != 1:
-            raise ValueError(
-                "Single-skill training requires exactly one server per block: "
-                f"{dataset_path.name} -> {block.get('server_name', '<unknown>')} "
-                f"has {len(block_servers)} servers"
-            )
-        for task in block.get("tasks", []):
-            text = _extract_text(task, text_mode)
-            text = _normalize_text(text)
-            if not text:
-                continue
-            task_id = str(task.get("task_id") or f"sample_{len(samples)}")
-            distraction = [
-                str(s)
-                for s in task.get("distraction_servers", [])
-                if str(s).strip()
-            ]
-            samples.append(
-                Sample(
-                    task_id=task_id,
-                    text=text,
-                    positive_servers=block_servers,
-                    distraction_servers=distraction,
-                    source_dataset=dataset_path.name,
-                ),
-            )
-
-    if not samples:
-        raise ValueError("No valid samples found in dataset")
-
-    return samples
-
-
-def load_samples_from_datasets(
-    dataset_paths: list[Path],
-    text_mode: str,
-) -> list[Sample]:
-    """Load and concatenate samples from multiple datasets."""
-    merged: list[Sample] = []
-    for dataset_path in dataset_paths:
-        merged.extend(load_samples(dataset_path=dataset_path, text_mode=text_mode))
-
-    if not merged:
-        raise ValueError("No valid samples found across all datasets")
-
-    return merged
-
-
-def _parse_dataset_paths(
-    dataset: Path,
-    datasets: str | None,
-) -> list[Path]:
-    """Resolve dataset inputs from either --dataset or --datasets."""
-    if datasets:
-        paths = [Path(p.strip()) for p in datasets.split(",") if p.strip()]
-        if not paths:
-            raise ValueError("--datasets was provided but no valid paths found")
-        return paths
-
-    return [dataset]
-
-
 def _resolve_local_path(path: Path) -> Path:
     """Resolve relative paths against the router_model directory."""
     return path if path.is_absolute() else (_SCRIPT_DIR / path)
-
-
-def split_samples(samples: list[Sample], train_ratio: float, seed: int) -> tuple[list[Sample], list[Sample]]:
-    """Split samples into train/eval subsets."""
-    if not 0.1 <= train_ratio <= 0.95:
-        raise ValueError("train_ratio must be between 0.1 and 0.95")
-
-    rng = random.Random(seed)
-    shuffled = list(samples)
-    rng.shuffle(shuffled)
-    split_idx = int(len(shuffled) * train_ratio)
-
-    train = shuffled[:split_idx]
-    eval_set = shuffled[split_idx:]
-    if not train or not eval_set:
-        raise ValueError("Split produced empty train or eval subset; adjust train_ratio")
-
-    return train, eval_set
 
 
 def _build_label_maps(samples: list[Sample]) -> tuple[dict[str, str], dict[str, str]]:
@@ -345,36 +232,19 @@ def evaluate(
     }
 
 
-def _save_eval_samples(eval_samples: list[Sample], output_path: Path) -> None:
-    """Save eval subset for reusable threshold grid search."""
-    with output_path.open("w", encoding="utf-8") as f:
-        for s in eval_samples:
-            row = {
-                "task_id": s.task_id,
-                "text": s.text,
-                "positive_servers": s.positive_servers,
-                "distraction_servers": s.distraction_servers,
-                "source_dataset": s.source_dataset,
-            }
-            f.write(json.dumps(row, ensure_ascii=False) + "\n")
-
-
 def main() -> None:
     """CLI entrypoint."""
     parser = argparse.ArgumentParser(description="Train FastText semantic router")
     parser.add_argument(
         "--dataset",
         type=Path,
-        default=_DATASET_DIR / "mcpbench_tasks_single_runner_format.json",
+        default=_DATASET_DIR / "laplace_tasks_single_runner_format.json",
         help="Single-skill dataset path (used when --datasets is not provided)",
     )
     parser.add_argument(
         "--datasets",
         type=str,
-        default=(
-            f"{_DATASET_DIR / 'mcpbench_tasks_single_runner_format.json'},"
-            f"{_DATASET_DIR / 'laplace_tasks_single_runner_format.json'}"
-        ),
+        default=f"{_DATASET_DIR / 'laplace_tasks_single_runner_format.json'}",
         help=(
             "Comma-separated single-skill dataset paths for joint training into "
             "one model"
@@ -388,12 +258,36 @@ def main() -> None:
     )
     parser.add_argument(
         "--text-mode",
-        choices=["fuzzy", "task", "both"],
-        default="both",
+        choices=["fuzzy", "task", "both", "split_both"],
+        default="split_both",
         help="Which text field to use as training text",
+    )
+    parser.add_argument(
+        "--query-only",
+        action="store_true",
+        help="Alias for query-side-only input; currently equivalent to --text-mode fuzzy",
     )
     parser.add_argument("--train-ratio", type=float, default=0.8)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--eval-seed", type=int, default=42)
+    parser.add_argument(
+        "--split-method",
+        choices=["stratified_by_server", "grouped_by_server_similarity"],
+        default="grouped_by_server_similarity",
+        help="How to split train/eval examples",
+    )
+    parser.add_argument(
+        "--dedupe-method",
+        choices=["none", "exact_text_per_server"],
+        default="exact_text_per_server",
+        help="Whether to remove exact duplicate texts before splitting",
+    )
+    parser.add_argument(
+        "--similarity-threshold",
+        type=float,
+        default=0.8,
+        help="Lexical Jaccard threshold used by grouped split",
+    )
 
     parser.add_argument("--epoch", type=int, default=30)
     parser.add_argument("--lr", type=float, default=0.6)
@@ -414,19 +308,24 @@ def main() -> None:
     )
 
     args = parser.parse_args()
+    if args.query_only:
+        args.text_mode = "fuzzy"
     args.output_dir = _resolve_local_path(args.output_dir)
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
-    dataset_paths = _parse_dataset_paths(args.dataset, args.datasets)
+    dataset_paths = parse_dataset_paths(args.dataset, args.datasets)
     dataset_paths = [_resolve_local_path(path) for path in dataset_paths]
     all_samples = load_samples_from_datasets(
         dataset_paths=dataset_paths,
         text_mode=args.text_mode,
     )
-    train_samples, eval_samples = split_samples(
+    train_samples, eval_samples, split_audit = split_samples_with_audit(
         all_samples,
         train_ratio=args.train_ratio,
-        seed=args.seed,
+        eval_seed=args.eval_seed,
+        split_method=args.split_method,
+        dedupe_method=args.dedupe_method,
+        similarity_threshold=args.similarity_threshold,
     )
 
     server_to_label, label_to_server = _build_label_maps(all_samples)
@@ -454,6 +353,12 @@ def main() -> None:
         "text_mode": args.text_mode,
         "train_ratio": args.train_ratio,
         "seed": args.seed,
+        "eval_seed": args.eval_seed,
+        "split_method": args.split_method,
+        "dedupe_method": args.dedupe_method,
+        "similarity_threshold": args.similarity_threshold,
+        "split_audit": split_audit.to_dict(),
+        "query_only": bool(args.query_only),
         "hyperparameters": {
             "epoch": args.epoch,
             "lr": args.lr,
@@ -474,7 +379,7 @@ def main() -> None:
     )
 
     eval_dump = args.output_dir / "eval_samples.jsonl"
-    _save_eval_samples(eval_samples, eval_dump)
+    save_eval_samples(eval_samples, eval_dump)
 
     import fasttext  # lazy import
 
@@ -500,7 +405,7 @@ def main() -> None:
     print("[eval]", json.dumps(metrics, ensure_ascii=False))
 
     if args.query.strip():
-        query = _normalize_text(args.query)
+        query = normalize_text(args.query)
         pred = predict_topk_with_threshold(
             model=model,
             text=query,

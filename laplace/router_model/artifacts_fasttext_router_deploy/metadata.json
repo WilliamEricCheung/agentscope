@@ -1,16 +1,33 @@
 {
   "datasets": [
-    "mcpbench_tasks_single_runner_format.json",
-    "laplace_tasks_single_runner_format.json"
+    "/mnt/d/Project/agentscope/laplace/mcp_dataset/laplace_tasks_single_runner_format.json"
   ],
-  "joint_training": true,
+  "joint_training": false,
   "training_mode": "single_only",
-  "text_mode": "both",
+  "text_mode": "split_both",
   "train_ratio": 0.8,
   "seed": 42,
+  "eval_seed": 42,
+  "split_method": "grouped_by_server_similarity",
+  "dedupe_method": "exact_text_per_server",
+  "similarity_threshold": 0.8,
+  "split_audit": {
+    "split_method": "grouped_by_server_similarity",
+    "dedupe_method": "exact_text_per_server",
+    "similarity_threshold": 0.8,
+    "original_samples": 512,
+    "deduped_samples": 480,
+    "duplicates_removed": 32,
+    "grouped_cluster_count": 448,
+    "grouped_multi_sample_clusters": 16,
+    "skipped_eval_servers": [],
+    "train_samples": 383,
+    "eval_samples": 97
+  },
+  "query_only": false,
   "hyperparameters": {
-    "epoch": 60,
-    "lr": 0.5,
+    "epoch": 30,
+    "lr": 0.6,
     "word_ngrams": 2,
     "dim": 100,
     "minn": 2,
@@ -28,17 +45,21 @@
     "Google Maps": "google_maps",
     "Huge Icons": "huge_icons",
     "Hugging Face": "hugging_face",
+    "Jupyter MCP": "jupyter_mcp",
     "Math MCP": "math_mcp",
     "Medical Calculator": "medical_calculator",
     "Metropolitan Museum": "metropolitan_museum",
+    "Milvus MCP": "milvus_mcp",
     "Movie Recommender": "movie_recommender",
     "NASA Data": "nasa_data",
     "National Parks": "national_parks",
+    "Neo4j Cypher": "neo4j_cypher",
     "NixOS": "nixos",
     "OKX Exchange": "okx_exchange",
     "OSINT Intelligence": "osint_intelligence",
     "OpenAPI Explorer": "openapi_explorer",
     "Paper Search": "paper_search",
+    "Playwright": "playwright",
     "Reddit": "reddit",
     "Scientific Computing": "scientific_computing",
     "Time MCP": "time_mcp",
@@ -46,6 +67,6 @@
     "Weather Data": "weather_data",
     "Wikipedia": "wikipedia"
   },
-  "train_samples": 173,
-  "eval_samples": 44
+  "train_samples": 383,
+  "eval_samples": 97
 }
