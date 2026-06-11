@@ -4,7 +4,10 @@ import asyncio
 import os
 
 from config import (
+    ON_DEMAND_PREDICTIVE_PREWARM_ENABLED,
     ON_DEMAND_PREWARM_ENABLED,
+    ON_DEMAND_PREWARM_TELEMETRY_ENABLED,
+    ON_DEMAND_PREWARM_TELEMETRY_MAX_EVENTS,
     ON_DEMAND_STREAM_TEXT_SPECULATION_INTERVAL_TOKENS,
     normalize_stream_text_speculation_interval_tokens,
 )
@@ -13,8 +16,9 @@ from tool import create_worker
 from agentscope.agent import ReActAgent, UserAgent
 from agentscope.formatter import DashScopeChatFormatter
 from agentscope.mcp import (
+    MCPLaplaceController,
+    MCPLaplaceControllerConfig,
     MCPPrewarmHybridRouter,
-    MCPPrewarmRouter,
     _MCPServerConfigFactory,
     build_mcp_speculative_executor,
 )
@@ -48,6 +52,24 @@ async def main() -> None:
     if planner_github_registration is not None:
         planner_prewarm_registrations.append(planner_github_registration)
 
+    planner_controller = MCPLaplaceController(
+        prompt_prewarm_router=(
+            MCPPrewarmHybridRouter() if ON_DEMAND_PREWARM_ENABLED else None
+        ),
+        prompt_prewarm_executor=(
+            build_mcp_speculative_executor(planner_prewarm_registrations)
+            if ON_DEMAND_PREWARM_ENABLED
+            else None
+        ),
+        config=MCPLaplaceControllerConfig(
+            prompt_prewarm_enabled=ON_DEMAND_PREWARM_ENABLED,
+            predictive_warmer_enabled=ON_DEMAND_PREDICTIVE_PREWARM_ENABLED,
+            telemetry_enabled=ON_DEMAND_PREWARM_TELEMETRY_ENABLED,
+            telemetry_max_events=ON_DEMAND_PREWARM_TELEMETRY_MAX_EVENTS,
+            telemetry_name="on_demand_planner",
+        ),
+    )
+
     planner = ReActAgent(
         name="Friday",
         # pylint: disable=C0301
@@ -74,14 +96,7 @@ Your primary purpose is to break down complicated tasks into manageable subtasks
         plan_notebook=PlanNotebook(),
         toolkit=toolkit,
         max_iters=20,
-        prompt_prewarm_router=(
-            MCPPrewarmHybridRouter() if ON_DEMAND_PREWARM_ENABLED else None
-        ),
-        prompt_prewarm_executor=(
-            build_mcp_speculative_executor(planner_prewarm_registrations)
-            if ON_DEMAND_PREWARM_ENABLED
-            else None
-        ),
+        mcp_laplace_controller=planner_controller,
     )
 
     user = UserAgent(name="user")

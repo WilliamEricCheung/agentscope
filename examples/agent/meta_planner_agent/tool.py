@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 from agentscope.agent import ReActAgent
 from agentscope.formatter import DashScopeChatFormatter
 from agentscope.mcp import (
+    MCPLaplaceController,
     MCPPrewarmRouter,
     _MCPServerConfigFactory,
     _ensure_local_docker_mcp_server,
@@ -140,6 +141,10 @@ async def create_worker(
 
     # Executor: maps matched candidate names to speculative ensure calls.
     _prewarm_executor = build_mcp_speculative_executor(_registrations)
+    _laplace_controller = MCPLaplaceController(
+        prompt_prewarm_router=_prewarm_router,
+        prompt_prewarm_executor=_prewarm_executor,
+    )
 
     # Create a new sub-agent to finish the given task
     sub_agent = ReActAgent(
@@ -160,8 +165,7 @@ You MUST use the `{ReActAgent.finish_function_name}` to generate the final answe
         formatter=DashScopeChatFormatter(),
         toolkit=toolkit,
         max_iters=20,
-        prompt_prewarm_router=_prewarm_router,
-        prompt_prewarm_executor=_prewarm_executor,
+        mcp_laplace_controller=_laplace_controller,
     )
 
     # disable the console output of the sub-agent

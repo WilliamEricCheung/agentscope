@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Tests for MCPPrewarm routers and build_mcp_speculative_executor."""
+import asyncio
 import json
 import os
 import tempfile
@@ -11,6 +12,8 @@ import numpy as np
 
 from agentscope.agent import ReActAgent
 from agentscope.mcp import (
+    MCPLaplaceController,
+    MCPLaplaceControllerConfig,
     MCPPrewarmHybridRouter,
     MCPPrewarmRouter,
     MCPPrewarmKeywordRouter,
@@ -18,6 +21,7 @@ from agentscope.mcp import (
     build_mcp_speculative_executor,
 )
 from agentscope.message import Msg
+from agentscope.tool import ToolResponse
 
 
 class MCPPrewarmKeywordRouterTest(TestCase):
@@ -250,13 +254,16 @@ class ReActAgentStreamPrewarmHookTest(IsolatedAsyncioTestCase):
         router = MCPPrewarmKeywordRouter(
             mapping={"playwright-mcp": ["browser"]}
         )
+        controller = MCPLaplaceController(
+            prompt_prewarm_router=router,
+            prompt_prewarm_executor=AsyncMock(),
+        )
         agent = ReActAgent(
             name="worker",
             sys_prompt="test",
             model=DummyModel(),
             formatter=MagicMock(),
-            prompt_prewarm_router=router,
-            prompt_prewarm_executor=AsyncMock(),
+            mcp_laplace_controller=controller,
         )
         agent._schedule_prompt_prewarm_task = MagicMock()
 
@@ -270,6 +277,7 @@ class ReActAgentStreamPrewarmHookTest(IsolatedAsyncioTestCase):
 
         agent._schedule_prompt_prewarm_task.assert_called_once_with(
             "playwright-mcp",
+            stage="stream",
         )
 
     async def test_stream_reasoning_text_can_trigger_keyword_prewarm(
@@ -285,13 +293,16 @@ class ReActAgentStreamPrewarmHookTest(IsolatedAsyncioTestCase):
         router = MCPPrewarmKeywordRouter(
             mapping={"playwright-mcp": ["搜索", "网页", "weather"]}
         )
+        controller = MCPLaplaceController(
+            prompt_prewarm_router=router,
+            prompt_prewarm_executor=AsyncMock(),
+        )
         agent = ReActAgent(
             name="worker",
             sys_prompt="test",
             model=DummyModel(),
             formatter=MagicMock(),
-            prompt_prewarm_router=router,
-            prompt_prewarm_executor=AsyncMock(),
+            mcp_laplace_controller=controller,
         )
         agent._schedule_prompt_prewarm_task = MagicMock()
 
@@ -303,6 +314,7 @@ class ReActAgentStreamPrewarmHookTest(IsolatedAsyncioTestCase):
 
         agent._schedule_prompt_prewarm_task.assert_called_once_with(
             "playwright-mcp",
+            stage="stream",
         )
 
 
@@ -397,3 +409,199 @@ class BuildMCPSpeculativeExecutorTest(IsolatedAsyncioTestCase):
         executor = build_mcp_speculative_executor([])
         # Should complete without raising
         await executor("anything")
+
+
+class ReActAgentPredictivePrewarmHookTest(IsolatedAsyncioTestCase):
+    """Integration tests for predictive warmer hook in ReActAgent."""
+
+    async def _single_chunk_tool_result(self):
+        """Build a minimal async tool-result generator."""
+        yield ToolResponse(
+            content=[{"type": "text", "text": "ok"}],
+            is_last=True,
+        )
+
+    async def test_predictive_warmer_triggers_after_tool_completion(self) -> None:
+        """Successful MCP tool completion should trigger predictive prewarm."""
+
+        class DummyModel:
+            stream_tool_speculation_hook = None
+            stream_text_speculation_interval_tokens = None
+            stream = False
+
+        predictive_warmer = MagicMock()
+        predictive_warmer.predict_next_servers.return_value = ["Weather Data"]
+        controller = MCPLaplaceController(
+            prompt_prewarm_executor=AsyncMock(),
+            predictive_warmer=predictive_warmer,
+        )
+
+        agent = ReActAgent(
+            name="worker",
+            sys_prompt="test",
+            model=DummyModel(),
+            formatter=MagicMock(),
+            mcp_laplace_controller=controller,
+        )
+
+        agent._schedule_prompt_prewarm_task = MagicMock()
+        agent.toolkit.call_tool_function = AsyncMock(
+            return_value=self._single_chunk_tool_result(),
+        )
+        agent.toolkit.tools["maps_geocode"] = MagicMock(mcp_name="Google Maps")
+
+        await agent._acting(
+            {
+                "id": "tool-1",
+                "type": "tool_use",
+                "name": "maps_geocode",
+                "input": {},
+            },
+        )
+
+        predictive_warmer.predict_next_servers.assert_called_once_with(
+            current_server="Google Maps",
+        )
+        agent._schedule_prompt_prewarm_task.assert_called_once_with(
+            "Weather Data",
+            stage="predictive",
+        )
+
+    async def test_predictive_warmer_respects_disable_switch(self) -> None:
+        """Predictive prewarm should be skipped when switch is disabled."""
+
+        class DummyModel:
+            stream_tool_speculation_hook = None
+            stream_text_speculation_interval_tokens = None
+            stream = False
+
+        predictive_warmer = MagicMock()
+        predictive_warmer.predict_next_servers.return_value = ["Weather Data"]
+        controller = MCPLaplaceController(
+            prompt_prewarm_executor=AsyncMock(),
+            predictive_warmer=predictive_warmer,
+            config=MCPLaplaceControllerConfig(predictive_warmer_enabled=False),
+        )
+
+        agent = ReActAgent(
+            name="worker",
+            sys_prompt="test",
+            model=DummyModel(),
+            formatter=MagicMock(),
+            mcp_laplace_controller=controller,
+        )
+
+        agent._schedule_prompt_prewarm_task = MagicMock()
+        agent.toolkit.call_tool_function = AsyncMock(
+            return_value=self._single_chunk_tool_result(),
+        )
+        agent.toolkit.tools["maps_geocode"] = MagicMock(mcp_name="Google Maps")
+
+        await agent._acting(
+            {
+                "id": "tool-2",
+                "type": "tool_use",
+                "name": "maps_geocode",
+                "input": {},
+            },
+        )
+
+        predictive_warmer.predict_next_servers.assert_not_called()
+        agent._schedule_prompt_prewarm_task.assert_not_called()
+
+    async def test_single_controller_injection_triggers_c1_and_c2(self) -> None:
+        """One controller should drive both prompt and predictive prewarm."""
+
+        class DummyModel:
+            stream_tool_speculation_hook = None
+            stream_text_speculation_interval_tokens = None
+            stream = False
+
+        router = MagicMock(return_value=["playwright-mcp"])
+        executor = AsyncMock()
+        predictive_warmer = MagicMock()
+        predictive_warmer.predict_next_servers.return_value = ["Weather Data"]
+
+        controller = MCPLaplaceController(
+            prompt_prewarm_router=router,
+            prompt_prewarm_executor=executor,
+            predictive_warmer=predictive_warmer,
+            config=MCPLaplaceControllerConfig(predictive_warmer_enabled=True),
+        )
+
+        agent = ReActAgent(
+            name="worker",
+            sys_prompt="test",
+            model=DummyModel(),
+            formatter=MagicMock(),
+            mcp_laplace_controller=controller,
+        )
+
+        await agent._trigger_prompt_prewarm(Msg("user", "hello", "user"))
+        router.assert_called_once()
+
+        agent._schedule_prompt_prewarm_task = MagicMock()
+        agent.toolkit.call_tool_function = AsyncMock(
+            return_value=self._single_chunk_tool_result(),
+        )
+        agent.toolkit.tools["maps_geocode"] = MagicMock(mcp_name="Google Maps")
+
+        await agent._acting(
+            {
+                "id": "tool-3",
+                "type": "tool_use",
+                "name": "maps_geocode",
+                "input": {},
+            },
+        )
+
+        predictive_warmer.predict_next_servers.assert_called_once_with(
+            current_server="Google Maps",
+        )
+        agent._schedule_prompt_prewarm_task.assert_any_call(
+            "Weather Data",
+            stage="predictive",
+        )
+
+    async def test_controller_telemetry_collects_stage_events(self) -> None:
+        """Controller telemetry should include route/schedule/execute events."""
+
+        class DummyModel:
+            stream_tool_speculation_hook = None
+            stream_text_speculation_interval_tokens = None
+            stream = False
+
+        router = MagicMock(return_value=["playwright-mcp", "playwright-mcp"])
+        executor = AsyncMock(return_value=None)
+        controller = MCPLaplaceController(
+            prompt_prewarm_router=router,
+            prompt_prewarm_executor=executor,
+            config=MCPLaplaceControllerConfig(
+                telemetry_enabled=True,
+                telemetry_max_events=64,
+            ),
+        )
+
+        agent = ReActAgent(
+            name="worker",
+            sys_prompt="test",
+            model=DummyModel(),
+            formatter=MagicMock(),
+            mcp_laplace_controller=controller,
+        )
+
+        await agent._trigger_prompt_prewarm(Msg("user", "hello", "user"))
+        router.assert_called_once()
+        await asyncio.sleep(0)
+
+        telemetry = controller.get_telemetry_snapshot()
+        self.assertGreaterEqual(telemetry["stats"]["prompt_route_calls"], 1)
+        self.assertGreaterEqual(telemetry["stats"]["schedule_attempts"], 1)
+        self.assertGreaterEqual(telemetry["stats"]["executor_runs"], 1)
+        event_names = {
+            str(event.get("event", ""))
+            for event in telemetry["events"]
+        }
+        self.assertIn("route_prompt_candidates", event_names)
+        self.assertIn("prewarm_schedule", event_names)
+        self.assertIn("prewarm_executor", event_names)

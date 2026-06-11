@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 
 from agentscope.agent import ReActAgent
 from agentscope.formatter import DashScopeChatFormatter
+from agentscope.mcp import MCPLaplaceController
 from agentscope.memory import InMemoryMemory
 from agentscope.message import TextBlock, ToolUseBlock, Msg
 from agentscope.model import ChatModelBase, ChatResponse
@@ -202,6 +203,11 @@ class ReActAgentTest(IsolatedAsyncioTestCase):
         async def executor(candidate: str) -> None:
             executed.append(candidate)
 
+        controller = MCPLaplaceController(
+            prompt_prewarm_router=router,
+            prompt_prewarm_executor=executor,
+        )
+
         agent = ReActAgent(
             name="Friday",
             sys_prompt="You are a helpful assistant named Friday.",
@@ -209,8 +215,7 @@ class ReActAgentTest(IsolatedAsyncioTestCase):
             formatter=DashScopeChatFormatter(),
             memory=InMemoryMemory(),
             toolkit=Toolkit(),
-            prompt_prewarm_router=router,
-            prompt_prewarm_executor=executor,
+            mcp_laplace_controller=controller,
         )
 
         await agent(Msg("user", "Please browse the web", "user"))

@@ -158,3 +158,6 @@ laplace/mcp_lifecycle/daemon.pid
 
 # FastText semantic router model artifact
 laplace/router_model/artifacts_fasttext_router_deploy/semantic_router_fasttext.bin
+
+# Original design docs (local only)
+laplace/original_design_docs/

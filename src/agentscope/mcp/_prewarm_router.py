@@ -824,6 +824,7 @@ def build_mcp_speculative_executor(
         .. code-block:: python
 
             from agentscope.mcp import (
+                MCPLaplaceController,
                 MCPPrewarmKeywordRouter,
                 build_mcp_speculative_executor,
             )
@@ -833,11 +834,14 @@ def build_mcp_speculative_executor(
                 github_registration,
             ])
             router = MCPPrewarmKeywordRouter.from_json("prewarm_mapping.json")
+            controller = MCPLaplaceController(
+                prompt_prewarm_router=router,
+                prompt_prewarm_executor=executor,
+            )
 
             agent = ReActAgent(
                 ...
-                prompt_prewarm_router=router,
-                prompt_prewarm_executor=executor,
+                mcp_laplace_controller=controller,
             )
     """
     # Build a lookup keyed by container_name, client_name, and optional

@@ -33,6 +33,8 @@ from ._prewarm_router import (
     MCPPrewarmSemanticRouter,
     build_mcp_speculative_executor,
 )
+from ._predictive_warmer import MCPPredictiveWarmer
+from ._laplace_controller import MCPLaplaceController, MCPLaplaceControllerConfig
 
 
 __all__ = [
@@ -61,4 +63,7 @@ __all__ = [
     "MCPPrewarmKeywordRouter",
     "MCPPrewarmSemanticRouter",
     "build_mcp_speculative_executor",
+    "MCPPredictiveWarmer",
+    "MCPLaplaceController",
+    "MCPLaplaceControllerConfig",
 ]

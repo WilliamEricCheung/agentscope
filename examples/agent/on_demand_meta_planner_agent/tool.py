@@ -11,7 +11,10 @@ from typing import Any, AsyncGenerator, Callable
 from pydantic import BaseModel, Field
 
 from config import (
+    ON_DEMAND_PREDICTIVE_PREWARM_ENABLED,
     ON_DEMAND_PREWARM_ENABLED,
+    ON_DEMAND_PREWARM_TELEMETRY_ENABLED,
+    ON_DEMAND_PREWARM_TELEMETRY_MAX_EVENTS,
     ON_DEMAND_STREAM_TEXT_SPECULATION_INTERVAL_TOKENS,
     normalize_stream_text_speculation_interval_tokens,
 )
@@ -19,6 +22,8 @@ from config import (
 from agentscope.agent import ReActAgent
 from agentscope.formatter import DashScopeChatFormatter
 from agentscope.mcp import (
+    MCPLaplaceController,
+    MCPLaplaceControllerConfig,
     MCPPrewarmHybridRouter,
     MCPPrewarmRouter,
     _DockerMCPRegistrationConfig,
@@ -450,14 +455,32 @@ async def create_worker(
             configured_router_method=router_method,
             candidate_effective_route_methods=candidate_effective_route_methods,
         )
+        laplace_controller = MCPLaplaceController(
+            prompt_prewarm_router=prewarm_router,
+            prompt_prewarm_executor=prewarm_executor,
+            config=MCPLaplaceControllerConfig(
+                prompt_prewarm_enabled=ON_DEMAND_PREWARM_ENABLED,
+                predictive_warmer_enabled=ON_DEMAND_PREDICTIVE_PREWARM_ENABLED,
+                telemetry_enabled=ON_DEMAND_PREWARM_TELEMETRY_ENABLED,
+                telemetry_max_events=ON_DEMAND_PREWARM_TELEMETRY_MAX_EVENTS,
+                telemetry_name="on_demand_worker",
+            ),
+        )
         _record_mcp_timing_event(
             timing_run,
             "stream_text_speculation_configured",
             interval_tokens=resolved_stream_text_speculation_interval_tokens,
         )
     else:
-        prewarm_router = None
-        prewarm_executor = None
+        laplace_controller = MCPLaplaceController(
+            config=MCPLaplaceControllerConfig(
+                prompt_prewarm_enabled=False,
+                predictive_warmer_enabled=False,
+                telemetry_enabled=ON_DEMAND_PREWARM_TELEMETRY_ENABLED,
+                telemetry_max_events=ON_DEMAND_PREWARM_TELEMETRY_MAX_EVENTS,
+                telemetry_name="on_demand_worker",
+            ),
+        )
 
     available_groups = "\n".join(
         f"- {reg.group_name}: {_summarize_group_description(reg)}"
@@ -505,8 +528,7 @@ You MUST use the {ReActAgent.finish_function_name} to generate the final answer 
         formatter=DashScopeChatFormatter(),
         toolkit=toolkit,
         max_iters=20,
-        prompt_prewarm_router=prewarm_router,
-        prompt_prewarm_executor=prewarm_executor,
+        mcp_laplace_controller=laplace_controller,
     )
 
     sub_agent.set_console_output_enabled(False)
@@ -552,6 +574,8 @@ You MUST use the {ReActAgent.finish_function_name} to generate the final answer 
 
     if result:
         timing_summary = _build_mcp_timing_summary(timing_run)
+        prewarm_telemetry = laplace_controller.get_telemetry_snapshot()
+        timing_run["prewarm_controller_telemetry"] = prewarm_telemetry
         log_path = _save_mcp_timing_log(timing_run, _TIMING_LOG_PATH)
 
         # Report which MCP tool groups were actually activated (lazy-started).
@@ -575,6 +599,13 @@ You MUST use the {ReActAgent.finish_function_name} to generate the final answer 
                     text=(
                         "MCP readiness summary (ms): "
                         f"{json.dumps(timing_summary, ensure_ascii=False)}"
+                    ),
+                ),
+                TextBlock(
+                    type="text",
+                    text=(
+                        "Prewarm controller telemetry stats: "
+                        f"{json.dumps(prewarm_telemetry.get('stats', {}), ensure_ascii=False)}"
                     ),
                 ),
                 TextBlock(

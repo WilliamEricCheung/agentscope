@@ -47,6 +47,11 @@ Unified experiment config now lives in `config.py` in this folder:
 
 - `ON_DEMAND_PREWARM_ENABLED`: one switch for both parent planner and sub-worker
 	agents.
+- `ON_DEMAND_PREDICTIVE_PREWARM_ENABLED`: unified C2 predictive prewarm switch.
+- `ON_DEMAND_PREWARM_TELEMETRY_ENABLED`: unified telemetry switch for the
+	controller.
+- `ON_DEMAND_PREWARM_TELEMETRY_MAX_EVENTS`: in-memory telemetry retention cap per
+	controller instance.
 - `ON_DEMAND_STREAM_TEXT_SPECULATION_INTERVAL_TOKENS`: one threshold for both
 	planner and worker stream-level periodic speculation.
 
@@ -84,7 +89,7 @@ The runner evaluates four experiment modes on sampled Laplace MCP tasks:
 - Default modes: `none keyword semantic hybrid`
 - Execution model: strictly sequential. No parallel trials are used, so one trial cannot warm a container for another trial.
 - Container isolation: before each single trial, the script forcibly removes all prewarm-ready Laplace MCP containers and clears persisted lifecycle state.
-- Default output naming: auto-incremented daily files under `result/`, such as `result/prewarm_experiment_results_0428_0.jsonl`, `result/prewarm_experiment_report_0428_0.md`, and `result/prewarm_experiment_results_0428_0.plan.json`. If `0428_0` already exists, the next default run uses `0428_1`.
+- Default output naming: auto-incremented daily files under `result/` with threshold-aware suffixes, such as `result/prewarm_experiment_results_0611_k2_0.jsonl`, `result/prewarm_experiment_report_0611_k2_0.md`, and `result/prewarm_experiment_results_0611_k2_0.plan.json`. If `0611_k2_0` already exists, the next default run uses `0611_k2_1`.
 
 This means a full default run executes:
 
@@ -146,7 +151,7 @@ python run_prewarm_experiment.py \
 	--seed 42
 ```
 
-When you do not provide explicit output paths, the runner allocates the next daily output slot automatically, for example `0428_0`, then `0428_1` after the earlier run artifacts already exist.
+When you do not provide explicit output paths, the runner allocates the next output slot automatically per day and threshold, for example `0611_k2_0`, then `0611_k2_1` after the earlier run artifacts already exist.
 
 Resume behavior:
 
@@ -177,9 +182,9 @@ The `keyword_min_matches_per_client` gate controls how strict L1 keyword matchin
 
 Latest side-by-side comparison based on:
 
-- `result/prewarm_experiment_results_0605_0.jsonl` (min matches = 1)
-- `result/prewarm_experiment_results_0605_4.jsonl` (min matches = 2)
-- `result/prewarm_experiment_results_0605_5.jsonl` (min matches = 3)
+- `result/prewarm_experiment_results_0605_k1_1.jsonl` (min matches = 1)
+- `result/prewarm_experiment_results_0605_k2_0.jsonl` (min matches = 2)
+- `result/prewarm_experiment_results_0605_k3_0.jsonl` (min matches = 3)
 
 | min matches | Hybrid L1 count | Hybrid L2 fallback count | Hybrid mismatch | Hybrid cold | Hybrid avg non-cold wait (ms) | Hybrid max wait (ms) | Recommendation |
 | --- | --- | --- | --- | --- | --- | --- | --- |

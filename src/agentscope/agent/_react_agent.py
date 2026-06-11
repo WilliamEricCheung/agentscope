@@ -210,8 +210,7 @@ class ReActAgent(ReActAgentBase):
         max_iters: int = 10,
         tts_model: TTSModelBase | None = None,
         compression_config: CompressionConfig | None = None,
-        prompt_prewarm_router: PromptPrewarmRouter | None = None,
-        prompt_prewarm_executor: PromptPrewarmExecutor | None = None,
+        mcp_laplace_controller: Any | None = None,
     ) -> None:
         """Initialize the ReAct agent
 
@@ -274,13 +273,9 @@ class ReActAgent(ReActAgentBase):
             compression_config (`CompressionConfig | None`, optional):
                 The compression configuration. If provided, the auto
                 compression will be activated.
-            prompt_prewarm_router (`PromptPrewarmRouter | None`, optional):
-                Optional router for prompt-level speculative warming. It can
-                be implemented by keyword mapping or a lightweight semantic
-                router to output candidate tool/client names.
-            prompt_prewarm_executor (`PromptPrewarmExecutor | None`, optional):
-                Optional executor that performs pre-warming for each candidate
-                produced by `prompt_prewarm_router`.
+            mcp_laplace_controller (`Any | None`, optional):
+                Optional unified controller for MCP prewarm orchestration.
+                This is the only prewarm integration entrypoint.
         """
         super().__init__()
 
@@ -298,10 +293,17 @@ class ReActAgent(ReActAgentBase):
         self.formatter = formatter
         self.tts_model = tts_model
         self.compression_config = compression_config
-        self.prompt_prewarm_router = prompt_prewarm_router
-        self.prompt_prewarm_executor = prompt_prewarm_executor
+
+        if mcp_laplace_controller is None:
+            from ..mcp import MCPLaplaceController
+
+            self.mcp_laplace_controller = MCPLaplaceController()
+        else:
+            self.mcp_laplace_controller = mcp_laplace_controller
+
         self._prompt_prewarm_tasks: set[asyncio.Task] = set()
         self._prompt_prewarm_candidates: set[str] = set()
+
         self._attach_stream_tool_speculation_hook_if_supported()
 
         # -------------- Memory management --------------
@@ -571,12 +573,12 @@ class ReActAgent(ReActAgentBase):
     def _attach_stream_tool_speculation_hook_if_supported(self) -> None:
         """Attach a stream-level speculation hook when the model supports it.
 
-        The current implementation reuses ``prompt_prewarm_router`` on both
+        The current implementation reuses controller C1 routing on both
         streamed ``tool_calls.function.name`` fragments and periodic
         reasoning/text snapshots. This provides an L1 keyword-based dynamic
         speculation path without blocking token parsing.
         """
-        if self.prompt_prewarm_router is None or self.prompt_prewarm_executor is None:
+        if not self.mcp_laplace_controller.has_prompt_prewarm:
             return
 
         if not hasattr(self.model, "stream_tool_speculation_hook"):
@@ -610,17 +612,13 @@ class ReActAgent(ReActAgentBase):
                         exc,
                     )
 
-            router = self.prompt_prewarm_router
-            executor = self.prompt_prewarm_executor
-            if router is None or executor is None or not tool_name:
+            if not tool_name:
                 return
 
             try:
-                candidates_or_awaitable = router(tool_name)
-                if inspect.isawaitable(candidates_or_awaitable):
-                    candidates = await candidates_or_awaitable
-                else:
-                    candidates = candidates_or_awaitable
+                candidates = await self.mcp_laplace_controller.route_prompt_candidates(
+                    tool_name,
+                )
             except Exception as exc:  # noqa: BLE001
                 logger.warning(
                     "Stream prewarm router failed for tool '%s' (index=%s): %s",
@@ -634,7 +632,7 @@ class ReActAgent(ReActAgentBase):
                 return
 
             for candidate in set(candidates):
-                self._schedule_prompt_prewarm_task(candidate)
+                self._schedule_prompt_prewarm_task(candidate, stage="stream")
 
         self.model.stream_tool_speculation_hook = _stream_hook
         self.model._agentscope_prewarm_stream_hook_installed = True
@@ -649,17 +647,13 @@ class ReActAgent(ReActAgentBase):
             msg (`Msg | list[Msg] | None`):
                 Input message(s) received by the agent.
         """
-        router = self.prompt_prewarm_router
-        executor = self.prompt_prewarm_executor
-        if router is None or executor is None:
+        if not self.mcp_laplace_controller.has_prompt_prewarm:
             return
 
         try:
-            candidates_or_awaitable = router(msg)
-            if inspect.isawaitable(candidates_or_awaitable):
-                candidates = await candidates_or_awaitable
-            else:
-                candidates = candidates_or_awaitable
+            candidates = await self.mcp_laplace_controller.route_prompt_candidates(
+                msg,
+            )
         except Exception as exc:  # noqa: BLE001
             logger.warning("Prompt prewarm router failed: %s", exc)
             return
@@ -668,20 +662,39 @@ class ReActAgent(ReActAgentBase):
             return
 
         for candidate in set(candidates):
-            self._schedule_prompt_prewarm_task(candidate)
+            self._schedule_prompt_prewarm_task(candidate, stage="prompt")
 
-    def _schedule_prompt_prewarm_task(self, candidate: str) -> None:
+    def _schedule_prompt_prewarm_task(
+        self,
+        candidate: str,
+        stage: str = "prompt",
+    ) -> None:
         """Schedule one prompt-level speculative pre-warming task.
 
         Args:
             candidate (`str`):
                 The MCP client/container candidate to pre-warm.
+            stage (`str`, defaults to `"prompt"`):
+                Which stage triggered this scheduling attempt.
         """
         if candidate in self._prompt_prewarm_candidates:
+            self.mcp_laplace_controller.note_schedule_attempt(
+                candidate=candidate,
+                stage=stage,
+                accepted=False,
+                reason="duplicate_candidate",
+            )
             return
 
+        self.mcp_laplace_controller.note_schedule_attempt(
+            candidate=candidate,
+            stage=stage,
+            accepted=True,
+        )
         self._prompt_prewarm_candidates.add(candidate)
-        task = asyncio.create_task(self._run_prompt_prewarm_executor(candidate))
+        task = asyncio.create_task(
+            self._run_prompt_prewarm_executor(candidate, stage=stage),
+        )
         self._prompt_prewarm_tasks.add(task)
 
         def _handle_done(done_task: asyncio.Task) -> None:
@@ -697,22 +710,84 @@ class ReActAgent(ReActAgentBase):
 
         task.add_done_callback(_handle_done)
 
-    async def _run_prompt_prewarm_executor(self, candidate: str) -> None:
+    async def _run_prompt_prewarm_executor(
+        self,
+        candidate: str,
+        stage: str = "prompt",
+    ) -> None:
         """Execute one prompt-level speculative pre-warming candidate."""
-        executor = self.prompt_prewarm_executor
-        if executor is None:
-            return
-
         try:
-            result = executor(candidate)
-            if inspect.isawaitable(result):
-                await result
+            await self.mcp_laplace_controller.execute_prompt_candidate(
+                candidate=candidate,
+                stage=stage,
+            )
         except Exception as exc:  # noqa: BLE001
             logger.warning(
                 "Prompt prewarm executor failed for '%s': %s",
                 candidate,
                 exc,
             )
+
+    def _resolve_predictive_current_server(
+        self,
+        tool_call: ToolUseBlock,
+    ) -> str | None:
+        """Resolve current server label for predictive warmer.
+
+        Args:
+            tool_call (`ToolUseBlock`):
+                The current tool call block.
+
+        Returns:
+            `str | None`:
+                Current MCP server identifier when available.
+        """
+        tool_name = str(tool_call.get("name", "")).strip()
+        if not tool_name:
+            return None
+
+        registered_tool = self.toolkit.tools.get(tool_name)
+        if registered_tool is None:
+            return None
+
+        mcp_name = getattr(registered_tool, "mcp_name", None)
+        if not mcp_name:
+            return None
+
+        return str(mcp_name).strip() or None
+
+    async def _trigger_predictive_prewarm(
+        self,
+        current_server: str | None,
+    ) -> None:
+        """Predict next candidates and schedule speculative prewarming.
+
+        Args:
+            current_server (`str | None`):
+                The current MCP server identifier.
+        """
+        if not self.mcp_laplace_controller.has_predictive_prewarm:
+            return
+        if current_server is None:
+            return
+
+        try:
+            candidates = await self.mcp_laplace_controller.predict_candidates(
+                current_server,
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.warning(
+                "Predictive warmer failed for current server '%s': %s",
+                current_server,
+                exc,
+            )
+            return
+
+        if not candidates:
+            return
+
+        for candidate in set(candidates):
+            self._schedule_prompt_prewarm_task(str(candidate), stage="predictive")
 
     # pylint: disable=too-many-branches
     async def _reasoning(
@@ -858,6 +933,8 @@ class ReActAgent(ReActAgentBase):
             ],
             "system",
         )
+        current_server = self._resolve_predictive_current_server(tool_call)
+        should_trigger_predictive_prewarm = False
         try:
             # Execute the tool call
             tool_res = await self.toolkit.call_tool_function(tool_call)
@@ -882,14 +959,18 @@ class ReActAgent(ReActAgentBase):
                     and chunk.metadata
                     and chunk.metadata.get("success", False)
                 ):
+                    should_trigger_predictive_prewarm = True
                     # Only return the structured output
                     return chunk.metadata.get("structured_output")
 
+            should_trigger_predictive_prewarm = True
             return None
 
         finally:
             # Record the tool result message in the memory
             await self.memory.add(tool_res_msg)
+            if should_trigger_predictive_prewarm:
+                await self._trigger_predictive_prewarm(current_server)
 
     async def observe(self, msg: Msg | list[Msg] | None) -> None:
         """Receive observing message(s) without generating a reply.

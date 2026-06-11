@@ -56,13 +56,19 @@ _MODE_LABELS = {
 }
 
 
-def _default_output_paths(base_dir: Path | None = None) -> tuple[Path, Path, Path]:
-    """Build dated default output paths with an incrementing daily index.
+def _default_output_paths(
+    keyword_min_matches_per_client: int,
+    base_dir: Path | None = None,
+) -> tuple[Path, Path, Path]:
+    """Build dated default output paths with an incrementing per-k index.
 
-    When the same day already has completed output files, the next available
-    suffix is chosen, for example ``0428_0`` -> ``0428_1``.
+    When the same day and keyword threshold already has completed output files,
+    the next available suffix is chosen, for example ``0605_k2_0`` ->
+    ``0605_k2_1``.
 
     Args:
+        keyword_min_matches_per_client (`int`):
+            Minimum keyword hits required for one L1 candidate.
         base_dir (`Path | None`, optional):
             Output directory. Defaults to the current example folder.
 
@@ -73,10 +79,11 @@ def _default_output_paths(base_dir: Path | None = None) -> tuple[Path, Path, Pat
     output_dir = base_dir or (Path(__file__).resolve().parent / "result")
     output_dir.mkdir(parents=True, exist_ok=True)
     date_prefix = time.strftime("%m%d", time.localtime())
+    min_match_value = max(1, int(keyword_min_matches_per_client))
     index = 0
 
     while True:
-        run_suffix = f"{date_prefix}_{index}"
+        run_suffix = f"{date_prefix}_k{min_match_value}_{index}"
         log_path = output_dir / f"prewarm_experiment_results_{run_suffix}.jsonl"
         report_path = output_dir / f"prewarm_experiment_report_{run_suffix}.md"
         plan_path = output_dir / f"prewarm_experiment_results_{run_suffix}.plan.json"
@@ -1392,7 +1399,10 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    default_log_path, default_report_path, default_plan_path = _default_output_paths()
+    keyword_min_matches_per_client = max(1, args.keyword_min_matches_per_client)
+    default_log_path, default_report_path, default_plan_path = _default_output_paths(
+        keyword_min_matches_per_client=keyword_min_matches_per_client,
+    )
     output_log_path = Path(args.output_log_path) if args.output_log_path else default_log_path
     output_report_path = (
         Path(args.output_report_path)
@@ -1414,7 +1424,7 @@ def main() -> None:
             resume=not args.no_resume,
             reset_output=args.reset_output,
             plan_path=plan_path,
-            keyword_min_matches_per_client=max(1, args.keyword_min_matches_per_client),
+            keyword_min_matches_per_client=keyword_min_matches_per_client,
         ),
     )
     print(report)

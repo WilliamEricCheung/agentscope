@@ -24,6 +24,15 @@ def normalize_stream_text_speculation_interval_tokens(
 # Unified switch for both parent planner and sub-worker prewarm behavior.
 ON_DEMAND_PREWARM_ENABLED = False
 
+# Unified C2 predictive prewarm switch.
+ON_DEMAND_PREDICTIVE_PREWARM_ENABLED = True
+
+# Unified controller telemetry switch.
+ON_DEMAND_PREWARM_TELEMETRY_ENABLED = True
+
+# Maximum retained telemetry events inside one controller instance.
+ON_DEMAND_PREWARM_TELEMETRY_MAX_EVENTS = 512
+
 # Unified stream-level periodic speculation threshold.
 # Use a positive integer to enable periodic text-based speculation.
 # Use `None` or `0` to disable periodic text-based speculation.
