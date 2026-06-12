@@ -1,6 +1,6 @@
 {
-  "_comment": "Prompt-level speculative pre-warming keyword mapping. Key: MCP client/container name. Value: list of lowercase keywords that trigger pre-warming.",
-  "playwright-mcp": [
+  "_comment": "Prompt-level speculative pre-warming keyword mapping. Key: canonical MCP server_name (preferred). Value: list of lowercase keywords that trigger pre-warming.",
+  "Playwright": [
     "search",
     "web",
     "browser",
@@ -18,19 +18,7 @@
     "访问",
     "导航"
   ],
-  "github-mcp": [
-    "github",
-    "pull request",
-    "repository",
-    "repo",
-    "issue",
-    "commit",
-    "code review",
-    "branch",
-    "仓库",
-    "代码"
-  ],
-  "laplace-jupyter-mcp": [
+  "Jupyter MCP": [
     "jupyter",
     "notebook",
     "ipynb",
@@ -40,21 +28,21 @@
     "单元格",
     "内核"
   ],
-  "laplace-biomcp": [
+  "BioMCP": [
     "braf",
     "melanoma",
     "variant",
     "trial",
     "drug"
   ],
-  "laplace-bibliomantic": [
+  "Bibliomantic": [
     "hexagram",
     "bibliomantic",
     "ching",
     "divination",
     "philip"
   ],
-  "laplace-neo4j-cypher": [
+  "Neo4j Cypher": [
     "neo4j",
     "cypher",
     "graph database",
@@ -63,18 +51,18 @@
     "图查询",
     "节点关系"
   ],
-  "laplace-call-for-papers": [
+  "Call for Papers": [
     "conferences",
     "academic",
     "submission",
     "deadline",
     "papers"
   ],
-  "laplace-car-price-evaluator": [
+  "Car Price Evaluator": [
     "toyota",
     "fipe"
   ],
-  "laplace-mcp-server-milvus": [
+  "Milvus MCP": [
     "milvus",
     "vector database",
     "vector search",
@@ -83,164 +71,164 @@
     "向量数据库",
     "向量检索"
   ],
-  "laplace-context7": [
+  "Context7": [
     "library",
     "documentation",
     "next.js",
     "tokens"
   ],
-  "laplace-dex-paprika": [
+  "DEX Paprika": [
     "ethereum",
     "liquidity",
     "pool",
     "ohlcv",
     "token"
   ],
-  "laplace-fruityvice": [
+  "FruityVice": [
     "fruit",
     "calories",
     "vitamin",
     "apple",
     "banana"
   ],
-  "laplace-game-trends": [
+  "Game Trends": [
     "steam",
     "epic",
     "trending",
     "sellers",
     "played"
   ],
-  "laplace-google-maps": [
+  "Google Maps": [
     "location",
     "address",
     "distance",
     "elevation",
     "building"
   ],
-  "laplace-huge-icons": [
+  "Huge Icons": [
     "icons",
     "dashboard",
     "react",
     "flutter",
     "notification"
   ],
-  "laplace-huggingface": [
+  "Hugging Face": [
     "model",
     "dataset",
     "collection",
     "space"
   ],
-  "laplace-math-mcp": [
+  "Math MCP": [
     "yield",
     "revenue",
     "profit",
     "median",
     "farms"
   ],
-  "laplace-medical-calculator": [
+  "Medical Calculator": [
     "egfr",
     "creatinine",
     "prevent",
     "homa",
     "rcri"
   ],
-  "laplace-metmuseum": [
+  "Metropolitan Museum": [
     "harvesters",
     "painting",
     "european",
     "department",
     "image"
   ],
-  "laplace-movie-recommender": [
+  "Movie Recommender": [
     "steampunk",
     "exploration",
     "fiction",
     "travel",
     "movies"
   ],
-  "laplace-nasa-data": [
+  "NASA Data": [
     "asteroid",
     "curiosity",
     "geomagnetic",
     "coronal",
     "landsat"
   ],
-  "laplace-national-parks": [
+  "National Parks": [
     "parks",
     "campgrounds",
     "visitor",
     "hiking",
     "closure"
   ],
-  "laplace-nixos": [
+  "NixOS": [
     "nixos",
     "postgresql",
     "stable",
     "manager",
     "darwin"
   ],
-  "laplace-okx-exchange": [
+  "OKX Exchange": [
     "btc-usdt",
     "candlesticks",
     "price",
     "exchange",
     "latest"
   ],
-  "laplace-openapi-explorer": [
+  "OpenAPI Explorer": [
     "openapi",
     "stripe",
     "paymentintent"
   ],
-  "laplace-osint-intelligence": [
+  "OSINT Intelligence": [
     "domain",
     "subdomains",
     "typosquatting",
     "registration",
     "ports"
   ],
-  "laplace-paper-search": [
+  "Paper Search": [
     "arxiv",
     "pubmed",
     "biorxiv",
     "medrxiv",
     "scholar"
   ],
-  "laplace-reddit": [
+  "Reddit": [
     "subreddit",
     "comments",
     "thread",
     "upvoted",
     "post"
   ],
-  "laplace-scientific-computing": [
+  "Scientific Computing": [
     "matrix",
     "determinant",
     "gradient",
     "eigenvalues",
     "vector"
   ],
-  "laplace-time-mcp": [
+  "Time MCP": [
     "tokyo",
     "london",
     "future",
     "converted",
     "date"
   ],
-  "laplace-unit-converter": [
+  "Unit Converter": [
     "kelvin",
     "joules",
     "pressure",
     "thermal",
     "fahrenheit"
   ],
-  "laplace-weather-data": [
+  "Weather Data": [
     "springfield",
     "forecast",
     "precipitation",
     "humidity",
     "weather"
   ],
-  "laplace-wikipedia": [
+  "Wikipedia": [
     "wikipedia",
     "heatwaves",
     "climate",

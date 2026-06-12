@@ -431,7 +431,7 @@ class MCPPrewarmKeywordRouter(MCPPrewarmRouter):
                 "Supported: 'keyword'.",
             )
         self.method = method
-        self._min_matches_per_client = 1
+        self._min_matches_per_client = 2
         self._max_candidates: int | None = None
 
         mapping_payload: dict[str, list[str]] | str | None = mapping
@@ -441,7 +441,7 @@ class MCPPrewarmKeywordRouter(MCPPrewarmRouter):
             mapping_payload = mapping.get("keyword_mapping")
             self._min_matches_per_client = max(
                 1,
-                int(mapping.get("min_matches_per_client", 1)),
+                int(mapping.get("min_matches_per_client", 2)),
             )
             max_candidates = mapping.get("max_candidates")
             self._max_candidates = (
@@ -693,10 +693,18 @@ class MCPPrewarmSemanticRouter(MCPPrewarmRouter):
 
 
 class MCPPrewarmHybridRouter(MCPPrewarmRouter):
-    """Hybrid pre-warming router with L1 keyword and L2 semantic fallback.
+    """Hybrid pre-warming router with parallel keyword and semantic fusion.
 
-    The router first applies the low-cost keyword matcher. When L1 produces no
-    candidates, it falls back to the semantic retrieval router.
+    The router evaluates both the keyword matcher and the semantic retrieval
+    router for the same input, then fuses candidates using a configurable
+    strategy. This keeps the fast keyword path while preserving the semantic
+    signal when keyword coverage is weak or noisy.
+
+    Supported fusion modes:
+
+    - ``union``: return candidates from either route that pass thresholds.
+    - ``intersection``: return only candidates that appear in both routes.
+    - ``weighted``: combine keyword and semantic scores into one ranking.
 
     Args:
         mapping (`dict[str, list[str]] | str | None`, optional):
@@ -721,6 +729,10 @@ class MCPPrewarmHybridRouter(MCPPrewarmRouter):
         "threshold",
         "top_k",
         "ensure_non_empty",
+        "fusion_mode",
+        "fusion_threshold",
+        "keyword_weight",
+        "semantic_weight",
     }
 
     def __init__(
@@ -736,13 +748,34 @@ class MCPPrewarmHybridRouter(MCPPrewarmRouter):
             )
 
         self.method = method
-        self.last_route_method = "keyword"
+        self.last_route_method = "none"
+        self._fusion_mode = "union"
+        self._fusion_threshold = 0.5
+        self._keyword_weight = 0.5
+        self._semantic_weight = 0.5
 
         keyword_mapping: dict[str, list[str]] | str | None = mapping
         semantic_mapping: dict[str, object] | str | None = None
 
         if isinstance(mapping, dict):
             if any(key in mapping for key in self._SEMANTIC_CONFIG_KEYS):
+                fusion_mode = str(mapping.get("fusion_mode", self._fusion_mode))
+                if fusion_mode not in {"union", "intersection", "weighted"}:
+                    raise ValueError(
+                        f"Unknown hybrid fusion mode '{fusion_mode}'. "
+                        "Supported: 'union', 'intersection', 'weighted'.",
+                    )
+                self._fusion_mode = fusion_mode
+                self._fusion_threshold = float(
+                    mapping.get("fusion_threshold", self._fusion_threshold),
+                )
+                self._keyword_weight = float(
+                    mapping.get("keyword_weight", self._keyword_weight),
+                )
+                self._semantic_weight = float(
+                    mapping.get("semantic_weight", self._semantic_weight),
+                )
+
                 keyword_mapping = mapping.get("keyword_mapping")
                 semantic_mapping = mapping.get("semantic_mapping")
 
@@ -784,19 +817,167 @@ class MCPPrewarmHybridRouter(MCPPrewarmRouter):
         self._keyword_router = MCPPrewarmKeywordRouter(mapping=keyword_mapping)
         self._semantic_router = MCPPrewarmSemanticRouter(mapping=semantic_mapping)
 
+    def _score_keyword_candidates(
+        self,
+        msg: "Msg | list[Msg] | str | None",
+    ) -> list[tuple[str, float]]:
+        """Score candidates from the keyword route.
+
+        Args:
+            msg (`Msg | list[Msg] | str | None`):
+                Incoming prompt text or fragments.
+
+        Returns:
+            `list[tuple[str, float]]`:
+                Candidate names paired with normalized keyword scores.
+        """
+        text = self._keyword_router._extract_text(msg)
+        if not text:
+            return []
+
+        scored_candidates: list[tuple[str, float]] = []
+        for client_name, keywords in self._keyword_router._mapping.items():
+            matched_keyword_count = 0
+            for keyword in keywords:
+                if keyword in text:
+                    matched_keyword_count += 1
+
+            if matched_keyword_count < self._keyword_router._min_matches_per_client:
+                continue
+
+            keyword_total = max(len(keywords), 1)
+            scored_candidates.append(
+                (client_name, matched_keyword_count / keyword_total),
+            )
+
+        if self._keyword_router._max_candidates is not None:
+            scored_candidates = scored_candidates[: self._keyword_router._max_candidates]
+
+        return scored_candidates
+
+    def _score_semantic_candidates(
+        self,
+        msg: "Msg | list[Msg] | str | None",
+    ) -> list[tuple[str, float]]:
+        """Score candidates from the semantic route.
+
+        Args:
+            msg (`Msg | list[Msg] | str | None`):
+                Incoming prompt text or fragments.
+
+        Returns:
+            `list[tuple[str, float]]`:
+                Candidate names paired with semantic similarity scores.
+        """
+        text = MCPPrewarmKeywordRouter._extract_text(msg)
+        if not text:
+            return []
+        if not self._semantic_router._ensure_model_loaded():
+            return []
+        model = self._semantic_router._model
+        if model is None:
+            return []
+
+        scored = model.score(text)
+        selected: list[tuple[str, float]] = [
+            (server_name, float(score))
+            for server_name, score in scored
+            if score >= self._semantic_router._threshold
+        ][: self._semantic_router._top_k]
+        if not selected and self._semantic_router._ensure_non_empty and scored:
+            selected = [(str(scored[0][0]), float(scored[0][1]))]
+        return selected
+
+    def _fuse_union(
+        self,
+        keyword_candidates: list[tuple[str, float]],
+        semantic_candidates: list[tuple[str, float]],
+    ) -> list[str]:
+        """Fuse candidates using set union semantics."""
+        merged_candidates: list[str] = []
+        seen: set[str] = set()
+        for candidate, _ in keyword_candidates + semantic_candidates:
+            if candidate in seen:
+                continue
+            seen.add(candidate)
+            merged_candidates.append(candidate)
+        return merged_candidates
+
+    def _fuse_intersection(
+        self,
+        keyword_candidates: list[tuple[str, float]],
+        semantic_candidates: list[tuple[str, float]],
+    ) -> list[str]:
+        """Fuse candidates using set intersection semantics."""
+        keyword_names = [candidate for candidate, _ in keyword_candidates]
+        semantic_names = {candidate for candidate, _ in semantic_candidates}
+        return [
+            candidate
+            for candidate in keyword_names
+            if candidate in semantic_names
+        ]
+
+    def _fuse_weighted(
+        self,
+        keyword_candidates: list[tuple[str, float]],
+        semantic_candidates: list[tuple[str, float]],
+    ) -> list[str]:
+        """Fuse candidates using normalized weighted scores."""
+        candidate_scores: dict[str, float] = {}
+
+        for candidate, score in keyword_candidates:
+            candidate_scores[candidate] = candidate_scores.get(candidate, 0.0) + (
+                score * self._keyword_weight
+            )
+
+        for candidate, score in semantic_candidates:
+            candidate_scores[candidate] = candidate_scores.get(candidate, 0.0) + (
+                score * self._semantic_weight
+            )
+
+        selected = [
+            candidate
+            for candidate, score in sorted(
+                candidate_scores.items(),
+                key=lambda item: item[1],
+                reverse=True,
+            )
+            if score >= self._fusion_threshold
+        ]
+        return selected
+
     def __call__(
         self,
         msg: "Msg | list[Msg] | str | None",
     ) -> list[str]:
-        """Return candidates from L1 keyword, then L2 semantic fallback."""
-        keyword_candidates = self._keyword_router(msg)
-        if keyword_candidates:
-            self.last_route_method = "keyword"
-            return keyword_candidates
+        """Return merged candidates from keyword and semantic routing.
 
-        semantic_candidates = self._semantic_router(msg)
-        self.last_route_method = "semantic"
-        return semantic_candidates
+        Both routes are evaluated for the same input. Keyword matches use the
+        configured minimum-match threshold, while semantic matches use the
+        retrieval threshold/top-k settings loaded into the semantic router.
+        The final candidate set is computed using the configured fusion mode.
+        """
+        keyword_candidates = self._score_keyword_candidates(msg)
+        semantic_candidates = self._score_semantic_candidates(msg)
+
+        if self._fusion_mode == "union":
+            merged_candidates = self._fuse_union(
+                keyword_candidates=keyword_candidates,
+                semantic_candidates=semantic_candidates,
+            )
+        elif self._fusion_mode == "intersection":
+            merged_candidates = self._fuse_intersection(
+                keyword_candidates=keyword_candidates,
+                semantic_candidates=semantic_candidates,
+            )
+        else:
+            merged_candidates = self._fuse_weighted(
+                keyword_candidates=keyword_candidates,
+                semantic_candidates=semantic_candidates,
+            )
+
+        self.last_route_method = self._fusion_mode if merged_candidates else "none"
+        return merged_candidates
 
 def build_mcp_speculative_executor(
     registrations: "list[_DockerMCPRegistrationConfig]",

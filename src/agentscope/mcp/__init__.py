@@ -21,7 +21,6 @@ from ._mcp_server_helper import (
 )
 from ._mcp_server_config import (
     _DockerMCPRegistrationConfig,
-    _MCPServerConfigFactory,
     build_laplace_speculative_executor,
     load_laplace_registration_bundle,
     load_laplace_registration_configs,
@@ -54,7 +53,6 @@ __all__ = [
     "_run_mcp_lifecycle_daemon_forever",
     "_speculative_ensure_local_docker_mcp_server",
     "_DockerMCPRegistrationConfig",
-    "_MCPServerConfigFactory",
     "build_laplace_speculative_executor",
     "load_laplace_registration_bundle",
     "load_laplace_registration_configs",

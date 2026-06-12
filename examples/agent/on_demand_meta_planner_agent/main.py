@@ -19,8 +19,8 @@ from agentscope.mcp import (
     MCPLaplaceController,
     MCPLaplaceControllerConfig,
     MCPPrewarmHybridRouter,
-    _MCPServerConfigFactory,
     build_mcp_speculative_executor,
+    load_laplace_registration_configs,
 )
 from agentscope.model import DashScopeChatModel
 from agentscope.plan import PlanNotebook
@@ -43,14 +43,25 @@ async def main() -> None:
     planner_stream_text_interval = normalize_stream_text_speculation_interval_tokens(
         ON_DEMAND_STREAM_TEXT_SPECULATION_INTERVAL_TOKENS,
     )
+    all_registrations = load_laplace_registration_configs()
     planner_prewarm_registrations = [
-        _MCPServerConfigFactory.build_playwright_registration_config(),
+        reg
+        for reg in all_registrations.values()
+        if reg.group_name in {"browser_tools", "github_tools"}
     ]
-    planner_github_registration = (
-        _MCPServerConfigFactory.build_github_registration_config()
-    )
-    if planner_github_registration is not None:
-        planner_prewarm_registrations.append(planner_github_registration)
+    if "GITHUB_PERSONAL_ACCESS_TOKEN" not in os.environ:
+        planner_prewarm_registrations = [
+            reg
+            for reg in planner_prewarm_registrations
+            if reg.group_name != "github_tools"
+        ]
+    if not any(
+        reg.group_name == "browser_tools"
+        for reg in planner_prewarm_registrations
+    ):
+        raise ValueError(
+            "`browser_tools` registration is missing in laplace_mcp_manifest.json.",
+        )
 
     planner_controller = MCPLaplaceController(
         prompt_prewarm_router=(

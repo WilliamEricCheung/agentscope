@@ -30,6 +30,7 @@ from agentscope.mcp import (
     MCPPrewarmHybridRouter,
     MCPPrewarmKeywordRouter,
     MCPPrewarmSemanticRouter,
+    _DockerMCPRegistrationConfig,
     _build_mcp_timing_summary,
     _create_mcp_timing_run,
     _ensure_local_docker_mcp_server,
@@ -40,7 +41,6 @@ from agentscope.mcp._mcp_server_helper import (
     _CONTAINER_LIFECYCLE_STATES,
     _remove_persisted_container_state,
 )
-from agentscope.mcp.server_config.base import _DockerMCPRegistrationConfig
 
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 _DEFAULT_TASK_FILE = (
@@ -76,7 +76,7 @@ def _default_output_paths(
         `tuple[Path, Path, Path]`:
             Default JSONL, Markdown report, and plan file paths.
     """
-    output_dir = base_dir or (Path(__file__).resolve().parent / "result")
+    output_dir = base_dir or (Path(__file__).resolve().parent / "result_prewarm")
     output_dir.mkdir(parents=True, exist_ok=True)
     date_prefix = time.strftime("%m%d", time.localtime())
     min_match_value = max(1, int(keyword_min_matches_per_client))
@@ -226,6 +226,10 @@ def _sample_unique_server_tasks(
 def _build_router(
     mode: Literal["none", "keyword", "semantic", "hybrid"],
     keyword_min_matches_per_client: int = 1,
+    hybrid_fusion_mode: Literal["union", "intersection", "weighted"] = "union",
+    hybrid_fusion_threshold: float = 0.5,
+    hybrid_keyword_weight: float = 0.5,
+    hybrid_semantic_weight: float = 0.5,
 ) -> object | None:
     """Create one router for the given experiment mode.
 
@@ -253,6 +257,10 @@ def _build_router(
         return MCPPrewarmHybridRouter(
             mapping={
                 "keyword_min_matches_per_client": keyword_min_matches_per_client,
+                "fusion_mode": hybrid_fusion_mode,
+                "fusion_threshold": hybrid_fusion_threshold,
+                "keyword_weight": hybrid_keyword_weight,
+                "semantic_weight": hybrid_semantic_weight,
             },
         )
     raise ValueError(f"Unsupported experiment mode: {mode}")
@@ -338,6 +346,10 @@ def _build_experiment_plan(
     sampled_tasks: list[dict[str, str]],
     manifest_path: str | None,
     keyword_min_matches_per_client: int,
+    hybrid_fusion_mode: str,
+    hybrid_fusion_threshold: float,
+    hybrid_keyword_weight: float,
+    hybrid_semantic_weight: float,
 ) -> dict[str, Any]:
     """Build a persisted experiment plan for resumable execution.
 
@@ -369,6 +381,10 @@ def _build_experiment_plan(
         "seed": seed,
         "modes": list(modes),
         "keyword_min_matches_per_client": keyword_min_matches_per_client,
+        "hybrid_fusion_mode": hybrid_fusion_mode,
+        "hybrid_fusion_threshold": hybrid_fusion_threshold,
+        "hybrid_keyword_weight": hybrid_keyword_weight,
+        "hybrid_semantic_weight": hybrid_semantic_weight,
         "sampled_tasks": sampled_tasks,
     }
 
@@ -468,6 +484,10 @@ def _load_or_initialize_plan(
     modes: list[Literal["none", "keyword", "semantic", "hybrid"]],
     manifest_path: str | None,
     keyword_min_matches_per_client: int,
+    hybrid_fusion_mode: str,
+    hybrid_fusion_threshold: float,
+    hybrid_keyword_weight: float,
+    hybrid_semantic_weight: float,
     resume: bool,
 ) -> dict[str, Any]:
     """Load an existing resumable plan or initialize a new one.
@@ -510,6 +530,10 @@ def _load_or_initialize_plan(
         "seed": seed,
         "modes": list(modes),
         "keyword_min_matches_per_client": keyword_min_matches_per_client,
+        "hybrid_fusion_mode": hybrid_fusion_mode,
+        "hybrid_fusion_threshold": hybrid_fusion_threshold,
+        "hybrid_keyword_weight": hybrid_keyword_weight,
+        "hybrid_semantic_weight": hybrid_semantic_weight,
     }
 
     if plan_path.exists():
@@ -538,6 +562,10 @@ def _load_or_initialize_plan(
         sampled_tasks=sampled_tasks,
         manifest_path=manifest_path,
         keyword_min_matches_per_client=keyword_min_matches_per_client,
+        hybrid_fusion_mode=hybrid_fusion_mode,
+        hybrid_fusion_threshold=hybrid_fusion_threshold,
+        hybrid_keyword_weight=hybrid_keyword_weight,
+        hybrid_semantic_weight=hybrid_semantic_weight,
     )
     plan_path.write_text(
         json.dumps(plan, indent=2, ensure_ascii=False),
@@ -682,6 +710,10 @@ async def _run_single_trial(
     registrations: list[_DockerMCPRegistrationConfig],
     speculative_executor: object,
     keyword_min_matches_per_client: int,
+    hybrid_fusion_mode: Literal["union", "intersection", "weighted"],
+    hybrid_fusion_threshold: float,
+    hybrid_keyword_weight: float,
+    hybrid_semantic_weight: float,
 ) -> dict[str, Any]:
     """Run one prompt-prewarm trial.
 
@@ -709,6 +741,10 @@ async def _run_single_trial(
     router = _build_router(
         mode,
         keyword_min_matches_per_client=keyword_min_matches_per_client,
+        hybrid_fusion_mode=hybrid_fusion_mode,
+        hybrid_fusion_threshold=hybrid_fusion_threshold,
+        hybrid_keyword_weight=hybrid_keyword_weight,
+        hybrid_semantic_weight=hybrid_semantic_weight,
     )
     timing_run = _create_mcp_timing_run(
         task_description=prompt,
@@ -719,6 +755,10 @@ async def _run_single_trial(
     timing_run["server_name"] = task["server_name"]
     timing_run["task_id"] = task["task_id"]
     timing_run["prompt_description"] = prompt
+    timing_run["hybrid_fusion_mode"] = hybrid_fusion_mode
+    timing_run["hybrid_fusion_threshold"] = hybrid_fusion_threshold
+    timing_run["hybrid_keyword_weight"] = hybrid_keyword_weight
+    timing_run["hybrid_semantic_weight"] = hybrid_semantic_weight
 
     target_aliases = _candidate_aliases(registration)
     target_effective_route_method = None
@@ -1162,6 +1202,10 @@ async def run_experiment(
     reset_output: bool = False,
     plan_path: Path | None = None,
     keyword_min_matches_per_client: int = 1,
+    hybrid_fusion_mode: Literal["union", "intersection", "weighted"] = "union",
+    hybrid_fusion_threshold: float = 0.5,
+    hybrid_keyword_weight: float = 0.5,
+    hybrid_semantic_weight: float = 0.5,
 ) -> str:
     """Run the full prewarm experiment and save artifacts.
 
@@ -1209,6 +1253,10 @@ async def run_experiment(
         modes=modes,
         manifest_path=manifest_path,
         keyword_min_matches_per_client=keyword_min_matches_per_client,
+        hybrid_fusion_mode=hybrid_fusion_mode,
+        hybrid_fusion_threshold=hybrid_fusion_threshold,
+        hybrid_keyword_weight=hybrid_keyword_weight,
+        hybrid_semantic_weight=hybrid_semantic_weight,
         resume=resume,
     )
     sampled_tasks = [
@@ -1262,6 +1310,10 @@ async def run_experiment(
                         registrations=all_registrations,
                         speculative_executor=speculative_executor,
                         keyword_min_matches_per_client=keyword_min_matches_per_client,
+                        hybrid_fusion_mode=hybrid_fusion_mode,
+                        hybrid_fusion_threshold=hybrid_fusion_threshold,
+                        hybrid_keyword_weight=hybrid_keyword_weight,
+                        hybrid_semantic_weight=hybrid_semantic_weight,
                     )
                     record["recorded_at"] = time.strftime(
                         "%Y-%m-%d %H:%M:%S",
@@ -1397,6 +1449,30 @@ def main() -> None:
         default=1,
         help="Minimum keyword hits required for one L1 candidate. Increase to force more L2 fallback.",
     )
+    parser.add_argument(
+        "--hybrid-fusion-mode",
+        choices=["union", "intersection", "weighted"],
+        default="union",
+        help="Fusion strategy for hybrid mode.",
+    )
+    parser.add_argument(
+        "--hybrid-fusion-threshold",
+        type=float,
+        default=0.5,
+        help="Minimum fused score for weighted hybrid mode.",
+    )
+    parser.add_argument(
+        "--hybrid-keyword-weight",
+        type=float,
+        default=0.5,
+        help="Keyword weight for weighted hybrid mode.",
+    )
+    parser.add_argument(
+        "--hybrid-semantic-weight",
+        type=float,
+        default=0.5,
+        help="Semantic weight for weighted hybrid mode.",
+    )
     args = parser.parse_args()
 
     keyword_min_matches_per_client = max(1, args.keyword_min_matches_per_client)
@@ -1425,6 +1501,10 @@ def main() -> None:
             reset_output=args.reset_output,
             plan_path=plan_path,
             keyword_min_matches_per_client=keyword_min_matches_per_client,
+            hybrid_fusion_mode=args.hybrid_fusion_mode,
+            hybrid_fusion_threshold=float(args.hybrid_fusion_threshold),
+            hybrid_keyword_weight=float(args.hybrid_keyword_weight),
+            hybrid_semantic_weight=float(args.hybrid_semantic_weight),
         ),
     )
     print(report)

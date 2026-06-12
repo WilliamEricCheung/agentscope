@@ -13,9 +13,9 @@ from agentscope.formatter import DashScopeChatFormatter
 from agentscope.mcp import (
     MCPLaplaceController,
     MCPPrewarmRouter,
-    _MCPServerConfigFactory,
     _ensure_local_docker_mcp_server,
     build_mcp_speculative_executor,
+    load_laplace_registration_configs,
 )
 from agentscope.message import Msg, TextBlock
 from agentscope.model import DashScopeChatModel
@@ -83,9 +83,15 @@ async def create_worker(
     toolkit = Toolkit()
 
     # Browser MCP client
-    browser_registration = (
-        _MCPServerConfigFactory.build_playwright_registration_config()
+    registrations = load_laplace_registration_configs()
+    browser_registration = next(
+        (reg for reg in registrations.values() if reg.group_name == "browser_tools"),
+        None,
     )
+    if browser_registration is None:
+        raise ValueError(
+            "`browser_tools` registration is missing in laplace_mcp_manifest.json.",
+        )
     toolkit.create_tool_group(
         group_name=browser_registration.group_name,
         description=browser_registration.group_description,
@@ -101,9 +107,12 @@ async def create_worker(
     )
 
     # GitHub MCP client
-    github_registration = (
-        _MCPServerConfigFactory.build_github_registration_config()
+    github_registration = next(
+        (reg for reg in registrations.values() if reg.group_name == "github_tools"),
+        None,
     )
+    if "GITHUB_PERSONAL_ACCESS_TOKEN" not in os.environ:
+        github_registration = None
     if github_registration:
         toolkit.create_tool_group(
             group_name=github_registration.group_name,

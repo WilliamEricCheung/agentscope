@@ -1,0 +1,6 @@
+[
+  "Please decompose the task into 4 subtasks, and for each subtask explain which tool group is likely needed. Do not execute yet.",
+  "Now execute subtask 1 and 2: find today's weather in Beijing and provide one concise citation-style source note.",
+  "Continue with subtask 3: inspect the agentscope GitHub repository, find one recently closed issue, and report title plus closed time with link.",
+  "Finish subtask 4: produce a final concise summary with risks and next-step suggestions."
+]

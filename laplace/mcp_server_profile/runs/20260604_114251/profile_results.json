@@ -806,7 +806,7 @@
     },
     {
       "server_name": "Playwright",
-      "container_name": "playwright-mcp",
+      "container_name": "laplace-playwright-mcp",
       "image": "laplace/playwright-mcp:local",
       "original_image": "mcr.microsoft.com/playwright/mcp:latest",
       "transport": "streamable_http",

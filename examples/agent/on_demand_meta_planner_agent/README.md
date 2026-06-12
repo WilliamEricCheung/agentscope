@@ -63,6 +63,50 @@ Run:
 python main.py
 ```
 
+## Multi-turn Plan SDG A/B Experiment
+
+Use the dedicated script to evaluate SDG optimization in a realistic
+multi-turn planning + tool-calling scenario.
+
+Fixed dialogue turns are stored in:
+
+- `multiturn_plan_dialogue_script.json`
+
+Run one-click A/B experiment (auto c1_only -> c1_c2 -> compare):
+
+```bash
+python run_sdg_experiment.py
+```
+
+Optional with custom model/turn-script/output path:
+
+```bash
+python run_sdg_experiment.py \
+	--model-name qwen3-max \
+	--turn-script-file ./multiturn_plan_dialogue_script.json \
+	--output-path ./result/sdg_compare_latest.md
+```
+
+The script automatically writes:
+
+- one JSON artifact + one Markdown summary for `c1_only`
+- one JSON artifact + one Markdown summary for `c1_c2`
+- one final one-page compare Markdown report
+
+CLI output contains only one line: the final compare report path.
+
+Equivalent old manual flow (now internalized by this script):
+
+```bash
+# 1) run c1_only
+# 2) run c1_c2
+# 3) compare two run artifacts
+```
+
+You can use this template for final sharing:
+
+- `result/multiturn_plan_comparison_template.md`
+
 ## Controlled Prewarm Experiment
 
 This folder also includes a dedicated experiment runner for controlled MCP

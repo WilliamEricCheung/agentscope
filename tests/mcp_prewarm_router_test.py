@@ -37,7 +37,7 @@ class MCPPrewarmKeywordRouterTest(TestCase):
     def test_default_mapping_loaded_when_none(self) -> None:
         """Router initialised with None should use the built-in mapping."""
         router = MCPPrewarmKeywordRouter()
-        self.assertIn("playwright-mcp", router._mapping)
+        self.assertIn("Playwright", router._mapping)
         self.assertIn("github-mcp", router._mapping)
 
     def test_dict_mapping_accepted(self) -> None:
@@ -146,7 +146,10 @@ class MCPPrewarmKeywordRouterTest(TestCase):
     def test_keyword_match_returns_client(self) -> None:
         """A message containing a keyword should return the matching client."""
         router = MCPPrewarmKeywordRouter(
-            mapping={"playwright-mcp": ["browser", "web"]}
+            mapping={
+                "keyword_mapping": {"playwright-mcp": ["browser", "web"]},
+                "min_matches_per_client": 1,
+            }
         )
         result = router(self._make_msg("Open the browser and search"))
         self.assertEqual(result, ["playwright-mcp"])
@@ -154,7 +157,10 @@ class MCPPrewarmKeywordRouterTest(TestCase):
     def test_keyword_case_insensitive(self) -> None:
         """Keyword matching is case-insensitive."""
         router = MCPPrewarmKeywordRouter(
-            mapping={"svc": ["Browser"]}
+            mapping={
+                "keyword_mapping": {"svc": ["Browser"]},
+                "min_matches_per_client": 1,
+            }
         )
         result = router(self._make_msg("Use BROWSER to load the page"))
         self.assertEqual(result, ["svc"])
@@ -171,8 +177,11 @@ class MCPPrewarmKeywordRouterTest(TestCase):
         """Multiple clients can match from a single message."""
         router = MCPPrewarmKeywordRouter(
             mapping={
-                "playwright-mcp": ["browser"],
-                "github-mcp": ["repository"],
+                "keyword_mapping": {
+                    "playwright-mcp": ["browser"],
+                    "github-mcp": ["repository"],
+                },
+                "min_matches_per_client": 1,
             }
         )
         result = router(self._make_msg("Search the browser and check the repository"))
@@ -195,7 +204,12 @@ class MCPPrewarmKeywordRouterTest(TestCase):
 
     def test_list_of_messages(self) -> None:
         """List of Msg objects should all have their text concatenated."""
-        router = MCPPrewarmKeywordRouter(mapping={"svc": ["kw"]})
+        router = MCPPrewarmKeywordRouter(
+            mapping={
+                "keyword_mapping": {"svc": ["kw"]},
+                "min_matches_per_client": 1,
+            }
+        )
         msgs = [
             self._make_msg("hello"),
             self._make_msg("contains kw here"),
@@ -205,39 +219,89 @@ class MCPPrewarmKeywordRouterTest(TestCase):
     def test_string_fragment_can_drive_stream_level_match(self) -> None:
         """Raw streamed tool-name fragments should also be routable."""
         router = MCPPrewarmKeywordRouter(
-            mapping={"playwright-mcp": ["browser"]}
+            mapping={
+                "keyword_mapping": {"playwright-mcp": ["browser"]},
+                "min_matches_per_client": 1,
+            }
         )
         self.assertEqual(router("browser_navigate"), ["playwright-mcp"])
 
-    def test_hybrid_router_prefers_keyword_before_semantic(self) -> None:
-        """Hybrid router should short-circuit on L1 keyword matches."""
+    def test_hybrid_router_merges_keyword_and_semantic(self) -> None:
+        """Hybrid router should evaluate and merge both routes in union mode."""
         router = MCPPrewarmHybridRouter(
-            mapping={"keyword_mapping": {"playwright-mcp": ["browser"]}},
+            mapping={
+                "keyword_mapping": {"playwright-mcp": ["browser"]},
+                "keyword_min_matches_per_client": 1,
+            },
         )
 
-        with patch.object(
-            router._semantic_router,
-            "__call__",
-            side_effect=AssertionError("semantic router should not be called"),
-        ):
-            result = router(self._make_msg("Open the browser please"))
-
-        self.assertEqual(result, ["playwright-mcp"])
-        self.assertEqual(router.last_route_method, "keyword")
-
-    def test_hybrid_router_falls_back_to_semantic_on_keyword_miss(self) -> None:
-        """Hybrid router should use L2 semantic routing after L1 miss."""
-        router = MCPPrewarmHybridRouter(
-            mapping={"keyword_mapping": {"playwright-mcp": ["browser"]}},
-        )
-
-        semantic_mock = MagicMock(return_value=["Wikipedia"])
-        router._semantic_router = semantic_mock
-        result = router(self._make_msg("Explain climate policy background"))
+        semantic_mock = MagicMock(return_value=[])
+        router._score_semantic_candidates = semantic_mock
+        result = router(self._make_msg("Open the browser please"))
 
         semantic_mock.assert_called_once()
-        self.assertEqual(result, ["Wikipedia"])
-        self.assertEqual(router.last_route_method, "semantic")
+        self.assertEqual(result, ["playwright-mcp"])
+        self.assertEqual(router.last_route_method, "union")
+
+    def test_hybrid_router_can_merge_both_candidate_sources(self) -> None:
+        """Hybrid router should return the union of both candidate sources."""
+        router = MCPPrewarmHybridRouter(
+            mapping={
+                "keyword_mapping": {"playwright-mcp": ["browser"]},
+                "keyword_min_matches_per_client": 1,
+            },
+        )
+
+        semantic_mock = MagicMock(return_value=[("github-mcp", 0.91)])
+        router._score_semantic_candidates = semantic_mock
+        result = router(self._make_msg("Open the browser please"))
+
+        semantic_mock.assert_called_once()
+        self.assertEqual(result, ["playwright-mcp", "github-mcp"])
+        self.assertEqual(router.last_route_method, "union")
+
+    def test_hybrid_router_intersection_mode_requires_overlap(self) -> None:
+        """Intersection mode should only keep candidates present in both routes."""
+        router = MCPPrewarmHybridRouter(
+            mapping={
+                "keyword_mapping": {"playwright-mcp": ["browser"]},
+                "keyword_min_matches_per_client": 1,
+                "fusion_mode": "intersection",
+            },
+        )
+
+        semantic_mock = MagicMock(return_value=[("github-mcp", 0.91)])
+        router._score_semantic_candidates = semantic_mock
+        result = router(self._make_msg("Open the browser please"))
+
+        semantic_mock.assert_called_once()
+        self.assertEqual(result, [])
+        self.assertEqual(router.last_route_method, "none")
+
+    def test_hybrid_router_weighted_mode_keeps_strong_candidates(self) -> None:
+        """Weighted mode should rank candidates by fused scores."""
+        router = MCPPrewarmHybridRouter(
+            mapping={
+                "keyword_mapping": {"playwright-mcp": ["browser"]},
+                "keyword_min_matches_per_client": 1,
+                "fusion_mode": "weighted",
+                "fusion_threshold": 0.4,
+                "keyword_weight": 0.5,
+                "semantic_weight": 0.5,
+            },
+        )
+
+        router._score_keyword_candidates = MagicMock(
+            return_value=[("playwright-mcp", 1.0), ("github-mcp", 0.2)],
+        )
+        router._score_semantic_candidates = MagicMock(
+            return_value=[("playwright-mcp", 0.4), ("github-mcp", 0.6)],
+        )
+
+        result = router(self._make_msg("Open the browser please"))
+
+        self.assertEqual(result, ["playwright-mcp", "github-mcp"])
+        self.assertEqual(router.last_route_method, "weighted")
 
 
 class ReActAgentStreamPrewarmHookTest(IsolatedAsyncioTestCase):
@@ -252,7 +316,10 @@ class ReActAgentStreamPrewarmHookTest(IsolatedAsyncioTestCase):
             stream = True
 
         router = MCPPrewarmKeywordRouter(
-            mapping={"playwright-mcp": ["browser"]}
+            mapping={
+                "keyword_mapping": {"playwright-mcp": ["browser"]},
+                "min_matches_per_client": 1,
+            }
         )
         controller = MCPLaplaceController(
             prompt_prewarm_router=router,
@@ -291,7 +358,10 @@ class ReActAgentStreamPrewarmHookTest(IsolatedAsyncioTestCase):
             stream = True
 
         router = MCPPrewarmKeywordRouter(
-            mapping={"playwright-mcp": ["搜索", "网页", "weather"]}
+            mapping={
+                "keyword_mapping": {"playwright-mcp": ["搜索", "网页", "weather"]},
+                "min_matches_per_client": 1,
+            }
         )
         controller = MCPLaplaceController(
             prompt_prewarm_router=router,

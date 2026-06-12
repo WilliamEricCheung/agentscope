@@ -27,13 +27,13 @@ from agentscope.mcp import (
     MCPPrewarmHybridRouter,
     MCPPrewarmRouter,
     _DockerMCPRegistrationConfig,
-    _MCPServerConfigFactory,
     _build_mcp_timing_summary,
     _create_mcp_timing_run,
     _ensure_local_docker_mcp_server,
     _record_mcp_timing_event,
     _save_mcp_timing_log,
     build_mcp_speculative_executor,
+    load_laplace_registration_configs,
 )
 from agentscope.message import Msg, TextBlock
 from agentscope.model import DashScopeChatModel
@@ -126,22 +126,27 @@ def _build_lazy_mcp_groups(
     """
     registry: dict[str, _DockerMCPRegistrationConfig] = {}
 
-    browser_reg = _MCPServerConfigFactory.build_playwright_registration_config()
-    toolkit.create_tool_group(
-        group_name=browser_reg.group_name,
-        description=_summarize_group_description(browser_reg),
-        notes=browser_reg.group_notes,
-    )
-    registry[browser_reg.group_name] = browser_reg
+    all_registrations = load_laplace_registration_configs()
+    for registration in all_registrations.values():
+        if registration.group_name not in {"browser_tools", "github_tools"}:
+            continue
+        if (
+            registration.group_name == "github_tools"
+            and "GITHUB_PERSONAL_ACCESS_TOKEN" not in os.environ
+        ):
+            continue
 
-    github_reg = _MCPServerConfigFactory.build_github_registration_config()
-    if github_reg is not None:
         toolkit.create_tool_group(
-            group_name=github_reg.group_name,
-            description=_summarize_group_description(github_reg),
-            notes=github_reg.group_notes,
+            group_name=registration.group_name,
+            description=_summarize_group_description(registration),
+            notes=registration.group_notes,
         )
-        registry[github_reg.group_name] = github_reg
+        registry[registration.group_name] = registration
+
+    if "browser_tools" not in registry:
+        raise ValueError(
+            "`browser_tools` registration is missing in laplace_mcp_manifest.json.",
+        )
 
     return registry
 
@@ -486,6 +491,20 @@ async def create_worker(
         f"- {reg.group_name}: {_summarize_group_description(reg)}"
         for reg in all_registrations
     )
+    activation_rules = [
+        "- If the task needs live or current online information (such as weather, news, prices, maps, or website content), activate `browser_tools` first.",
+    ]
+    if any(reg.group_name == "github_tools" for reg in all_registrations):
+        activation_rules.append(
+            "- If the task involves GitHub repositories, files, issues, commits, branches, or pull requests, activate `github_tools` first.",
+        )
+    activation_rules.append(
+        "- Do not say you lack internet or GitHub access until you have checked whether a relevant tool group can be activated.",
+    )
+    activation_rules.append(
+        "- After activating a group, continue the task using the newly available tools.",
+    )
+    activation_rules_text = "\n".join(activation_rules)
 
     sub_agent = ReActAgent(
         name="Worker",
@@ -506,10 +525,7 @@ Some tool groups are available but initially inactive. You can activate them by 
 - Even when pre-warm is disabled, you can still activate tool groups on demand.
 
 ## Activation Rules
-- If the task needs live or current online information (such as weather, news, prices, maps, or website content), activate `browser_tools` first.
-- If the task involves GitHub repositories, files, issues, commits, branches, or pull requests, activate `github_tools` first.
-- Do not say you lack internet or GitHub access until you have checked whether a relevant tool group can be activated.
-- After activating a group, continue the task using the newly available tools.
+{activation_rules_text}
 
 ## IMPORTANT
 You MUST use `reset_equipped_tools` whenever the task requires an inactive tool group.
