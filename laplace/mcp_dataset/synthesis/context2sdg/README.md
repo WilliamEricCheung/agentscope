@@ -72,6 +72,23 @@ If `--transition-matrix-output` is provided, the same run also writes one JSON f
 
 This makes the standalone SDG workflow a one-command path from prompt generation to trace generation to Markov transition estimation.
 
+## Rebuild and Evaluate Markov Matrices
+
+Recompute the transition counts and probabilities from the retained traces,
+then evaluate top-k next-server prediction on a deterministic held-out split
+of unique server paths:
+
+```bash
+python -m laplace.mcp_dataset.synthesis.context2sdg.rebuild_sdg_transition_matrices
+```
+
+The command does not call an LLM. It writes a separate rebuilt matrix and
+evaluation report, preserving the current transition-matrix file. The grouped
+split keeps duplicate trace paths together to avoid train/test leakage. The
+report includes both all-transition and cross-server-only metrics, as well as
+the share of predicted destination servers enabled by the example's default
+runtime allowlist.
+
 ## First-Order Markov Matrices
 
 For server transitions, aggregate all traces by `sdg_summary.server_path` and compute:

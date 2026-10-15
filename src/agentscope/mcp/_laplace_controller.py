@@ -28,6 +28,10 @@ class MCPLaplaceControllerConfig:
         auto_create_predictive_warmer (`bool`, defaults to `True`):
             Whether to create a default predictive warmer when C2 is enabled
             and the warmer is not provided.
+        predictive_top_k (`int`, defaults to `1`):
+            Maximum number of predictive candidates to warm.
+        predictive_transition_matrix_path (`str | None`, optional):
+            Optional path to a transition matrix for the predictive warmer.
         telemetry_enabled (`bool`, defaults to `True`):
             Whether to record unified controller telemetry.
         telemetry_max_events (`int`, defaults to `2000`):
@@ -39,9 +43,16 @@ class MCPLaplaceControllerConfig:
     prompt_prewarm_enabled: bool = True
     predictive_warmer_enabled: bool = True
     auto_create_predictive_warmer: bool = True
+    predictive_top_k: int = 1
+    predictive_transition_matrix_path: str | None = None
     telemetry_enabled: bool = True
     telemetry_max_events: int = 2000
     telemetry_name: str = "mcp_laplace_controller"
+
+    def __post_init__(self) -> None:
+        """Validate predictive candidate configuration."""
+        if self.predictive_top_k < 1:
+            raise ValueError("predictive_top_k must be >= 1.")
 
 
 class MCPLaplaceController:
@@ -110,11 +121,17 @@ class MCPLaplaceController:
             try:
                 from ._predictive_warmer import MCPPredictiveWarmer
 
-                self.predictive_warmer = MCPPredictiveWarmer()
+                self.predictive_warmer = MCPPredictiveWarmer(
+                    top_k=config_obj.predictive_top_k,
+                    transition_matrix_path=(
+                        config_obj.predictive_transition_matrix_path
+                    ),
+                )
                 self._record_telemetry(
                     event="predictive_warmer_auto_created",
                     stage="controller",
                     status="success",
+                    top_k=config_obj.predictive_top_k,
                 )
             except Exception as exc:  # noqa: BLE001
                 logger.warning(

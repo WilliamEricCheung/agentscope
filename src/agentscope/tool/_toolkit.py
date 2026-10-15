@@ -1110,6 +1110,7 @@ Check "{dir}/SKILL.md" for how to use this skill"""
             "raise",
             "rename",
         ] = "raise",
+        execution_timeout: float | None = None,
     ) -> None:
         """Register tool functions from an MCP client.
 
@@ -1146,6 +1147,9 @@ Check "{dir}/SKILL.md" for how to use this skill"""
                 - 'skip': skip the registration of the new tool function.
                 - 'rename': rename the new tool function by appending a random
                   suffix to make it unique.
+            execution_timeout (`float | None`, optional):
+                Maximum seconds to wait for each MCP tool response. When
+                exceeded, the MCP client error is returned to the agent.
         """
         if (
             isinstance(mcp_client, StatefulClientBase)
@@ -1205,6 +1209,7 @@ Check "{dir}/SKILL.md" for how to use this skill"""
             func_obj = await mcp_client.get_callable_function(
                 func_name=mcp_tool.name,
                 wrap_tool_result=True,
+                execution_timeout=execution_timeout,
             )
 
             # Prepare preset kwargs

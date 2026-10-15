@@ -33,8 +33,22 @@ class MCPClientBase:
         self,
         func_name: str,
         wrap_tool_result: bool = True,
+        execution_timeout: float | None = None,
     ) -> Callable:
-        """Get a tool function by its name."""
+        """Get a tool function by its name.
+
+        Args:
+            func_name (`str`):
+                The MCP tool name.
+            wrap_tool_result (`bool`, defaults to `True`):
+                Whether to convert the result to an AgentScope `ToolResponse`.
+            execution_timeout (`float | None`, optional):
+                Maximum time in seconds to wait for the MCP tool response.
+
+        Returns:
+            `Callable`:
+                The callable MCP tool wrapper.
+        """
 
     @staticmethod
     def _convert_mcp_content_to_as_blocks(

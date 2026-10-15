@@ -14,6 +14,7 @@ from agentscope.agent import ReActAgent
 from agentscope.mcp import (
     MCPLaplaceController,
     MCPLaplaceControllerConfig,
+    MCPPredictiveWarmer,
     MCPPrewarmHybridRouter,
     MCPPrewarmRouter,
     MCPPrewarmKeywordRouter,
@@ -39,6 +40,7 @@ class MCPPrewarmKeywordRouterTest(TestCase):
         router = MCPPrewarmKeywordRouter()
         self.assertIn("Playwright", router._mapping)
         self.assertIn("github-mcp", router._mapping)
+
 
     def test_dict_mapping_accepted(self) -> None:
         """Router can be initialised with an explicit dict."""
@@ -302,6 +304,50 @@ class MCPPrewarmKeywordRouterTest(TestCase):
 
         self.assertEqual(result, ["playwright-mcp", "github-mcp"])
         self.assertEqual(router.last_route_method, "weighted")
+
+
+class MCPLaplaceControllerConfigTest(TestCase):
+    """Tests for predictive warmer settings on the Laplace controller."""
+
+    def test_auto_created_predictor_uses_configured_top_k(self) -> None:
+        """The controller should forward top-k and matrix path to C2."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            matrix_path = Path(tmpdir) / "matrix.json"
+            matrix_path.write_text(
+                json.dumps(
+                    {
+                        "server_transition_matrix": {
+                            "source": {
+                                "target-a": 0.6,
+                                "target-b": 0.3,
+                                "source": 0.1,
+                            },
+                        },
+                    },
+                ),
+                encoding="utf-8",
+            )
+            controller = MCPLaplaceController(
+                prompt_prewarm_executor=AsyncMock(),
+                config=MCPLaplaceControllerConfig(
+                    predictive_top_k=2,
+                    predictive_transition_matrix_path=str(matrix_path),
+                ),
+            )
+
+        self.assertIsInstance(
+            controller.predictive_warmer,
+            MCPPredictiveWarmer,
+        )
+        self.assertEqual(
+            controller.predictive_warmer.predict_next_servers("source"),
+            ["target-a", "target-b"],
+        )
+
+    def test_predictive_top_k_must_be_positive(self) -> None:
+        """The controller should reject an invalid candidate count."""
+        with self.assertRaisesRegex(ValueError, "predictive_top_k"):
+            MCPLaplaceControllerConfig(predictive_top_k=0)
 
 
 class ReActAgentStreamPrewarmHookTest(IsolatedAsyncioTestCase):

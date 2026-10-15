@@ -18,7 +18,7 @@
 | Server | Success | Partial | Fail | Total Avg (ms) | Launch Avg (ms) | Port Wait Avg (ms) | Handshake Avg (ms) | Interface Avg (ms) |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | BioMCP | 10 | 0 | 0 | 2126.57 | 669.82 | 0.69 | 776.08 | 83.64 |
-| Bibliomantic | 0 | 0 | 10 | 121576.17 | 637.79 | - | - | - |
+| Bibliomantic | 10 | 0 | 0 | 2478.93 | 654.84 | 0.74 | 1187.61 | 84.97 |
 | Playwright | 10 | 0 | 0 | 2463.92 | 627.83 | 0.87 | 601.51 | 679.54 |
 | Jupyter MCP | 10 | 0 | 0 | 9015.40 | 632.90 | 0.67 | 1729.29 | 6111.09 |
 | Neo4j Cypher | 10 | 0 | 0 | 2700.10 | 622.58 | 0.64 | 1147.62 | 376.10 |
@@ -95,45 +95,44 @@
 - Container: laplace-bibliomantic
 - Image: laplace/bibliomantic:local
 - URL: http://localhost:8801/mcp
-- Success / Partial / Fail: 0 / 0 / 10
-- Failure stages: {"tcp_ready": 10}
+- Success / Partial / Fail: 10 / 0 / 0
 
 ### Metric Stats
 
 | Metric | Avg (ms) | Min (ms) | Max (ms) | Samples |
 | --- | ---: | ---: | ---: | ---: |
-| docker_run_ms | 637.79 | 604.72 | 689.28 | 10 |
-| wait_tcp_ms | - | - | - | 0 |
-| mcp_handshake_ms | - | - | - | 0 |
-| interface_test_ms | - | - | - | 0 |
-| total_ms | 121576.17 | 121427.92 | 121717.99 | 10 |
+| docker_run_ms | 654.84 | 599.16 | 942.16 | 10 |
+| wait_tcp_ms | 0.74 | 0.52 | 1.11 | 10 |
+| mcp_handshake_ms | 1187.61 | 1086.23 | 1993.55 | 10 |
+| interface_test_ms | 84.97 | 77.09 | 93.91 | 10 |
+| total_ms | 2478.93 | 2284.32 | 3720.83 | 10 |
 
 ### Milestones
 
 | Milestone | Avg (ms) | Min (ms) | Max (ms) | Samples |
 | --- | ---: | ---: | ---: | ---: |
-| tcp_ready_elapsed_ms | - | - | - | 0 |
-| handshake_elapsed_ms | - | - | - | 0 |
-| interface_test_elapsed_ms | - | - | - | 0 |
+| tcp_ready_elapsed_ms | 679.30 | 619.34 | 974.39 | 10 |
+| handshake_elapsed_ms | 1866.91 | 1711.50 | 2967.94 | 10 |
+| interface_test_elapsed_ms | 1951.88 | 1788.59 | 3059.60 | 10 |
 
 ### Trial Results
 
 | Trial | Status | Failure Stage | Total (ms) | Launch (ms) | Port Wait (ms) | Handshake (ms) | Interface (ms) | Smoke Tool |
 | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
-| 1 | fail | tcp_ready | 121585.58 | 604.72 | - | - | - | - |
-| 2 | fail | tcp_ready | 121641.75 | 613.39 | - | - | - | - |
-| 3 | fail | tcp_ready | 121618.55 | 613.30 | - | - | - | - |
-| 4 | fail | tcp_ready | 121427.92 | 668.08 | - | - | - | - |
-| 5 | fail | tcp_ready | 121568.99 | 631.57 | - | - | - | - |
-| 6 | fail | tcp_ready | 121680.91 | 623.85 | - | - | - | - |
-| 7 | fail | tcp_ready | 121450.28 | 644.92 | - | - | - | - |
-| 8 | fail | tcp_ready | 121627.83 | 666.68 | - | - | - | - |
-| 9 | fail | tcp_ready | 121717.99 | 689.28 | - | - | - | - |
-| 10 | fail | tcp_ready | 121441.85 | 622.15 | - | - | - | - |
+| 1 | pass | - | 3720.83 | 942.16 | 1.11 | 1993.55 | 91.66 | i_ching_divination |
+| 2 | pass | - | 2441.58 | 688.42 | 0.60 | 1101.69 | 91.07 | i_ching_divination |
+| 3 | pass | - | 2303.62 | 629.04 | 0.65 | 1093.96 | 79.80 | i_ching_divination |
+| 4 | pass | - | 2318.15 | 616.02 | 0.75 | 1096.49 | 82.19 | i_ching_divination |
+| 5 | pass | - | 2350.46 | 623.38 | 0.79 | 1109.71 | 93.91 | i_ching_divination |
+| 6 | pass | - | 2346.82 | 625.09 | 0.92 | 1106.75 | 82.43 | i_ching_divination |
+| 7 | pass | - | 2307.45 | 605.27 | 0.52 | 1086.23 | 77.09 | i_ching_divination |
+| 8 | pass | - | 2284.32 | 601.83 | 0.74 | 1093.22 | 80.23 | i_ching_divination |
+| 9 | pass | - | 2359.42 | 599.16 | 0.60 | 1093.74 | 83.62 | i_ching_divination |
+| 10 | pass | - | 2356.62 | 618.01 | 0.73 | 1100.76 | 87.69 | i_ching_divination |
 
 ## Playwright
 
-- Container: playwright-mcp
+- Container: laplace-playwright-mcp
 - Image: laplace/playwright-mcp:local
 - Original image: mcr.microsoft.com/playwright/mcp:latest
 - URL: http://localhost:8804/mcp

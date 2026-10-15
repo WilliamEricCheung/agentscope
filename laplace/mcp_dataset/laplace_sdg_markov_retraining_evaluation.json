@@ -1,0 +1,172 @@
+{
+  "status": "complete",
+  "method": "First-order maximum-likelihood Markov estimation from adjacent server labels in SDG traces.",
+  "input": {
+    "traces_path": "/mnt/d/Project/agentscope/laplace/mcp_dataset/laplace_sdg_traces.json",
+    "trace_count": 200,
+    "unique_server_paths": 71,
+    "trace_sha256": "fc06ba743733e49ee9b69731af8972f4e8e61aab2a384c8cb6e38daf79d248fb"
+  },
+  "outputs": {
+    "rebuilt_matrix": "/mnt/d/Project/agentscope/laplace/mcp_dataset/laplace_sdg_transition_matrices_retrained.json"
+  },
+  "existing_matrix_match": {
+    "server_transition_counts_identical": true,
+    "server_transition_probabilities_identical": true,
+    "interpretation": "Retraining reproduces the checked-in matrix exactly."
+  },
+  "dataset_diagnostics": {
+    "server_transition_count": 1090,
+    "self_transition_count": 640,
+    "self_transition_fraction": 0.5871559633027523
+  },
+  "held_out_evaluation": {
+    "split": "Unique server paths are grouped before a deterministic 80/20 split; duplicate paths cannot leak across train and test.",
+    "train_unique_paths": 56,
+    "test_unique_paths": 15,
+    "test_transitions": 78,
+    "policies": {
+      "self_transitions_included": {
+        "top_1": {
+          "all_transitions": {
+            "correct_transitions": 44,
+            "test_transitions": 78,
+            "recall_at_k": 0.5641025641025641,
+            "mean_candidates_per_transition": 0.9871794871794872,
+            "predictable_transition_fraction": 0.9871794871794872
+          },
+          "cross_server_transitions": {
+            "correct_transitions": 4,
+            "test_transitions": 35,
+            "recall_at_k": 0.11428571428571428,
+            "mean_candidates_per_transition": 0.9714285714285714,
+            "predictable_transition_fraction": 0.9714285714285714
+          }
+        },
+        "top_2": {
+          "all_transitions": {
+            "correct_transitions": 58,
+            "test_transitions": 78,
+            "recall_at_k": 0.7435897435897436,
+            "mean_candidates_per_transition": 1.9743589743589745,
+            "predictable_transition_fraction": 0.9871794871794872
+          },
+          "cross_server_transitions": {
+            "correct_transitions": 15,
+            "test_transitions": 35,
+            "recall_at_k": 0.42857142857142855,
+            "mean_candidates_per_transition": 1.9428571428571428,
+            "predictable_transition_fraction": 0.9714285714285714
+          }
+        },
+        "top_3": {
+          "all_transitions": {
+            "correct_transitions": 63,
+            "test_transitions": 78,
+            "recall_at_k": 0.8076923076923077,
+            "mean_candidates_per_transition": 2.948717948717949,
+            "predictable_transition_fraction": 0.9871794871794872
+          },
+          "cross_server_transitions": {
+            "correct_transitions": 20,
+            "test_transitions": 35,
+            "recall_at_k": 0.5714285714285714,
+            "mean_candidates_per_transition": 2.8857142857142857,
+            "predictable_transition_fraction": 0.9714285714285714
+          }
+        },
+        "top_5": {
+          "all_transitions": {
+            "correct_transitions": 67,
+            "test_transitions": 78,
+            "recall_at_k": 0.8589743589743589,
+            "mean_candidates_per_transition": 4.371794871794871,
+            "predictable_transition_fraction": 0.9871794871794872
+          },
+          "cross_server_transitions": {
+            "correct_transitions": 24,
+            "test_transitions": 35,
+            "recall_at_k": 0.6857142857142857,
+            "mean_candidates_per_transition": 4.257142857142857,
+            "predictable_transition_fraction": 0.9714285714285714
+          }
+        }
+      },
+      "self_transitions_excluded": {
+        "top_1": {
+          "all_transitions": {
+            "correct_transitions": 14,
+            "test_transitions": 78,
+            "recall_at_k": 0.1794871794871795,
+            "mean_candidates_per_transition": 0.9871794871794872,
+            "predictable_transition_fraction": 0.9871794871794872
+          },
+          "cross_server_transitions": {
+            "correct_transitions": 14,
+            "test_transitions": 35,
+            "recall_at_k": 0.4,
+            "mean_candidates_per_transition": 0.9714285714285714,
+            "predictable_transition_fraction": 0.9714285714285714
+          }
+        },
+        "top_2": {
+          "all_transitions": {
+            "correct_transitions": 20,
+            "test_transitions": 78,
+            "recall_at_k": 0.2564102564102564,
+            "mean_candidates_per_transition": 1.9615384615384615,
+            "predictable_transition_fraction": 0.9871794871794872
+          },
+          "cross_server_transitions": {
+            "correct_transitions": 20,
+            "test_transitions": 35,
+            "recall_at_k": 0.5714285714285714,
+            "mean_candidates_per_transition": 1.9142857142857144,
+            "predictable_transition_fraction": 0.9714285714285714
+          }
+        },
+        "top_3": {
+          "all_transitions": {
+            "correct_transitions": 22,
+            "test_transitions": 78,
+            "recall_at_k": 0.28205128205128205,
+            "mean_candidates_per_transition": 2.7051282051282053,
+            "predictable_transition_fraction": 0.9871794871794872
+          },
+          "cross_server_transitions": {
+            "correct_transitions": 22,
+            "test_transitions": 35,
+            "recall_at_k": 0.6285714285714286,
+            "mean_candidates_per_transition": 2.6285714285714286,
+            "predictable_transition_fraction": 0.9714285714285714
+          }
+        },
+        "top_5": {
+          "all_transitions": {
+            "correct_transitions": 29,
+            "test_transitions": 78,
+            "recall_at_k": 0.3717948717948718,
+            "mean_candidates_per_transition": 4.0,
+            "predictable_transition_fraction": 0.9871794871794872
+          },
+          "cross_server_transitions": {
+            "correct_transitions": 29,
+            "test_transitions": 35,
+            "recall_at_k": 0.8285714285714286,
+            "mean_candidates_per_transition": 3.8,
+            "predictable_transition_fraction": 0.9714285714285714
+          }
+        }
+      }
+    }
+  },
+  "runtime_candidate_coverage": {
+    "default_runtime_server_labels": [
+      "Playwright"
+    ],
+    "transition_count_total": 1090,
+    "transitions_to_default_available_servers": 6,
+    "transition_target_coverage": 0.005504587155963303,
+    "note": "The experiment helper further removes github_tools when no GitHub token is configured."
+  }
+}

@@ -54,7 +54,9 @@ class MCPPredictiveWarmer:
         probability_threshold (`float`, optional):
             Minimum transition probability to keep a candidate.
         include_self_transition (`bool`, optional):
-            Whether to keep transitions like `A -> A`.
+            Whether to keep transitions like `A -> A`. Defaults to `False`
+            because the current server is already active and is not a useful
+            sandbox prewarm target.
     """
 
     def __init__(
@@ -63,7 +65,7 @@ class MCPPredictiveWarmer:
         traces_path: str | Path | None = None,
         top_k: int = 1,
         probability_threshold: float = 0.0,
-        include_self_transition: bool = True,
+        include_self_transition: bool = False,
         manifest_path: str | Path | None = None,
         server_aliases: dict[str, str] | None = None,
     ) -> None:
@@ -79,7 +81,8 @@ class MCPPredictiveWarmer:
             probability_threshold (`float`, optional):
                 Candidate probability floor.
             include_self_transition (`bool`, optional):
-                Keep `server -> same server` candidates when true.
+                Keep `server -> same server` candidates when true. Defaults to
+                `False` because the current server is already active.
             manifest_path (`str | Path | None`, optional):
                 Optional Laplace manifest path used to build alias mapping
                 from client/container names to canonical server names.
@@ -113,7 +116,7 @@ class MCPPredictiveWarmer:
         path: str | Path,
         top_k: int = 1,
         probability_threshold: float = 0.0,
-        include_self_transition: bool = True,
+        include_self_transition: bool = False,
     ) -> "MCPPredictiveWarmer":
         """Build a predictive warmer from one transition-matrix JSON file.
 
@@ -463,8 +466,7 @@ class MCPPredictiveWarmer:
 
         ranked = sorted(
             ((target, float(prob)) for target, prob in transitions.items()),
-            key=lambda item: item[1],
-            reverse=True,
+            key=lambda item: (-item[1], item[0]),
         )
 
         selected: list[str] = []

@@ -1,0 +1,405 @@
+{
+  "trace_schema_version": 2,
+  "trace_count": 200,
+  "training_source": "/mnt/d/Project/agentscope/laplace/mcp_dataset/laplace_sdg_traces.json",
+  "server_transition_counts": {
+    "Google Maps": {
+      "Google Maps": 346,
+      "Math MCP": 38,
+      "Context7": 30,
+      "Weather Data": 77,
+      "Wikipedia": 15,
+      "Metropolitan Museum": 7,
+      "Unit Converter": 1,
+      "Playwright": 3,
+      "Game Trends": 2,
+      "Huge Icons": 15,
+      "Time MCP": 1
+    },
+    "Math MCP": {
+      "Unit Converter": 29,
+      "Google Maps": 3,
+      "Math MCP": 1,
+      "Context7": 1,
+      "Huge Icons": 1,
+      "National Parks": 1
+    },
+    "Unit Converter": {
+      "Google Maps": 26
+    },
+    "Metropolitan Museum": {
+      "Metropolitan Museum": 55,
+      "Google Maps": 70,
+      "Context7": 5
+    },
+    "Context7": {
+      "Context7": 49,
+      "Math MCP": 1,
+      "Hugging Face": 2,
+      "Google Maps": 1,
+      "Wikipedia": 1
+    },
+    "National Parks": {
+      "National Parks": 48,
+      "Google Maps": 25,
+      "Math MCP": 2
+    },
+    "Weather Data": {
+      "Weather Data": 82,
+      "Math MCP": 17,
+      "Wikipedia": 4,
+      "Google Maps": 9,
+      "Metropolitan Museum": 3,
+      "Unit Converter": 1
+    },
+    "Wikipedia": {
+      "Wikipedia": 31,
+      "Google Maps": 14,
+      "Weather Data": 6,
+      "Game Trends": 9,
+      "Paper Search": 6
+    },
+    "Game Trends": {
+      "Game Trends": 7,
+      "Google Maps": 1,
+      "Wikipedia": 1
+    },
+    "Playwright": {
+      "Playwright": 3,
+      "Context7": 3
+    },
+    "Hugging Face": {
+      "Hugging Face": 3,
+      "Paper Search": 1,
+      "Context7": 2
+    },
+    "Huge Icons": {
+      "Context7": 1,
+      "Wikipedia": 3,
+      "Huge Icons": 12
+    },
+    "NASA Data": {
+      "Wikipedia": 2
+    },
+    "Paper Search": {
+      "Paper Search": 1,
+      "BioMCP": 2,
+      "Hugging Face": 2
+    },
+    "BioMCP": {
+      "Medical Calculator": 2
+    },
+    "Medical Calculator": {
+      "NASA Data": 1,
+      "Medical Calculator": 2
+    },
+    "Bibliomantic": {
+      "Wikipedia": 2
+    },
+    "Time MCP": {
+      "Weather Data": 1
+    }
+  },
+  "server_transition_matrix": {
+    "Google Maps": {
+      "Google Maps": 0.6467289719626168,
+      "Math MCP": 0.07102803738317758,
+      "Context7": 0.056074766355140186,
+      "Weather Data": 0.14392523364485982,
+      "Wikipedia": 0.028037383177570093,
+      "Metropolitan Museum": 0.013084112149532711,
+      "Unit Converter": 0.001869158878504673,
+      "Playwright": 0.005607476635514018,
+      "Game Trends": 0.003738317757009346,
+      "Huge Icons": 0.028037383177570093,
+      "Time MCP": 0.001869158878504673
+    },
+    "Math MCP": {
+      "Unit Converter": 0.8055555555555556,
+      "Google Maps": 0.08333333333333333,
+      "Math MCP": 0.027777777777777776,
+      "Context7": 0.027777777777777776,
+      "Huge Icons": 0.027777777777777776,
+      "National Parks": 0.027777777777777776
+    },
+    "Unit Converter": {
+      "Google Maps": 1.0
+    },
+    "Metropolitan Museum": {
+      "Metropolitan Museum": 0.4230769230769231,
+      "Google Maps": 0.5384615384615384,
+      "Context7": 0.038461538461538464
+    },
+    "Context7": {
+      "Context7": 0.9074074074074074,
+      "Math MCP": 0.018518518518518517,
+      "Hugging Face": 0.037037037037037035,
+      "Google Maps": 0.018518518518518517,
+      "Wikipedia": 0.018518518518518517
+    },
+    "National Parks": {
+      "National Parks": 0.64,
+      "Google Maps": 0.3333333333333333,
+      "Math MCP": 0.02666666666666667
+    },
+    "Weather Data": {
+      "Weather Data": 0.7068965517241379,
+      "Math MCP": 0.14655172413793102,
+      "Wikipedia": 0.034482758620689655,
+      "Google Maps": 0.07758620689655173,
+      "Metropolitan Museum": 0.02586206896551724,
+      "Unit Converter": 0.008620689655172414
+    },
+    "Wikipedia": {
+      "Wikipedia": 0.4696969696969697,
+      "Google Maps": 0.21212121212121213,
+      "Weather Data": 0.09090909090909091,
+      "Game Trends": 0.13636363636363635,
+      "Paper Search": 0.09090909090909091
+    },
+    "Game Trends": {
+      "Game Trends": 0.7777777777777778,
+      "Google Maps": 0.1111111111111111,
+      "Wikipedia": 0.1111111111111111
+    },
+    "Playwright": {
+      "Playwright": 0.5,
+      "Context7": 0.5
+    },
+    "Hugging Face": {
+      "Hugging Face": 0.5,
+      "Paper Search": 0.16666666666666666,
+      "Context7": 0.3333333333333333
+    },
+    "Huge Icons": {
+      "Context7": 0.0625,
+      "Wikipedia": 0.1875,
+      "Huge Icons": 0.75
+    },
+    "NASA Data": {
+      "Wikipedia": 1.0
+    },
+    "Paper Search": {
+      "Paper Search": 0.2,
+      "BioMCP": 0.4,
+      "Hugging Face": 0.4
+    },
+    "BioMCP": {
+      "Medical Calculator": 1.0
+    },
+    "Medical Calculator": {
+      "NASA Data": 0.3333333333333333,
+      "Medical Calculator": 0.6666666666666666
+    },
+    "Bibliomantic": {
+      "Wikipedia": 1.0
+    },
+    "Time MCP": {
+      "Weather Data": 1.0
+    }
+  },
+  "state_transition_counts": {
+    "Maps::Resolve": {
+      "Maps::Search": 219,
+      "Maps::Enrich": 19,
+      "Maps::Fetch": 3,
+      "Maps::Inspect": 53,
+      "Maps::Resolve": 11,
+      "Maps::Forecast": 1,
+      "Academic::Search": 3
+    },
+    "Maps::Search": {
+      "Maps::Inspect": 184,
+      "Maps::Resolve": 28,
+      "Maps::Compute": 10,
+      "Maps::Enrich": 10,
+      "Maps::Search": 30,
+      "Academic::Search": 6,
+      "Academic::Inspect": 4,
+      "Maps::Validate": 1
+    },
+    "Maps::Inspect": {
+      "Maps::Compute": 35,
+      "Maps::Resolve": 82,
+      "Maps::Inspect": 36,
+      "Maps::Enrich": 4,
+      "Maps::Search": 20,
+      "Academic::Search": 20,
+      "Maps::Convert": 1,
+      "Maps::Aggregate": 13,
+      "Academic::Inspect": 3,
+      "General::Fetch": 3,
+      "Maps::Transform": 1
+    },
+    "Maps::Compute": {
+      "Maps::Convert": 13,
+      "Maps::Inspect": 3,
+      "Maps::Resolve": 2,
+      "Maps::Transform": 3,
+      "Maps::Enrich": 1,
+      "Maps::Compute": 3,
+      "Maps::Search": 1
+    },
+    "Maps::Convert": {
+      "Maps::Inspect": 12
+    },
+    "Academic::Search": {
+      "Academic::Inspect": 53,
+      "Academic::Extract": 7,
+      "Maps::Resolve": 34,
+      "Academic::Summarize": 5,
+      "Maps::Inspect": 1,
+      "Academic::Resolve": 5,
+      "Academic::Search": 11,
+      "Maps::Search": 4,
+      "Academic::Reason": 1
+    },
+    "Academic::Inspect": {
+      "Maps::Search": 4,
+      "Maps::Inspect": 1,
+      "Maps::Resolve": 44,
+      "Academic::Reason": 1
+    },
+    "Maps::Enrich": {
+      "Maps::Inspect": 9,
+      "Maps::Search": 7,
+      "Maps::Enrich": 1,
+      "Academic::Search": 1,
+      "Maps::Resolve": 2
+    },
+    "Academic::Extract": {
+      "Maps::Resolve": 6,
+      "Maps::Search": 1
+    },
+    "Maps::Aggregate": {
+      "Maps::Enrich": 6,
+      "Maps::Transform": 6
+    },
+    "Maps::Transform": {
+      "Maps::Inspect": 8
+    },
+    "Academic::Summarize": {
+      "Maps::Resolve": 1,
+      "Maps::Search": 4
+    },
+    "General::Fetch": {
+      "General::Extract": 3
+    },
+    "General::Extract": {
+      "Maps::Resolve": 3
+    },
+    "Academic::Resolve": {
+      "Maps::Resolve": 6,
+      "Academic::Search": 14
+    },
+    "Academic::Reason": {
+      "Maps::Calculate": 1,
+      "Maps::Compute": 1
+    },
+    "Maps::Calculate": {
+      "Academic::Inspect": 1
+    }
+  },
+  "state_transition_matrix": {
+    "Maps::Resolve": {
+      "Maps::Search": 0.7087378640776699,
+      "Maps::Enrich": 0.061488673139158574,
+      "Maps::Fetch": 0.009708737864077669,
+      "Maps::Inspect": 0.1715210355987055,
+      "Maps::Resolve": 0.03559870550161812,
+      "Maps::Forecast": 0.003236245954692557,
+      "Academic::Search": 0.009708737864077669
+    },
+    "Maps::Search": {
+      "Maps::Inspect": 0.673992673992674,
+      "Maps::Resolve": 0.10256410256410256,
+      "Maps::Compute": 0.03663003663003663,
+      "Maps::Enrich": 0.03663003663003663,
+      "Maps::Search": 0.10989010989010989,
+      "Academic::Search": 0.02197802197802198,
+      "Academic::Inspect": 0.014652014652014652,
+      "Maps::Validate": 0.003663003663003663
+    },
+    "Maps::Inspect": {
+      "Maps::Compute": 0.16055045871559634,
+      "Maps::Resolve": 0.3761467889908257,
+      "Maps::Inspect": 0.1651376146788991,
+      "Maps::Enrich": 0.01834862385321101,
+      "Maps::Search": 0.09174311926605505,
+      "Academic::Search": 0.09174311926605505,
+      "Maps::Convert": 0.0045871559633027525,
+      "Maps::Aggregate": 0.05963302752293578,
+      "Academic::Inspect": 0.013761467889908258,
+      "General::Fetch": 0.013761467889908258,
+      "Maps::Transform": 0.0045871559633027525
+    },
+    "Maps::Compute": {
+      "Maps::Convert": 0.5,
+      "Maps::Inspect": 0.11538461538461539,
+      "Maps::Resolve": 0.07692307692307693,
+      "Maps::Transform": 0.11538461538461539,
+      "Maps::Enrich": 0.038461538461538464,
+      "Maps::Compute": 0.11538461538461539,
+      "Maps::Search": 0.038461538461538464
+    },
+    "Maps::Convert": {
+      "Maps::Inspect": 1.0
+    },
+    "Academic::Search": {
+      "Academic::Inspect": 0.4380165289256198,
+      "Academic::Extract": 0.05785123966942149,
+      "Maps::Resolve": 0.2809917355371901,
+      "Academic::Summarize": 0.04132231404958678,
+      "Maps::Inspect": 0.008264462809917356,
+      "Academic::Resolve": 0.04132231404958678,
+      "Academic::Search": 0.09090909090909091,
+      "Maps::Search": 0.03305785123966942,
+      "Academic::Reason": 0.008264462809917356
+    },
+    "Academic::Inspect": {
+      "Maps::Search": 0.08,
+      "Maps::Inspect": 0.02,
+      "Maps::Resolve": 0.88,
+      "Academic::Reason": 0.02
+    },
+    "Maps::Enrich": {
+      "Maps::Inspect": 0.45,
+      "Maps::Search": 0.35,
+      "Maps::Enrich": 0.05,
+      "Academic::Search": 0.05,
+      "Maps::Resolve": 0.1
+    },
+    "Academic::Extract": {
+      "Maps::Resolve": 0.8571428571428571,
+      "Maps::Search": 0.14285714285714285
+    },
+    "Maps::Aggregate": {
+      "Maps::Enrich": 0.5,
+      "Maps::Transform": 0.5
+    },
+    "Maps::Transform": {
+      "Maps::Inspect": 1.0
+    },
+    "Academic::Summarize": {
+      "Maps::Resolve": 0.2,
+      "Maps::Search": 0.8
+    },
+    "General::Fetch": {
+      "General::Extract": 1.0
+    },
+    "General::Extract": {
+      "Maps::Resolve": 1.0
+    },
+    "Academic::Resolve": {
+      "Maps::Resolve": 0.3,
+      "Academic::Search": 0.7
+    },
+    "Academic::Reason": {
+      "Maps::Calculate": 0.5,
+      "Maps::Compute": 0.5
+    },
+    "Maps::Calculate": {
+      "Academic::Inspect": 1.0
+    }
+  }
+}

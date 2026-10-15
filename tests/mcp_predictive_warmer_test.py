@@ -43,6 +43,29 @@ class MCPPredictiveWarmerTest(TestCase):
                 ["Weather Data", "Wikipedia"],
             )
 
+    def test_equal_probabilities_use_lexical_candidate_order(self) -> None:
+        """Tied candidates should have deterministic lexical ordering."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            matrix_path = Path(tmpdir) / "matrix.json"
+            matrix_path.write_text(
+                json.dumps(
+                    {
+                        "server_transition_matrix": {
+                            "source": {
+                                "Zulu": 0.5,
+                                "Alpha": 0.5,
+                            },
+                        },
+                    },
+                ),
+                encoding="utf-8",
+            )
+            warmer = MCPPredictiveWarmer.from_json(matrix_path, top_k=1)
+            self.assertEqual(
+                warmer.predict_next_servers("source"),
+                ["Alpha"],
+            )
+
     def test_probability_threshold_filters_candidates(self) -> None:
         """Probability threshold should remove low-confidence transitions."""
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -97,6 +120,31 @@ class MCPPredictiveWarmerTest(TestCase):
                 top_k=2,
                 include_self_transition=False,
             )
+            self.assertEqual(
+                warmer.predict_next_servers("Context7"),
+                ["Hugging Face"],
+            )
+
+    def test_self_transition_is_excluded_by_default(self) -> None:
+        """Default top-1 prediction should target another server for prewarming."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            matrix_path = Path(tmpdir) / "matrix.json"
+            matrix_path.write_text(
+                json.dumps(
+                    {
+                        "server_transition_matrix": {
+                            "Context7": {
+                                "Context7": 0.7,
+                                "Hugging Face": 0.3,
+                            },
+                        },
+                    },
+                ),
+                encoding="utf-8",
+            )
+
+            warmer = MCPPredictiveWarmer.from_json(matrix_path)
+
             self.assertEqual(
                 warmer.predict_next_servers("Context7"),
                 ["Hugging Face"],

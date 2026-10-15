@@ -671,11 +671,16 @@ def _create_mcp_timing_run(
         `dict[str, Any]`:
             Mutable timing context for recording step-level events.
     """
+    started_at_unix_s = time.time()
     return {
         "run_id": f"worker-{int(time.time() * 1000)}",
         "task_description": task_description,
         "prewarm": prewarm,
-        "started_at": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+        "started_at": time.strftime(
+            "%Y-%m-%d %H:%M:%S",
+            time.localtime(started_at_unix_s),
+        ),
+        "started_at_unix_s": started_at_unix_s,
         "events": [],
         "_started_perf": time.perf_counter(),
     }
