@@ -1,0 +1,34 @@
+RESEARCH REPORT: THE GREAT WAVE OFF KANAGAWA
+
+ARTWORK INFORMATION:
+- Full Title: Under the Wave off Kanagawa (Kanagawa oki nami ura), or The Great Wave, from the series Thirty-six Views of Mount Fuji (Fugaku sanjūrokkei)
+- Artist: Katsushika Hokusai (Japanese, Tokyo/Edo 1760–1849 Tokyo/Edo)
+- Medium: Woodblock print; ink and color on paper
+- Dimensions: Approximately 10 x 15 inches (25.4 x 38.1 cm)
+
+METROPOLITAN MUSEUM HOLDINGS:
+The Met Museum holds multiple versions of this iconic print. Two notable examples include:
+
+1. Object ID: 39799
+   - Credit Line: The Howard Mansfield Collection, Purchase, Rogers Fund, 1936
+   - Department: Asian Art
+
+2. Object ID: 45434  
+   - Credit Line: H. O. Havemeyer Collection, Bequest of Mrs. H. O. Havemeyer, 1929
+   - Department: Asian Art
+
+DISPLAY LOCATION:
+Both versions are part of the Metropolitan Museum's Asian Art Department collection. However, specific current gallery locations and display buildings cannot be determined through the available museum API tools. The Met's Asian Art collection is typically housed in designated galleries within the main museum building at 1000 Fifth Avenue, New York, NY, but exact current exhibition status would require checking the museum's current floor plans or contacting the museum directly.
+
+PRESERVATION DOCUMENTATION:
+Preservation and conservation documentation for these specific prints is not accessible through the available museum search tools. Such detailed conservation records are typically maintained internally by museum conservation departments and may not be publicly available through standard collection databases.
+
+RESEARCH LIMITATIONS:
+- Exact current display location/gallery information not available through API
+- Detailed preservation/conservation documentation not accessible through public search tools
+- For current exhibition status and detailed conservation information, direct contact with the Metropolitan Museum's Asian Art Department or Conservation Department would be recommended.
+
+IMAGE RESOURCES:
+High-resolution images of both versions are available through the Met's Open Access program:
+- Version 1 (ID: 39799): https://images.metmuseum.org/CRDImages/as/original/DP141042.jpg
+- Version 2 (ID: 45434): https://images.metmuseum.org/CRDImages/as/original/DP130155.jpg

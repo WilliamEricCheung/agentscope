@@ -1,0 +1,73 @@
+# National Parks and Monuments in Colorado
+
+Based on the National Parks Service data, here are all 17 national parks, monuments, and historic sites located in Colorado:
+
+1. **Amache National Historic Site** (amch)
+   - Designation: National Historic Site
+   - Description: Former Japanese American incarceration site during World War II
+
+2. **Bent's Old Fort National Historic Site** (beol)
+   - Designation: National Historic Site
+   - Description: Adobe trading post on the Santa Fe Trail from the 1840s
+
+3. **Black Canyon Of The Gunnison National Park** (blca)
+   - Designation: National Park
+   - Description: Features some of the steepest cliffs and oldest rock in North America
+
+4. **California National Historic Trail** (cali)
+   - Designation: National Historic Trail
+   - Description: Over 5,000-mile trail that passes through 10 states including Colorado
+
+5. **Colorado National Monument** (colm)
+   - Designation: National Monument
+   - Description: Preserves red rock canyons and monoliths near Grand Junction
+
+6. **Curecanti National Recreation Area** (cure)
+   - Designation: National Recreation Area
+   - Description: Three reservoirs and surrounding lands in western Colorado
+
+7. **Dinosaur National Monument** (dino)
+   - Designation: National Monument
+   - Description: Contains dinosaur fossils embedded in rocks; spans Colorado and Utah
+
+8. **Florissant Fossil Beds National Monument** (flfo)
+   - Designation: National Monument
+   - Description: Rich fossil deposits including petrified redwood stumps and insect fossils
+
+9. **Great Sand Dunes National Park & Preserve** (grsa)
+   - Designation: National Park & Preserve
+   - Description: Home to the tallest dunes in North America
+
+10. **Hovenweep National Monument** (hove)
+    - Designation: National Monument
+    - Description: Prehistoric sites with multistory towers; spans Colorado and Utah
+
+11. **Mesa Verde National Park** (meve)
+    - Designation: National Park
+    - Description: Protects Ancestral Pueblo cliff dwellings and cultural heritage
+
+12. **Old Spanish National Historic Trail** (olsp)
+    - Designation: National Historic Trail
+    - Description: Route of mule pack trains between Santa Fe and Los Angeles
+
+13. **Pony Express National Historic Trail** (poex)
+    - Designation: National Historic Trail
+    - Description: Historic mail delivery route that passed through eight states including Colorado
+
+14. **Rocky Mountain National Park** (romo)
+    - Designation: National Park
+    - Description: 415 square miles of mountain environments with over 300 miles of hiking trails
+
+15. **Sand Creek Massacre National Historic Site** (sand)
+    - Designation: National Historic Site
+    - Description: Commemorates the 1864 massacre of Cheyenne and Arapaho people
+
+16. **Santa Fe National Historic Trail** (safe)
+    - Designation: National Historic Trail
+    - Description: Historic trade route between Missouri and Santa Fe that passes through Colorado
+
+17. **Yucca House National Monument** (yuho)
+    - Designation: National Monument
+    - Description: Unexcavated pueblo site between Mesa Verde and Ute Mountain
+
+Note: Some sites like the California, Old Spanish, Pony Express, and Santa Fe National Historic Trails span multiple states but have portions within Colorado.

@@ -1,0 +1,1 @@
+{"status": "ok", "error": null, "mode": "always_on", "trace_id": "sdg_trace_00011", "attempt_id": 1, "request_id": 3, "repeat_id": 0, "qps": 12, "e2e_ms": 227554.705831, "tool_cumulative_ms": 49440.123, "worker_calls": 1, "worker_enforcement_turns": 0, "mcp_container_namespace": "always_on_qps12_r0_req3_c3ef1611", "mcp_container_port": 52304}

@@ -1,0 +1,50 @@
+# Cafes Near The Metropolitan Museum of Art
+
+The Metropolitan Museum of Art is located at:
+- Address: 1000 5th Ave, New York, NY 10028
+- Coordinates: 40.7794366, -73.963244
+
+## Currently Open Cafe:
+1. **星巴克 (Starbucks)**
+   - Address: 1142 Madison Ave, New York, NY 10028
+   - Rating: 4.1/5 (927 reviews)
+   - Phone: (212) 288-1506
+   - Website: https://www.starbucks.com/store-locator/store/1015661
+   - Price Level: $$
+   - Status: Currently open
+   - Distance from Met: ~0.2 miles (approx. 3-minute walk)
+
+## Highly Rated Cafes (Currently Closed):
+1. **787 Coffee** ⭐ HIGHEST RATED
+   - Address: 228 E 80th St, New York, NY 10075
+   - Rating: 4.9/5 (3,472 reviews)
+   - Phone: (646) 850-0234
+   - Website: http://www.787coffee.com/
+   - Specialties: Rum-infused coffee beans, specialty drinks
+   - Distance from Met: ~0.5 miles (approx. 10-minute walk)
+
+2. **Antonucci Cafe**
+   - Rating: 4.5/5 (428 reviews)
+   - Distance from Met: ~0.4 miles
+
+3. **Tarallucci e Vino at Cooper Hewitt**
+   - Rating: 4.5/5 (30 reviews)
+   - Distance from Met: ~0.4 miles
+
+4. **Dear Coffee**
+   - Rating: 4.6/5 (330 reviews)
+   - Distance from Met: ~0.3 miles
+
+5. **Café Blériot XI**
+   - Rating: 4.6/5 (310 reviews)
+   - Distance from Met: ~0.5 miles
+
+## Other Notable Options:
+- **Café Fledermaus**: 4.2/5 (40 reviews)
+- **Rosa's Cafe & Bakery**: 4.3/5 (32 reviews)
+- **Le Pain Quotidien**: 3.9/5 (880 reviews)
+- **Eataly Caffè**: 4.1/5 (134 reviews)
+- **Variety Coffee Roasters**: 4.4/5 (615 reviews)
+- **Church of Heavenly Rest Café**: 4.4/5 (2,256 reviews)
+
+All cafes listed are within a 500-meter radius (approximately 0.3 miles) of the Metropolitan Museum of Art.

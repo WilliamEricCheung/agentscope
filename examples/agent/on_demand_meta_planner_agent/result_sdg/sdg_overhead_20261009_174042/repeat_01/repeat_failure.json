@@ -1,0 +1,5 @@
+{
+  "repeat_id": 1,
+  "error_type": "RuntimeError",
+  "error": "Failed to get response from _ API: {\"status_code\": 400, \"request_id\": \"239bb32b-dba9-98bd-91b7-a93c74f8b265\", \"code\": \"InvalidParameter\", \"message\": \"url error, please check url！ For details, see: https://help.aliyun.com/zh/model-studio/error-code#error-url\", \"output\": null, \"usage\": null}"
+}

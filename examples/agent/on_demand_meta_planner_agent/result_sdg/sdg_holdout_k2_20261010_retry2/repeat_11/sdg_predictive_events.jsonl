@@ -1,0 +1,3 @@
+{"repeat_id": 11, "record_index": 0, "event_index": 1, "timestamp_unix_ms": 1791598364084.794, "current_server": "laplace-huge-icons", "status": "completed", "candidate_count": 2}
+{"repeat_id": 11, "record_index": 1, "event_index": 1, "timestamp_unix_ms": 1791598388084.587, "current_server": "laplace-wikipedia", "status": "completed", "candidate_count": 2}
+{"repeat_id": 11, "record_index": 1, "event_index": 6, "timestamp_unix_ms": 1791598389493.832, "current_server": "laplace-wikipedia", "status": "completed", "candidate_count": 2}

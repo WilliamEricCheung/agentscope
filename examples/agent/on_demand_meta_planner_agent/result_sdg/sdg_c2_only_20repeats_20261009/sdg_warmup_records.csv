@@ -1,0 +1,21 @@
+repeat_id,record_index,target,candidate,schedule_timestamp,start_timestamp,ready_timestamp,later_demand_use,prefetch_hit,demand_timestamp,discard_timestamp,discard_timestamp_basis,cpu_seconds,memory_gib_seconds,resource_measurement
+1,0,laplace_unit_converter,Unit Converter,2026-10-09T18:36:36.354,2026-10-09T18:36:36.357,2026-10-09T18:36:39.139,True,False,2026-10-09T18:36:37.391,,,,,not_applicable_warmup_was_used
+2,0,laplace_unit_converter,Unit Converter,2026-10-09T18:36:56.514,2026-10-09T18:36:56.516,2026-10-09T18:36:59.302,True,False,2026-10-09T18:36:57.472,,,,,not_applicable_warmup_was_used
+3,0,laplace_unit_converter,Unit Converter,2026-10-09T18:37:17.431,2026-10-09T18:37:17.434,2026-10-09T18:37:20.291,True,False,2026-10-09T18:37:18.322,,,,,not_applicable_warmup_was_used
+4,0,laplace_unit_converter,Unit Converter,2026-10-09T18:37:38.553,2026-10-09T18:37:38.558,2026-10-09T18:37:41.592,True,False,2026-10-09T18:37:39.658,,,,,not_applicable_warmup_was_used
+5,0,laplace_unit_converter,Unit Converter,2026-10-09T18:38:06.713,2026-10-09T18:38:06.715,2026-10-09T18:38:09.493,True,False,2026-10-09T18:38:07.771,,,,,not_applicable_warmup_was_used
+6,0,laplace_unit_converter,Unit Converter,2026-10-09T18:38:33.488,2026-10-09T18:38:33.491,2026-10-09T18:38:36.189,True,False,2026-10-09T18:38:34.288,,,,,not_applicable_warmup_was_used
+7,0,laplace_unit_converter,Unit Converter,2026-10-09T18:38:59.953,2026-10-09T18:38:59.956,2026-10-09T18:39:02.737,True,False,2026-10-09T18:39:00.961,,,,,not_applicable_warmup_was_used
+8,0,laplace_unit_converter,Unit Converter,2026-10-09T18:39:23.666,2026-10-09T18:39:23.669,2026-10-09T18:39:26.466,True,False,2026-10-09T18:39:24.422,,,,,not_applicable_warmup_was_used
+9,0,laplace_unit_converter,Unit Converter,2026-10-09T18:39:41.494,2026-10-09T18:39:41.497,2026-10-09T18:39:44.288,True,False,2026-10-09T18:39:42.397,,,,,not_applicable_warmup_was_used
+10,0,laplace_unit_converter,Unit Converter,2026-10-09T18:40:00.225,2026-10-09T18:40:00.229,2026-10-09T18:40:03.058,True,False,2026-10-09T18:40:01.146,,,,,not_applicable_warmup_was_used
+11,0,laplace_unit_converter,Unit Converter,2026-10-09T18:40:21.692,2026-10-09T18:40:21.694,2026-10-09T18:40:24.538,True,False,2026-10-09T18:40:22.602,,,,,not_applicable_warmup_was_used
+12,0,laplace_unit_converter,Unit Converter,2026-10-09T18:40:42.634,2026-10-09T18:40:42.636,2026-10-09T18:40:45.452,True,False,2026-10-09T18:40:43.470,,,,,not_applicable_warmup_was_used
+13,0,laplace_unit_converter,Unit Converter,2026-10-09T18:41:00.615,2026-10-09T18:41:00.618,2026-10-09T18:41:03.402,True,False,2026-10-09T18:41:01.624,,,,,not_applicable_warmup_was_used
+14,0,laplace_unit_converter,Unit Converter,2026-10-09T18:41:18.877,2026-10-09T18:41:18.879,2026-10-09T18:41:21.669,True,False,2026-10-09T18:41:20.096,,,,,not_applicable_warmup_was_used
+15,0,laplace_unit_converter,Unit Converter,2026-10-09T18:41:39.096,2026-10-09T18:41:39.098,2026-10-09T18:41:41.877,True,False,2026-10-09T18:41:39.813,,,,,not_applicable_warmup_was_used
+16,0,laplace_unit_converter,Unit Converter,2026-10-09T18:41:57.084,2026-10-09T18:41:57.087,2026-10-09T18:41:59.902,True,False,2026-10-09T18:41:58.121,,,,,not_applicable_warmup_was_used
+17,0,laplace_unit_converter,Unit Converter,2026-10-09T18:42:16.675,2026-10-09T18:42:16.678,2026-10-09T18:42:19.501,True,False,2026-10-09T18:42:17.434,,,,,not_applicable_warmup_was_used
+18,0,laplace_unit_converter,Unit Converter,2026-10-09T18:42:37.767,2026-10-09T18:42:37.770,2026-10-09T18:42:40.583,True,False,2026-10-09T18:42:38.738,,,,,not_applicable_warmup_was_used
+19,0,laplace_unit_converter,Unit Converter,2026-10-09T18:42:58.534,2026-10-09T18:42:58.537,2026-10-09T18:43:01.409,True,False,2026-10-09T18:42:59.792,,,,,not_applicable_warmup_was_used
+20,0,laplace_unit_converter,Unit Converter,2026-10-09T18:43:15.955,2026-10-09T18:43:15.957,2026-10-09T18:43:18.769,True,False,2026-10-09T18:43:16.971,,,,,not_applicable_warmup_was_used

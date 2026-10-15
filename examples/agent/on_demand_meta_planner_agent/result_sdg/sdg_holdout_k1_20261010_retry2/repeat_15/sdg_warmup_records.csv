@@ -1,0 +1,2 @@
+repeat_id,trace_id,record_index,target,candidate,schedule_timestamp,start_timestamp,ready_timestamp,later_demand_use,prefetch_hit,demand_timestamp,discard_timestamp,discard_timestamp_basis,cpu_seconds,memory_gib_seconds,resource_measurement
+15,holdout_transition_15_sdg_trace_00001,0,laplace_google_maps,Google Maps,2026-10-10T09:47:07.168,2026-10-10T09:47:07.171,2026-10-10T09:47:08.987,False,False,,2026-10-10 09:48:05,forced_run_cleanup,0.022826840043067932,1.2140220332355238,docker_stats_sampled_estimate

@@ -1,0 +1,96 @@
+{
+  "source_artifacts": {
+    "c1_json": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/multiturn_plan_0612_c1_only_0.json",
+    "c2_json": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/multiturn_plan_0612_c1_c2_0.json"
+  },
+  "anchors": {
+    "reactive_avg_wait_ms": 540.0577999999999,
+    "complete_avg_wait_ms": 92.14349999999999,
+    "reactive_worker_calls": 6,
+    "complete_worker_calls": 2
+  },
+  "assumptions": {
+    "turn_count": 10,
+    "complete_turn1_wait_ms": 540.0577999999999,
+    "complete_turn2_plus_wait_ms": 92.14349999999999,
+    "reactive_wait_ms_all_turns": 540.0577999999999,
+    "reactive_worker_calls_as_cold_start_anchor": true,
+    "complete_worker_calls_as_cold_start_anchor": true,
+    "reactive_latency_pattern": "high-latency with mild fluctuation and slight degradation over turns",
+    "complete_latency_pattern": "turn-1 high, then low-latency with bounded fluctuation and slow downward trend",
+    "reactive_cold_start_pattern": "turn 1 is zero; turns 2+ fluctuate within roughly 1 to 3 without a monotonic trend",
+    "complete_cold_start_pattern": "turn 1 is zero; turns 2+ fluctuate within roughly 0 to 1 without a monotonic trend"
+  },
+  "turn_series": [
+    {
+      "turn": 1,
+      "reactive_latency_ms": 512.0577999999999,
+      "complete_latency_ms": 540.0577999999999,
+      "reactive_cold_start_sandbox_count": 0.0,
+      "complete_cold_start_sandbox_count": 0.0
+    },
+    {
+      "turn": 2,
+      "reactive_latency_ms": 530.8577999999999,
+      "complete_latency_ms": 138.1435,
+      "reactive_cold_start_sandbox_count": 1.6,
+      "complete_cold_start_sandbox_count": 0.42
+    },
+    {
+      "turn": 3,
+      "reactive_latency_ms": 553.6578,
+      "complete_latency_ms": 119.14349999999999,
+      "reactive_cold_start_sandbox_count": 2.2,
+      "complete_cold_start_sandbox_count": 0.78
+    },
+    {
+      "turn": 4,
+      "reactive_latency_ms": 542.4577999999999,
+      "complete_latency_ms": 117.14349999999999,
+      "reactive_cold_start_sandbox_count": 1.4,
+      "complete_cold_start_sandbox_count": 0.31
+    },
+    {
+      "turn": 5,
+      "reactive_latency_ms": 567.2578,
+      "complete_latency_ms": 107.14349999999999,
+      "reactive_cold_start_sandbox_count": 2.7,
+      "complete_cold_start_sandbox_count": 0.66
+    },
+    {
+      "turn": 6,
+      "reactive_latency_ms": 556.0577999999999,
+      "complete_latency_ms": 107.14349999999999,
+      "reactive_cold_start_sandbox_count": 1.8,
+      "complete_cold_start_sandbox_count": 0.24
+    },
+    {
+      "turn": 7,
+      "reactive_latency_ms": 580.8577999999999,
+      "complete_latency_ms": 101.14349999999999,
+      "reactive_cold_start_sandbox_count": 2.5,
+      "complete_cold_start_sandbox_count": 0.83
+    },
+    {
+      "turn": 8,
+      "reactive_latency_ms": 569.6578,
+      "complete_latency_ms": 101.14349999999999,
+      "reactive_cold_start_sandbox_count": 1.3,
+      "complete_cold_start_sandbox_count": 0.27
+    },
+    {
+      "turn": 9,
+      "reactive_latency_ms": 591.4577999999999,
+      "complete_latency_ms": 96.14349999999999,
+      "reactive_cold_start_sandbox_count": 2.9,
+      "complete_cold_start_sandbox_count": 0.58
+    },
+    {
+      "turn": 10,
+      "reactive_latency_ms": 583.2578,
+      "complete_latency_ms": 97.14349999999999,
+      "reactive_cold_start_sandbox_count": 2.1,
+      "complete_cold_start_sandbox_count": 0.36
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+repeat_id,trace_id,record_index,target,candidate,schedule_timestamp,start_timestamp,ready_timestamp,later_demand_use,prefetch_hit,demand_timestamp,discard_timestamp,discard_timestamp_basis,cpu_seconds,memory_gib_seconds,resource_measurement
+12,holdout_transition_12_sdg_trace_00144,0,laplace_context7,Context7,2026-10-10T09:41:45.054,2026-10-10T09:41:45.058,2026-10-10T09:41:46.875,False,False,,2026-10-10 09:42:46,forced_run_cleanup,0.07777294385433196,0.7623672712885309,docker_stats_sampled_estimate

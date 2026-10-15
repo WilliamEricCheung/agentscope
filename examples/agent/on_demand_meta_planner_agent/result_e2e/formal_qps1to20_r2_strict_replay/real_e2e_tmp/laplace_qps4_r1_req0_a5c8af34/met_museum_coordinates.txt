@@ -1,0 +1,10 @@
+Metropolitan Museum of Art, New York - Geographic Coordinates
+
+Address: 1000 Fifth Avenue, New York, NY 10028
+
+Coordinates:
+- Latitude: 40.7794
+- Longitude: -73.9632
+
+Note: Google Maps geocoding service encountered errors during resolution attempt.
+Manual coordinates provided based on known location data.

@@ -1,0 +1,2 @@
+{"repeat_id": 20, "record_index": 0, "event_index": 1, "timestamp_unix_ms": 1791597289271.873, "current_server": "laplace-wikipedia", "status": "completed", "candidate_count": 1}
+{"repeat_id": 20, "record_index": 1, "event_index": 1, "timestamp_unix_ms": 1791597311674.993, "current_server": "laplace-game-trends", "status": "completed", "candidate_count": 1}

@@ -1,0 +1,75 @@
+# National Parks in Colorado
+
+Based on the National Parks Service data, there are 17 national park sites in Colorado. These include national parks, national monuments, national historic sites, and portions of national historic trails that pass through Colorado.
+
+## Full List of National Parks in Colorado:
+
+1. **Amache National Historic Site**
+   - Designation: National Historic Site
+   - Description: Preserves the site of one of ten incarceration sites established during World War II to unjustly incarcerate Japanese Americans.
+
+2. **Bent's Old Fort National Historic Site**
+   - Designation: National Historic Site
+   - Description: A reconstructed adobe trading post on the Santa Fe Trail where traders, trappers, travelers, and Native American tribes came together for trade.
+
+3. **Black Canyon Of The Gunnison National Park**
+   - Designation: National Park
+   - Description: Features some of the steepest cliffs, oldest rock, and craggiest spires in North America, carved by the Gunnison River over two million years.
+
+4. **California National Historic Trail** (portion in Colorado)
+   - Designation: National Historic Trail
+   - Description: Part of the over 5,000-mile trail that follows the route of emigrants who traveled to California during the 1840s and 1850s.
+
+5. **Colorado National Monument**
+   - Designation: National Monument
+   - Description: Preserves towering monoliths within a vast plateau and canyon panorama, with sheer-walled red rock canyons along Rim Rock Drive.
+
+6. **Curecanti National Recreation Area**
+   - Designation: National Recreation Area
+   - Description: Comprises three reservoirs and surrounding lands in western Colorado, offering both natural and human-made features.
+
+7. **Dinosaur National Monument** (shared with Utah)
+   - Designation: National Monument
+   - Description: Contains dinosaur fossils embedded in rocks, mountains, desert, and rivers flowing in canyons, as well as petroglyphs from Indigenous people.
+
+8. **Florissant Fossil Beds National Monument**
+   - Designation: National Monument
+   - Description: Protects one of the richest and most diverse fossil deposits in the world, including petrified redwood stumps and detailed fossils of insects and plants.
+
+9. **Great Sand Dunes National Park & Preserve**
+   - Designation: National Park & Preserve
+   - Description: Home to the tallest dunes in North America, set against a diverse landscape of grasslands, wetlands, forests, alpine lakes, and tundra.
+
+10. **Hovenweep National Monument** (shared with Utah)
+    - Designation: National Monument
+    - Description: Preserves six prehistoric sites built between 1200 and 1300 CE, featuring multistory towers perched on canyon rims and balanced on boulders.
+
+11. **Mesa Verde National Park**
+    - Designation: National Park
+    - Description: Protects the cultural heritage of 27 Pueblos and Tribes, showcasing thriving communities built by Ancestral Pueblo people on mesas and in cliffs over 700 years.
+
+12. **Old Spanish National Historic Trail** (portion in Colorado)
+    - Designation: National Historic Trail
+    - Description: Follows the routes of mule pack trains across the Southwest between Santa Fe, New Mexico, and Los Angeles, California.
+
+13. **Pony Express National Historic Trail** (portion in Colorado)
+    - Designation: National Historic Trail
+    - Description: Part of the relay system that carried mail from Missouri to California in just 10 days before the telegraph was established.
+
+14. **Rocky Mountain National Park**
+    - Designation: National Park
+    - Description: Encompasses 415 square miles of spectacular mountain environments, from montane meadows to alpine lakes and towering peaks, with over 300 miles of hiking trails.
+
+15. **Sand Creek Massacre National Historic Site**
+    - Designation: National Historic Site
+    - Description: Commemorates the tragic 1864 massacre of Cheyenne and Arapaho people by U.S. troops, preserving the memory and legacy of this painful event.
+
+16. **Santa Fe National Historic Trail** (portion in Colorado)
+    - Designation: National Historic Trail
+    - Description: Follows the route used for trade between western Missouri and Santa Fe, New Mexico, passing through five states including Colorado.
+
+17. **Yucca House National Monument**
+    - Designation: National Monument
+    - Description: Preserves a large unexcavated pueblo in Montezuma Valley, largely untouched since being protected as a national monument in 1919.
+
+Note: Some of these sites are shared with other states or are portions of longer trails that pass through multiple states.

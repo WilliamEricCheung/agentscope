@@ -1,0 +1,67 @@
+# New York City Weather Patterns & Umbrella Decision Guide
+
+## Typical NYC Weather Patterns by Season
+
+### Spring (March-May)
+- **Temperature**: Gradual warming from 40s°F to 70s°F
+- **Precipitation**: Moderate rainfall, averaging 3-4 inches per month
+- **Umbrella factors**: Frequent light rain showers, occasional thunderstorms
+
+### Summer (June-August)
+- **Temperature**: Hot and humid, 70s-90s°F
+- **Precipitation**: Highest rainfall months (4+ inches monthly), frequent thunderstorms
+- **Umbrella factors**: Sudden afternoon thunderstorms, high humidity makes rain feel more oppressive
+
+### Fall (September-November)
+- **Temperature**: Cooling from 70s°F to 40s°F
+- **Precipitation**: Moderate rainfall, similar to spring
+- **Umbrella factors**: Steady rain more common than summer storms
+
+### Winter (December-February)
+- **Temperature**: Cold, 20s-40s°F
+- **Precipitation**: Lower total precipitation but includes snow, sleet, freezing rain
+- **Umbrella factors**: Mixed precipitation types; umbrella useful for rain/sleet but not heavy snow
+
+## How to Check Current Weather Forecasts
+
+### Reliable Weather Services:
+1. **National Weather Service (weather.gov)** - Official government forecasts
+2. **Weather Channel (weather.com)** - Detailed hourly forecasts
+3. **AccuWeather** - Precipitation timing and intensity
+4. **Local NYC news stations** - Hyperlocal conditions
+
+### Key Information to Look For:
+- **Hourly precipitation probability** (% chance of rain)
+- **Rainfall amounts** (light drizzle vs. heavy downpour)
+- **Timing** (when rain starts/stops during your day)
+- **Wind conditions** (affects umbrella usability)
+- **Temperature** (cold rain vs. warm rain comfort)
+
+## Umbrella Decision Factors
+
+### Definitely Bring an Umbrella When:
+- Precipitation probability ≥ 60%
+- Forecast shows steady rain (not just passing showers)
+- You'll be outside for extended periods
+- Rain coincides with your commute/activities
+- Wind speeds are under 20 mph (umbrellas become ineffective in high winds)
+
+### Consider Alternatives When:
+- Light drizzle or mist (water-resistant jacket may suffice)
+- High winds expected (umbrella may invert or break)
+- Very cold temperatures with mixed precipitation (snow/rain mix)
+- Short outdoor exposure time
+
+### NYC-Specific Considerations:
+- **Crowded sidewalks**: Compact/folding umbrellas are more practical
+- **Subway commuting**: Waterproof bags protect electronics better than relying solely on umbrellas
+- **Wind tunnels**: Tall buildings create unpredictable wind gusts
+- **Sudden storms**: Summer thunderstorms can develop quickly
+
+## Quick Daily Check Routine:
+1. Check morning forecast before leaving home
+2. Look at hourly precipitation chart for your specific neighborhoods
+3. Consider your planned outdoor activities and timing
+4. Have a backup plan (indoor alternatives, waterproof gear)
+
+Remember: Weather forecasts are most accurate within 24-48 hours, so check closer to your planned activities for the best decision-making information.

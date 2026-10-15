@@ -1,0 +1,64 @@
+# Cafes Near The Metropolitan Museum of Art
+
+The Metropolitan Museum of Art is located at 1000 5th Ave, New York, NY 10028.
+
+## Currently Open Cafes
+
+### Starbucks
+- **Address**: 1142 Madison Ave, New York, NY 10028
+- **Rating**: 4.1/5 (927 reviews)
+- **Phone**: (212) 288-1506
+- **Website**: https://www.starbucks.com/store-locator/store/1015661
+- **Price Level**: $$
+- **Status**: Currently open
+- **Notes**: Convenient option with restroom facilities. Located about 0.3 miles from the museum.
+
+### Café Fledermaus
+- **Address**: 1048 5th Ave, New York, NY 10028
+- **Rating**: 4.2/5 (40 reviews)
+- **Phone**: (212) 288-0665
+- **Website**: http://www.neuegalerie.org/cafes/fledermaus
+- **Price Level**: $$$
+- **Status**: May be open (hours not specified in details)
+- **Notes**: Located in the Neue Galerie, just a short walk from the Met. Known for cakes, herring sandwiches, and hot wine.
+
+## Highly Rated Cafes (Currently Closed)
+
+### 787 Coffee
+- **Address**: 228 E 80th St, New York, NY 10075
+- **Rating**: 4.9/5 (3,477 reviews)
+- **Phone**: (646) 850-0234
+- **Website**: http://www.787coffee.com/
+- **Status**: Currently closed
+- **Notes**: Exceptionally highly rated coffee shop known for rum-infused coffee beans, friendly staff, and cozy atmosphere. Features a swing by the window for customers to enjoy.
+
+### Antonucci Cafe
+- **Address**: Near 40.7756958, -73.9569247
+- **Rating**: 4.5/5 (428 reviews)
+- **Status**: Currently closed
+
+### Tarallucci e Vino at Cooper Hewitt
+- **Address**: Near 40.7838404, -73.9576926
+- **Rating**: 4.5/5 (30 reviews)
+- **Status**: Currently closed
+
+### Dear Coffee
+- **Address**: Near 40.7781508, -73.9567354
+- **Rating**: 4.6/5 (331 reviews)
+- **Status**: Currently closed
+
+### Café Blériot XI
+- **Address**: Near 40.7762309, -73.9544046
+- **Rating**: 4.6/5 (310 reviews)
+- **Status**: Currently closed
+
+## Other Options
+
+- **Church of Heavenly Rest Café**: 4.4/5 rating (2,274 reviews)
+- **Rosa's Cafe & Bakery**: 4.4/5 rating (34 reviews)
+- **Le Pain Quotidien**: 3.9/5 rating (881 reviews)
+- **Eataly Caffè**: 4.1/5 rating (134 reviews)
+- **Variety Coffee Roasters**: 4.4/5 rating (616 reviews)
+- **Nectar**: 3.6/5 rating (1,040 reviews)
+
+Most cafes are within a 0.5-mile radius of the Metropolitan Museum of Art.

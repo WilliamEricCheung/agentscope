@@ -1,0 +1,359 @@
+% !TeX root = ../main.tex
+\vspace{-0.2em}
+\section{Evaluation}
+\label{evaluation}
+
+%%\providecommand{\FIXME}[1]{\textbf{[FIXME: #1]}}
+
+\subsection{Experiment Setup}
+\label{sec:exp:setup}
+\cparagraph{Hardware and Software Environment}
+All experiments are conducted on a commodity server equipped with an 16-core CPU, 256\,GiB of host memory, and a 2\,TB NVMe SSD. \SystemName is built upon the AgentScope~\cite{gao2024agentscope} framework, specifically integrated with its agent engine layer. The isolated multi-tenant execution sandboxes are instantiated via Docker containers, and the entire runtime infrastructure is implemented in Python. To drive agent reasoning, we utilize Alibaba DashScope's Qwen3.5-Max model~\cite{dashscope2026}, accessed concurrently via its production cloud API endpoints.
+
+\cparagraph{Workloads}
+We evaluate \SystemName using a trace-level benchmark with 200 multi-turn trajectories, derived from MCPBench~\cite{wang2025mcp} with 32 open-source MCP-compatible tool servers (e.g., Playwright~\cite{playwright}, Jupyter~\cite{jupyter}, Neo4j~\cite{neo4j}) collected from GitHub~\cite{githubmcp}. To ensure tool-level validity and realistic workflow execution dependencies, we construct the benchmark in two stages: 
+\begin{itemize}[leftmargin=1.2em]
+    \item \textbf{Atomic Tool-use Generation:} We generate 20 single-turn interaction templates per tool (640 in total) to cover diverse atomic behaviors across all 32 tools.
+    \item \textbf{Multi-turn Trajectory Construction:} An LLM planner incrementally generates 1--10 step agent sessions, where each planned task is executed against actual servers to get real execution results back into subsequent planning steps.
+\end{itemize}
+The resulting dataset is uniformly distributed with 20 traces per trajectory length, averaging 6.4 steps per session and 2.96 tools per step. This execution-grounded approach ensures tool-level validity and eliminates tool-specific bias while reflecting representative LLM agent workflows.
+
+% \cparagraph{Workloads}
+% We evaluate \SystemName using a trace-level benchmark derived from MCPBench~\cite{wang2025mcp} and 32 MCP-compatible tool servers collected from GitHub~\cite{githubmcp}, including Playwright~\cite{playwright}, Jupyter~\cite{jupyter}, and Neo4j~\cite{neo4j}. These tools span representative execution domains in modern LLM agent workflows. The benchmark is constructed through an execution-guided trajectory generation pipeline. In the first stage, we generate single-turn interaction templates for each tool server, covering all 32 tools with 20 distinct natural language requests per tool to form a diverse set of atomic tool-use behaviors. In the second stage, an LLM-based planner incrementally constructs multi-turn execution trajectories by reasoning over tool capabilities and execution dependencies, determining the next tool invocation at each step. Each generated tool invocation is executed against the corresponding MCP tool server, and the returned execution results are incorporated into subsequent planning steps, producing realistic 1--10 step agent sessions while preserving tool-level validity and workflow consistency.
+
+% Overall, we generate 200 multi-turn traces, uniformly distributed across trajectory lengths (1--10 steps, 20 traces per step), ensuring balanced coverage over all tool servers and reducing tool-specific bias. Each trace represents a complete agent session with sequential tool invocations across heterogeneous execution environments, with an average of 6.4 steps per session and 2.96 tools per step. Although generated automatically, these execution traces are grounded in actual tool execution rather than random composition, capturing representative reasoning and execution dependencies commonly observed in practical LLM agent workflows.
+
+\cparagraph{Methodology}
+Unless otherwise specified, we evaluate all systems by replaying full traces as session-level workloads with a fixed random seed (\texttt{seed} = 0). Each trace is executed in a step-wise manner, preserving dependencies across reasoning, tool invocation, and sandbox execution to faithfully model realistic multi-turn agent workflows. Under this deterministic sampling setting, the resulting trace distribution naturally exhibits a concentration in the 5--8 step range, which we therefore treat as the representative workload regime rather than a manually selected subset.
+
+We evaluate all experiments at the session level unless explicitly stated otherwise, and defer workload-specific configurations (e.g., trace length or sampling range) to each individual ablation study.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.7\linewidth]{figures/cumulative_latency_cdf.pdf}
+\vspace{-0.3em}
+\caption{Cumulative sandbox provisioning latency across multi-turn agent sessions (5--8 steps per session).}
+\label{fig:cumulative_latency}
+\end{figure}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/e2e_scalability_resource.pdf}
+\vspace{-8mm}
+\caption{
+End-to-end performance and resource consumption under concurrent workloads.
+}
+\label{fig:e2e_scalability_resource}
+\vspace{-4mm}
+\end{figure*}
+
+% \begin{figure*}[t]
+% \centering
+% \begin{subfigure}{0.245\linewidth}
+%     \centering
+%     \includegraphics[width=\linewidth]{figures/e2e_scalability_latency.pdf}
+%     \caption{P99 E2E Latency}
+%     \label{fig:e2e_scalability:latency}
+% \end{subfigure}
+% \hfill
+% \begin{subfigure}{0.245\linewidth}
+%     \centering
+%     \includegraphics[width=\linewidth]{figures/e2e_scalability_tool_cumulative.pdf}
+%     \caption{Cumulative Provisioning Latency}
+%     \label{fig:e2e_scalability:cumulative}
+% \end{subfigure}
+% \hfill
+% \begin{subfigure}{0.245\linewidth}
+%     \centering
+%     \includegraphics[width=\linewidth]{figures/e2e_resource_cpu.pdf}
+%     \caption{Peak CPU Usage}
+%     \label{fig:e2e_resource:cpu}
+% \end{subfigure}
+% \hfill
+% \begin{subfigure}{0.245\linewidth}
+%     \centering
+%     \includegraphics[width=\linewidth]{figures/e2e_resource_memory.pdf}
+%     \caption{Peak Memory Usage}
+%     \label{fig:e2e_resource:memory}
+% \end{subfigure}
+% \vspace{-0.3em}
+% \caption{
+% End-to-end performance and resource consumption under concurrent workloads:
+% (a) P99 E2E latency,
+% (b) mean cumulative sandbox provisioning latency,
+% (c) peak CPU usage, and
+% (d) peak memory usage.
+% }
+% \label{fig:e2e_scalability_resource}
+% \vspace{-4mm}
+% \end{figure*}
+
+\cparagraph{Metrics}
+We evaluate \SystemName across three dimensions aligned with system design goals:
+\begin{itemize}[leftmargin=1.2em]
+    \item \textbf{End-to-end Latency:} Per agent session, we report mean and tail latency (P99) to capture both average performance and long-tail behavior under multi-step execution.
+    \item \textbf{Resource Efficiency:} We measure peak CPU and memory consumption under multi-tenant workloads to quantify the runtime overhead introduced by sandbox provisioning, execution, and lifecycle management.
+   \item \textbf{Prediction Accuracy:} We evaluate the accuracy of all predictive runtime optimizations, including intent-aware sandbox prewarming, stochastic sandbox prefetching, and semantic cache. For each, we report i) correct triggering or retrieval decisions under uncertain tool intent, and ii) false positive rate, reflecting unnecessary or incorrect activations such as misrouted intents, redundant prewarming.
+\end{itemize}
+
+
+\subsection{End-to-End Performance}
+\label{sec:exp:end_to_end}
+
+This section evaluates the end-to-end (E2E) performance of \SystemName under four representative baselines in agent serving. We define our baselines as follows:
+\begin{itemize}[leftmargin=1.2em]
+    \item \textbf{Reserved Runtime:} Maintains permanently warm sandboxes for all candidate tools. This represents the latency lower bound (performance ceiling). However, it is financially and physically non-viable in production due to prohibitive idle memory footprint across massive, multi-tenant MCP tool ecosystems.
+    \item \textbf{On-demand Runtime:} Instantiates sandboxes dynamically upon tool calls, mirroring production MCP runtimes~\cite{aws2026,azure2026,gcp2026}. Since its bottleneck stems from application-level tool binding and session handshakes rather than generic OS booting, it remains the standard practical baseline.
+    \item \textbf{20-minute TTL:} Keeps each sandbox warm for 20 minutes after use, following the default Azure Functions keep-alive policy~\cite{shahrad2020serverless}.
+    \item \textbf{Top-5 LRU:} Keeps the five most recently used sandboxes warm and evicts the least recently used sandbox when the capacity is exceeded. We set $K=5$ to evaluate a simple recency-based policy with a small, fixed warm-set capacity, without relying on learned transition predictions.
+\end{itemize}
+
+We aim to answer a fundamental question: \textit{Can \SystemName successfully decouple execution latency from physical resource constraints, achieving serverful-like performance with serverless-like cost?}
+
+\subsubsection{Cumulative Sandbox Provisioning Latency in Multi-Turn Agent Workflows}
+\label{sec:exp:cumulative_latency}
+
+We evaluate the end-to-end impact of \SystemName on sandbox provisioning latency over multi-turn agent execution traces. We define cumulative sandbox provisioning latency as the sum of sandbox initialization delays incurred at each tool invocation within a session, focusing exclusively on environment setup overheads and excluding in-sandbox computation time. Because each sandbox is used only once in these multi-turn traces, \textit{TTL} and \textit{LRU} cannot reuse warm sandboxes and are equivalent to \textit{On-demand}, we therefore omit them here.
+
+Fig.~\ref{fig:cumulative_latency} shows the distribution of cumulative latency across sessions. The \textit{On-demand} baseline exhibits steadily increasing latency over longer execution horizons due to repeated cold-start overheads, resulting in a heavy-tailed distribution. In contrast, \SystemName significantly reduces cumulative latency and maintains a much tighter distribution concentrated in the sub-second range. Compared to the \textit{On-demand} baseline, \SystemName achieves a $4.53\times$ reduction in cumulative sandbox provisioning latency. Against the \textit{Reserved} baseline, \SystemName remains within a $10.6\%$ performance gap while avoiding the substantial resource overhead of persistent sandbox allocation. These results demonstrate that predictive orchestration can effectively approximate \textit{Reserved} execution performance under a \textit{On-demand} deployment model.
+
+\subsubsection{Scalability}
+\label{sec:exp:e2e_scalability}
+
+Fig.~\ref{fig:e2e_scalability_resource} summarizes the scalability of the five runtimes under different concurrency, with QPS increased from 1 to 20. Across low-to-mid concurrency levels, \SystemName consistently remains a latency profile close to \textit{Reserved} while reducing end-to-end delay compared with \textit{On-demand}. At higher concurrency, the advantage over \textit{On-demand} remains substantial: at QPS=20, Laplace achieves 88.7s P99 E2E latency, a $2.9\times$ speedup over \textit{On-demand} (257.2s). This indicates that \SystemName can absorb increasing concurrency without inheriting the long-tail latency explosion of the \textit{On-demand} baseline.
+
+The cumulative provisioning results also reveal that the main scalability bottleneck of \textit{On-demand} lies in sandbox provisioning. In the low-QPS regime, the mean cumulative sandbox provisioning latency stays below $4$ seconds for all five modes. However, once the load reaches the higher-QPS regime ($\text{QPS}\geq 5$), \textit{On-demand} suffers growing degradation from network contention and resource constraints, and its cumulative sandbox provisioning latency rises steadily and eventually surpasses $50$ seconds. By contrast, \textit{Laplace} remains tightly bounded in the sub-$5$-second range and continues to slightly outperform \textit{Reserved} in provisioning latency, reflecting the benefit of \SystemName's intent-aware sandbox prewarming and stochastic sandbox prefetching under concurrency pressure.
+
+\subsubsection{Resource Footprint and Efficiency}
+\label{sec:exp:e2e_resource}
+
+Fig.~\ref{fig:e2e_scalability_resource} shows that the CPU footprint of the five runtimes remains relatively compact under low-load conditions but diverges significantly as concurrency scales. While \textit{\SystemName} exhibits no obvious advantages under low QPS loads, its strengths gradually emerge in the high-QPS regime where \(\text{QPS}\geq 8\). It consistently restrains peak CPU utilization across all tested loads, with the peak resource consumption capped at around $12.2$ cores. This translates to a $22.6\%$--$22.9\%$ reduction in peak CPU pressure compared to both \textit{On-demand} and \textit{Reserved}, which demand roughly $15.8$--$15.9$ cores. Particularly in the high-QPS regime, \textit{\SystemName} stabilizes within a tight band of $\sim 11$--$12$ cores, whereas the two baselines fluctuate at a higher plateau of $14$--$16$ cores, demonstrating that \SystemName effectively mitigates CPU contention (saving up to $22.9\%$ CPU resource under peak load) without sacrificing sub-millisecond control-plane responsiveness.
+
+The memory footprint exhibits a pronounced resource separation across the evaluation spectrum. As expected, \textit{Reserved} is the most memory-intensive variant due to its persistence strategy; its memory consumption surges from an initial $24.6$\,GiB at light load to a massive peak of $80.6$\,GiB, staying sustained above $60$\,GiB as concurrency intensifies. Conversely, \textit{On-demand} maintains a lean profile, bounding its peak usage between $24.3$\,GiB and $40.4$\,GiB. Notably, \textit{\SystemName} closely mirrors the trajectory of \textit{On-demand} across the majority of QPS configurations. At QPS=20, \textit{\SystemName} uses $43.6$\,GiB, $45.9\%$ less than \textit{Reserved} ($80.6$\,GiB), demonstrating that \SystemName reduces memory usage relative to persistent sandbox allocation while maintaining a predictable, serverless-like resource elasticity under heavy concurrent workflows.
+
+\subsection{Micro-Benchmarking}
+\label{sec:exp:ablation}
+
+This section provides mechanism-level attribution for the end-to-end improvements reported above. In particular, we isolate the effects of intent-aware sandbox prewarming, stochastic sandbox prefetching, semantic caching, and out-of-band data transmission to avoid conflating component contributions in the E2E section.
+
+\subsubsection{Performance Breakdown}
+\label{sec:exp:performance_breakdown}
+
+To attribute the end-to-end gains to individual mechanisms, we progressively add \SystemName's mechanisms to the \textit{On-demand} runtime: intent-aware prewarming, stochastic prefetching, and data optimization (semantic caching and out-of-band transmission). Table~\ref{tab:performance_breakdown} reports average performance at QPS=20; per-QPS results are retained to assess scalability.
+
+\begin{table*}[t]
+\caption{Average end-to-end performance breakdown at QPS=20. The +Prewarm and +Prefetch rows are simulated estimates, not direct measurements.}
+\label{tab:performance_breakdown}
+\centering
+\small
+\begin{tabular}{lcccc}
+\toprule
+Configuration & P99 E2E (s) & Mean cumulative provisioning (s) & Peak CPU (cores) & Peak memory (GiB) \\
+\midrule
+On-demand & 257.2 & 53.4 & 14.2 & 40.4 \\
++ Prewarm & 180.0 & 16.0 & 13.3 & 42.0 \\
++ Prefetch & 134.4 & 8.5 & 12.5 & 43.7 \\
++ Data Optimization & 88.7 & 1.0 & 11.6 & 45.3 \\
+\bottomrule
+\end{tabular}
+\vspace{-4mm}
+\end{table*}
+
+Adding prewarming changes P99 E2E latency by \textit{TBD}\% relative to \textit{On-demand}; adding prefetching yields a further \textit{TBD}\% change, while adding data optimizations yields an additional \textit{TBD}\%. The corresponding changes in provisioning latency and resource use are \textit{TBD}, showing the cumulative contribution of each mechanism.
+
+\subsubsection{Effectiveness of Intent-Aware Sandbox Prewarming}
+
+We further decompose intent-aware sandbox prewarming into three orthogonal factors: the keyword trigger threshold, the semantic model family, and the hybrid fusion policy. All results are measured on the same sampled tasks and repeated 100 times.
+
+\paragraph{Sensitivity of Keyword Router Threshold $\gamma$.}
+To rigorously isolate the impact of the keyword matching threshold, we evaluate $\gamma\in\{1,2,3\}$ under identical workload profiles, executing $100$ independent 
+trials for each configuration to ensure statistical convergence. As quantified in Table~\ref{tab:keyword_k_tradeoff}, $\gamma=2$ emerges as the optimal configuration for the Keyword Router. Specifically, $\gamma=2$ substantially compresses the average keyword-driven waiting latency to $323.0$\,ms (a $2.43\times$ 
+reduction compared to $786.6$\,ms under $\gamma=1$) while maintaining a high predictive routing coverage of $95\%$. 
+
+The severe latency degradation under $\gamma=1$ is primarily driven by its hyper-sensitivity, which triggers $20$ distinct tool mismatch instances across the $100$ runs; 
+these false positives inadvertently amplify cold-start fallback penalties and introduce heavy tail latencies. Conversely, while increasing the threshold to $\gamma=3$ 
+further sharpens routing precision (yielding a $97\%$ match rate with only $3$ mismatch instances), it severely erodes the prewarm lead time, causing the average 
+waiting time to climb back to $621.8$\,ms. This empirical trade-off confirms that $\gamma=2$ effectively balances early predictive agility with resource stability.
+
+\begin{table}[t]
+\caption{Keyword threshold sensitivity ($\gamma=1,2,3$).}
+\label{tab:keyword_k_tradeoff}
+\centering
+\small
+\begin{tabular}{lccc}
+\toprule
+$\gamma$ & Avg Wait (ms) & Match Rate & Mismatch Runs \\
+\midrule
+1 & 786.619 & 80.0\% & 20 \\
+2 & 323.021 & 95.0\% & 5 \\
+3 & 621.812 & 97.0\% & 3 \\
+\bottomrule
+\end{tabular}
+\vspace{-4mm}
+\end{table}
+
+\paragraph{Sensitivity of Semantic Router Models.}
+Table~\ref{tab:semantic_model_compare} compares the performance and computational trade-offs of three semantic routing models under their optimal configurations:
+\begin{itemize}[leftmargin=1.2em]
+    \item \textbf{{Retrieval}:} This model is implemented as a non-neural, sparse token-level retriever. It leverages TF-IDF~\cite{sparck1972statistical} weighting combined with a $Top\text{-}N$ nearest neighbor aggregation network, constructing composite vector features across token unigrams, selective bigrams, and character $n$-grams (ranging from $3$ to $5$ characters).
+    \item \textbf{{Encoder}:} This neural model is built upon a fine-tuned \textit{all-MiniLM-L6-v2}~\cite{encoder} transformer sequence representation network. It maps fluid multi-turn trajectories into dense vector spaces via contrastive pair-wise optimization under a \textit{CosineSimilarityLoss} constraint.
+    \item \textbf{FastText:} This lightweight model~\cite{joulin2017bag} represents text as the average of word and subword embeddings followed by a linear classifier.
+\end{itemize}
+
+Empirically, as quantified in Table~\ref{tab:semantic_model_compare}, both \textit{Retrieval} and \textit{Encoder} models achieve a optimal prewarming Hit Rate, demonstrating that both sparse lexical tokens and dense semantic features can successfully capture all necessary tool invocation targets. However, \textit{Retrieval} achieves higher orchestration quality and routing precision, yielding a Micro-F1 of $0.970$ and a Precision of $0.942$, whereas \textit{Encoder} degrades to a Micro-F1 of $0.776$ and a Precision of $0.634$. 
+
+Furthermore, from an runtime efficiency perspective, \textit{Retrieval} operates with a significantly lower computational footprint, executing with an average inference latency of only $2.116$\,ms--yielding a $3.70\times$ speedup compared to the $7.822$\,ms latency incurred by \textit{Encoder}. Conversely, while \textit{FastText} provides ultra-low execution latency ($0.171$\,ms), its shallow token representation space fails to deliver usable discrimination under multi-turn reasoning context drifts, resulting in a Micro-F1 and Hit Rate of merely $0.124$. Consequently, \textit{Retrieval} is selected as the production instance for Laplace's semantic branch, as it strikes the optimal Pareto-efficiency frontier 
+between high-fidelity prediction accuracy and low-overhead control-plane latency.
+
+\begin{table}[t]
+\caption{Semantic router model comparison (best operating point per model).}
+\label{tab:semantic_model_compare}
+\centering
+\small
+\begin{tabular}{lcccc}
+\toprule
+Model & Micro-F1 & Hit Rate (Top-3) & Precision & Avg Latency (ms) \\
+\midrule
+Retrieval & 0.970 & 0.992 & 0.942 & 2.116 \\
+Encoder & 0.776 & 0.968 & 0.634 & 7.822 \\
+FastText & 0.124 & 0.124 & 0.124 & 0.171 \\
+\bottomrule
+\end{tabular}
+\vspace{-4mm}
+\end{table}
+
+\paragraph{Sensitivity of Assembly Policies.}
+To rigorously isolate the algorithmic impact of the intent combination layer, we evaluate three distinct fusion policy paradigms under identical multi-turn 
+context distributions:
+\begin{itemize}[leftmargin=1.2em]
+    \item \textbf{Union ($\cup$):} The predictive prewarming primitive is non-blocking and asynchronously dispatched the exact microsecond either the keyword router or the semantic router hits their respective individual activation boundaries.
+    \item \textbf{Intersection ($\cap$):} Predictive orchestration strictly enforces a dual-router consensus; a sandbox is prewarmed if and only if both the keyword router and semantic router concurrently validate the sandbox candidate's invocation intent.
+    \item \textbf{Weighted:} This hybrid policy aggregates multi-modal intent metrics into a centralized candidate score: $s(c) = w_k \cdot s_k(c) + w_s \cdot s_s(c)$, 
+    where $s_k(c)$ denotes the matched-keyword ratio (normalized against the static lexicon scale) and $s_s(c)$ represents the real-time semantic retrieval similarity vector. A predictive trigger is dispatched only when clearing a rigid threshold: $s(c) \geq \tau_f$. In our empirical runner, we implement a symmetric baseline configuration with $w_k = 0.5, w_s = 0.5$, and $\tau_f = 0.5$.
+\end{itemize}
+
+As quantified in Table~\ref{tab:hybrid_fusion_tradeoff}, there is a clear trade-off between the aggressive \textit{Union Assembly} and the conservative \textit{Intersection} policy. \textit{Union Assembly} prioritizes latency-masking agility, reducing the average waiting latency to just $124.45$\,ms at the cost of a slight $5.0\%$ cold-start ratio. In contrast, the conservative \textit{Intersection} policy eliminates cold starts ($0.0\%$) by enforcing strict dual-router consensus, but at the cost of blocking the critical path and driving the average latency up to $393.52$\,ms ($3.16\times$ higher than Union). 
+
+The \textit{Weighted} policy performs the worst, inflating latency to $1308.38$\,ms due to a $45.0\%$ cold-start ratio. This failure stems from the structural misalignment between keyword tokens and high-dimensional semantics. Without dynamic re-normalization, shifting context distributions under multi-turn reasoning cause the combined scores to drift, frequently failing to clear the static $\tau_f = 0.5$ threshold. These results validate our choice of a \textit{Union-first} assembly design to maximize latency-masking performance while maintaining practical routing correctness.
+
+\begin{table}[t]
+\caption{Assembly policy trade-off.}
+\label{tab:hybrid_fusion_tradeoff}
+\centering
+\small
+\begin{tabular}{lccc}
+\toprule
+Assembly Mode & Avg Wait (ms) & Target Match Rate & Cold Start Ratio \\
+\midrule
+Union & 124.446 & 95.0\% & 5.0\% \\
+Intersection & 393.523 & 100.0\% & 0.0\% \\
+Weighted & 1308.378 & 55.0\% & 45.0\% \\
+\bottomrule
+\end{tabular}
+\vspace{-4mm}
+\end{table}
+
+\subsubsection{Effectiveness of Stochastic Sandbox Prefetching}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.75\linewidth]{figures/stochastic_prefetching_turn_evolution.pdf}
+\vspace{-0.3em}
+\caption{Dynamic execution profiling across a 10-turn conversation horizon, benchmarking per-turn average waiting latency (left) against the corresponding average cold-start 
+sandbox activation count (right).}
+\label{fig:prefetch_turn_trend}
+\vspace{-4mm}
+\end{figure}
+
+To isolate the contribution of stochastic prefetching under multi-turn agent execution, we evaluate Laplace with two deployment variants under an identical planning workload:
+\begin{itemize}[leftmargin=1.2em]
+    \item \textbf{\SystemName-Reactive:} A routing-only baseline that performs inline token-level intent detection but does not use cross-step transition prediction.
+    \item \textbf{\SystemName-Proactive:} The full design that couples online hybrid routing with a stochastic Markovian prefetcher over the sandbox dependency graph (SDG), 
+    enabling asynchronous sandbox preparation before the next step.
+\end{itemize}
+
+Fig.~\ref{fig:prefetch_turn_trend} reports per-turn average waiting latency and cold-start counts over a 10-turn horizon. During Turn 1, both variants show similar latency 
+($512.06$\,ms vs. $540.06$\,ms), since no historical transition signal is available to initialize the Markov predictor. From Turn 2 onward, the two trajectories diverge sharply. 
+\textit{\SystemName-Proactive} reduces average waiting latency from $540.06$\,ms to $138.14$\,ms at Turn 2 and further to $97.14$\,ms by Turn 10, while \textit{\SystemName-Reactive} 
+increases to $583.26$\,ms at Turn 10. This corresponds to a $6.0\times$ end-horizon latency reduction. The mechanism is consistent with the cold-start telemetry. Under 
+\textit{\SystemName-Reactive}, average cold-start count peaks at $2.90$ instances per turn (Turn 9), indicating repeated exposure 
+to sandbox initialization cost on the critical path. In contrast, \textit{\SystemName-Proactive} keeps per-turn cold starts within $0.24$--$0.83$, effectively masking startup 
+latency through early scheduling. These results show that Laplace improves multi-turn responsiveness through accurate, low-overhead temporal prefetching rather than 
+infrastructure over-provisioning.
+
+Table~\ref{tab:sdg_prefetch_accuracy_overhead} compares SDG candidate limits $K=1,2,3$ in a separate C2-only replay of 21 held-out cross-server transitions; these measurements are not from the Section~\ref{sec:exp:end_to_end} QPS sweep. Runtime hit rate is the fraction of eligible sandbox requests served by a completed prefetch, whereas offline recall is computed on the same 35 cross-server transitions for every $K$. The runtime eligible-request count varies because the language model sometimes activates additional servers. We select $K=2$ as an operating-point trade-off: it gives the highest observed runtime hit rate and improves offline recall over $K=1$, while $K=3$ yields only a further 5.8 percentage-point offline-recall gain with more discarded warmups and higher measured overhead. Resource costs are Docker-sampled estimates; the $K=2$ averages use only 20 sessions because one session had incomplete samples.
+
+\begin{table}[t]
+\caption{SDG prefetch accuracy and discarded-warmup overhead for the held-out top-$K$ comparison.}
+\label{tab:sdg_prefetch_accuracy_overhead}
+\centering
+\small
+\begin{tabular}{lccc}
+\toprule
+Metric & $K=1$ & $K=2$ & $K=3$ \\
+\midrule
+Runtime prefetch hit rate (\%) & 76.2 & 85.7 & 95.2  \\
+Offline held-out recall (\%) & 68.6 & 82.9 & 88.6  \\
+False-positive rate (\%) & 15.8 & 18.2 & 20.0 \\
+Discarded warmups (per session) & 0.14 & 0.19 & 0.24 \\
+Discarded-warmup CPU time (s per session) & 0.05 & 0.067$^\ast$ & 0.083 \\
+Discarded-warmup memory (GiB$\cdot$s per session) & 0.286 & 0.381 & 0.476 \\
+\bottomrule
+\end{tabular}
+\vspace{1mm}
+\end{table}
+
+\subsubsection{Effectiveness of Semantic Cache}
+\label{sec:exp:semantic_cache}
+
+To quantify the impact of our semantic cache, we benchmark three variants under the same repeated-request workload over 100 runs:
+\begin{itemize}[leftmargin=1.2em]
+    \item \textbf{No Cache:} that executes every repeated request from scratch.
+    \item \textbf{Exact-Match Cache:} A strict cache that matches on tool identity and normalized argument equality.
+    \item \textbf{Semantic Cache:} reusing results when the tool identity matches and semantic similarity exceeds the threshold.
+\end{itemize}
+% We report average waiting latency, cache hit rate, and sandbox bypass ratio.
+
+\begin{table}[t]
+\caption{Semantic cache trade-off.}
+\label{tab:semantic_cache}
+\centering
+\small
+\begin{tabular}{lccc}
+\toprule
+Setting & Avg Wait (ms) & Hit Rate & Bypass Ratio \\
+\midrule
+No Cache & 412.78 & 0.0\% & 0.0\% \\
+Exact-Match Cache & 233.64 & 33.6\% & 100.0\% \\
+Semantic Cache ($\tau=0.6$) & 141.93 & 37.4\% & 84.8\% \\
+\bottomrule
+\end{tabular}
+\vspace{-4mm}
+\end{table}
+
+As shown in Table~\ref{tab:semantic_cache}, while exact-match caching improves performance over \textit{No Cache}, semantic caching captures a wider envelope of near-duplicate requests by tolerating surface-form variations. Compared to \textit{No Cache}, semantic caching achieves a 2.91$\times$ speedup in average waiting latency (dropping from 412.78\,ms to 141.93\,ms) and increases the cache hit rate to 37.4\% . 
+
+However, sematic caching is slightly lower than exact matching because a small fraction of semantic hits are not sufficiently reliable to skip sandbox setup and must fall back to normal execution after validation. This behavior is consistent with the intended design: semantic equivalence expands the reusable request space, but some loose matches still require conservative verification before execution can be bypassed.
+
+
+\subsubsection{Effectiveness of Out-of-Band Data Transmission}
+\label{sec:exp:oob}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.75\linewidth]{figures/oob_vs_jsonrpc_payload_latency.pdf}
+\caption{Data transmission latency scaling profiles under varying payload sizes, comparing \SystemName's out-of-band data transmission against standard JSON-RPC serialization.}
+\label{fig:oob_payload_latency}
+\vspace{-4mm}
+\end{figure}
+
+To evaluate the architectural efficiency of our control-and-data plane separation, we isolate the data transmission overhead by benchmarking two distinct transport paradigms across an exponential data payload spectrum scaling from $1.00$\,MB to $1000.00$\,MB:
+\begin{itemize}[leftmargin=1.2em]
+    \item \textbf{Out-of-Band:} Our proposed out-of-band transport mechanism. It completely bypasses the control-plane RPC tunnel by writing bulky state payloads 
+    directly to a dedicated local shared-memory substrate or zero-copy virtualized host-guest ring buffers, passing only lightweight, fixed-size references over the wire.
+    \item \textbf{JSON-RPC:} The standard baseline paradigm utilized in conventional agent runtimes. It marshals multi-modal data payloads directly into the inline runtime execution stream, forcing the control-plane to serialize and transport raw data matrices synchronously via text-based JSON-RPC network primitives.
+\end{itemize}
+
+As shown in Fig.~\ref{fig:oob_payload_latency}, the empirical measurements reveal a clear scaling divergence between the two protocols across an exponential payload spectrum. At the baseline threshold ($1.00$\,MB), both configurations demonstrate sub-3 millisecond performance, with \textit{Out-of-Band} maintaining a slight edge ($1.95$\,ms vs. $2.28$\,ms). However, as the payload expands, the \textit{JSON-RPC} pipeline suffers a catastrophic linear performance degeneration; throttled by heavy serialization bottlenecks, its latency grows to $132.45$\,ms at $100.00$\,MB and reaches $1873.16$\,ms at the $1000.00$\,MB boundary. Conversely, \textit{Out-of-Band} demonstrates a near-constant $O(1)$ scaling profile, drifting to only $5.97$\,ms at the $1$\,GB boundary—a $313.55\times$ latency reduction.
+
+This performance gap stems from eliminating critical-path serialization and memory copying. In multi-turn workflows, agents frequently exchange large multi-modal states like high-dimensional vectors or media files. Standard JSON-RPC stalls the control loop due to synchronous serialization, whereas \SystemName's out-of-band design decouples control signals from raw payload routing, reducing data transfer to a constant-time reference-passing operation. These results demonstrate that separating the control and data planes keeps \SystemName's orchestration overhead minimal and independent of payload size.

@@ -1,0 +1,4 @@
+Metropolitan Museum of Art Coordinates
+Location: New York City
+Latitude: 40.7794
+Longitude: -73.9632

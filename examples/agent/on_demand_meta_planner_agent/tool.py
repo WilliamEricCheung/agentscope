@@ -12,15 +12,18 @@ from pydantic import BaseModel, Field
 
 from config import (
     ON_DEMAND_PREDICTIVE_PREWARM_ENABLED,
+    ON_DEMAND_PREDICTIVE_TOP_K,
+    ON_DEMAND_PREDICTIVE_TRANSITION_MATRIX_PATH,
     ON_DEMAND_PREWARM_ENABLED,
     ON_DEMAND_PREWARM_TELEMETRY_ENABLED,
     ON_DEMAND_PREWARM_TELEMETRY_MAX_EVENTS,
     ON_DEMAND_STREAM_TEXT_SPECULATION_INTERVAL_TOKENS,
+    build_experiment_chat_model,
+    get_experiment_chat_formatter,
     normalize_stream_text_speculation_interval_tokens,
 )
 
 from agentscope.agent import ReActAgent
-from agentscope.formatter import DashScopeChatFormatter
 from agentscope.mcp import (
     MCPLaplaceController,
     MCPLaplaceControllerConfig,
@@ -36,7 +39,6 @@ from agentscope.mcp import (
     load_laplace_registration_configs,
 )
 from agentscope.message import Msg, TextBlock
-from agentscope.model import DashScopeChatModel
 from agentscope.pipeline import stream_printing_messages
 from agentscope.tool import (
     ToolResponse,
@@ -46,11 +48,47 @@ from agentscope.tool import (
     write_text_file,
 )
 
+from _mcp_request_scope import (
+    get_request_namespace,
+    get_request_port,
+    scope_registration_configs,
+)
+
+
+_TEMP_FILE_DIR = os.getenv("AGENTSCOPE_ON_DEMAND_TEMP_DIR", "").strip()
+if _TEMP_FILE_DIR:
+    _TEMP_FILE_DIR = os.path.abspath(os.path.expanduser(_TEMP_FILE_DIR))
+else:
+    _TEMP_FILE_DIR = os.path.join(os.path.dirname(__file__), "temp_file")
+os.makedirs(_TEMP_FILE_DIR, exist_ok=True)
+
+_TIMING_LOG_BASENAME = (
+    os.getenv("AGENTSCOPE_TIMING_LOG_BASENAME", "").strip()
+    or "on_demand_timing.log.jsonl"
+)
 
 _TIMING_LOG_PATH = os.path.join(
-    os.path.dirname(__file__),
-    "on_demand_timing.log.jsonl",
+    _TEMP_FILE_DIR,
+    _TIMING_LOG_BASENAME,
 )
+
+
+def _resolve_allowed_server_names() -> set[str] | None:
+    """Resolve optional server-name allowlist from environment."""
+    raw = os.getenv("AGENTSCOPE_EXPERIMENT_SERVER_NAMES", "").strip()
+    if not raw:
+        return None
+
+    try:
+        payload = json.loads(raw)
+        if isinstance(payload, list):
+            values = [str(item).strip() for item in payload if str(item).strip()]
+            return set(values)
+    except Exception:
+        pass
+
+    values = [part.strip() for part in raw.split(",") if part.strip()]
+    return set(values) if values else None
 
 
 class ResultModel(BaseModel):
@@ -125,16 +163,28 @@ def _build_lazy_mcp_groups(
             Mapping from group_name to registration config for lazy lookup.
     """
     registry: dict[str, _DockerMCPRegistrationConfig] = {}
+    allowed_server_names = _resolve_allowed_server_names()
 
     all_registrations = load_laplace_registration_configs()
+    namespace = get_request_namespace()
+    port = get_request_port()
     for registration in all_registrations.values():
-        if registration.group_name not in {"browser_tools", "github_tools"}:
+        if allowed_server_names is not None:
+            server_name = str(getattr(registration, "server_name", "") or "")
+            if (
+                server_name not in allowed_server_names
+                and registration.group_name not in allowed_server_names
+            ):
+                continue
+        elif registration.group_name not in {"browser_tools", "github_tools"}:
             continue
         if (
             registration.group_name == "github_tools"
             and "GITHUB_PERSONAL_ACCESS_TOKEN" not in os.environ
         ):
             continue
+
+        registration = scope_registration_configs([registration], namespace, port)[0]
 
         toolkit.create_tool_group(
             group_name=registration.group_name,
@@ -143,9 +193,9 @@ def _build_lazy_mcp_groups(
         )
         registry[registration.group_name] = registration
 
-    if "browser_tools" not in registry:
+    if not registry:
         raise ValueError(
-            "`browser_tools` registration is missing in laplace_mcp_manifest.json.",
+            "No MCP registrations available for current experiment settings.",
         )
 
     return registry
@@ -213,7 +263,11 @@ def _make_lazy_mcp_postprocess(
                 group_name=group_name,
                 startup_mode=getattr(client, "startup_mode", None),
             )
-            await toolkit.register_mcp_client(client, group_name=group_name)
+            await toolkit.register_mcp_client(
+                client,
+                group_name=group_name,
+                execution_timeout=30.0,
+            )
             _record_mcp_timing_event(
                 timing_run,
                 "mcp_tools_registered",
@@ -441,19 +495,28 @@ async def create_worker(
         ),
     )
 
-    # Phase 4: Optionally enable speculative executor for comparison.
+    # Phase 4: Enable prompt and predictive prewarm paths independently.
     all_registrations = list(lazy_registry.values())
-    if prewarm:
-        base_prewarm_router = MCPPrewarmHybridRouter()
+    prompt_prewarm_enabled = bool(
+        prewarm and ON_DEMAND_PREWARM_ENABLED
+    )
+    predictive_prewarm_enabled = bool(
+        ON_DEMAND_PREDICTIVE_PREWARM_ENABLED
+    )
+    if prompt_prewarm_enabled or predictive_prewarm_enabled:
         candidate_effective_route_methods: dict[str, str] = {}
-        router_method = str(
-            getattr(base_prewarm_router, "method", "unknown"),
-        )
-        prewarm_router = _build_logged_prewarm_router(
-            base_prewarm_router,
-            timing_run,
-            candidate_effective_route_methods,
-        )
+        prewarm_router = None
+        router_method = "predictive"
+        if prompt_prewarm_enabled:
+            base_prewarm_router = MCPPrewarmHybridRouter()
+            router_method = str(
+                getattr(base_prewarm_router, "method", "unknown"),
+            )
+            prewarm_router = _build_logged_prewarm_router(
+                base_prewarm_router,
+                timing_run,
+                candidate_effective_route_methods,
+            )
         prewarm_executor = _build_logged_prewarm_executor(
             all_registrations,
             timing_run,
@@ -464,18 +527,23 @@ async def create_worker(
             prompt_prewarm_router=prewarm_router,
             prompt_prewarm_executor=prewarm_executor,
             config=MCPLaplaceControllerConfig(
-                prompt_prewarm_enabled=ON_DEMAND_PREWARM_ENABLED,
-                predictive_warmer_enabled=ON_DEMAND_PREDICTIVE_PREWARM_ENABLED,
+                prompt_prewarm_enabled=prompt_prewarm_enabled,
+                predictive_warmer_enabled=predictive_prewarm_enabled,
+                predictive_top_k=ON_DEMAND_PREDICTIVE_TOP_K,
+                predictive_transition_matrix_path=(
+                    ON_DEMAND_PREDICTIVE_TRANSITION_MATRIX_PATH
+                ),
                 telemetry_enabled=ON_DEMAND_PREWARM_TELEMETRY_ENABLED,
                 telemetry_max_events=ON_DEMAND_PREWARM_TELEMETRY_MAX_EVENTS,
                 telemetry_name="on_demand_worker",
             ),
         )
-        _record_mcp_timing_event(
-            timing_run,
-            "stream_text_speculation_configured",
-            interval_tokens=resolved_stream_text_speculation_interval_tokens,
-        )
+        if prompt_prewarm_enabled:
+            _record_mcp_timing_event(
+                timing_run,
+                "stream_text_speculation_configured",
+                interval_tokens=resolved_stream_text_speculation_interval_tokens,
+            )
     else:
         laplace_controller = MCPLaplaceController(
             config=MCPLaplaceControllerConfig(
@@ -531,17 +599,19 @@ Some tool groups are available but initially inactive. You can activate them by 
 You MUST use `reset_equipped_tools` whenever the task requires an inactive tool group.
 You MUST use the {ReActAgent.finish_function_name} to generate the final answer after finishing the task.
 """,
-        model=DashScopeChatModel(
-            model_name="qwen3-max",
-            api_key=os.environ["DASHSCOPE_API_KEY"],
-            stream_text_speculation_interval_tokens=(
+        model=build_experiment_chat_model(
+            model_name=os.getenv(
+                "AGENTSCOPE_EXPERIMENT_MODEL_NAME",
+                "qwen3-max",
+            ),
+            stream_interval_tokens=(
                 resolved_stream_text_speculation_interval_tokens
                 if prewarm
                 else None
             ),
         ),
         enable_meta_tool=False,
-        formatter=DashScopeChatFormatter(),
+        formatter=get_experiment_chat_formatter(),
         toolkit=toolkit,
         max_iters=20,
         mcp_laplace_controller=laplace_controller,

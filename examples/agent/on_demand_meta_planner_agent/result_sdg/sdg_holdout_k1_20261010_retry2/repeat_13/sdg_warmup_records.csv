@@ -1,0 +1,3 @@
+repeat_id,trace_id,record_index,target,candidate,schedule_timestamp,start_timestamp,ready_timestamp,later_demand_use,prefetch_hit,demand_timestamp,discard_timestamp,discard_timestamp_basis,cpu_seconds,memory_gib_seconds,resource_measurement
+13,holdout_transition_13_sdg_trace_00085,0,laplace_google_maps,Google Maps,2026-10-10T09:43:07.166,2026-10-10T09:43:07.169,2026-10-10T09:43:08.992,False,False,,2026-10-10 09:45:28,forced_run_cleanup,0.2288304183721543,3.067643964078743,docker_stats_sampled_estimate
+13,holdout_transition_13_sdg_trace_00085,1,laplace_huggingface,Hugging Face,2026-10-10T09:43:30.615,2026-10-10T09:43:30.619,2026-10-10T09:43:32.431,False,False,,2026-10-10 09:45:28,forced_run_cleanup,0.2898455006718635,5.541666856470983,docker_stats_sampled_estimate

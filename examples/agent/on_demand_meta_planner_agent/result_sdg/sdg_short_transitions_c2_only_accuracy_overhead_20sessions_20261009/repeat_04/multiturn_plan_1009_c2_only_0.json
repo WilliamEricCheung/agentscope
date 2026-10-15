@@ -1,0 +1,36 @@
+{
+  "artifact_path": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_short_transitions_c2_only_accuracy_overhead_20sessions_20261009/repeat_04/multiturn_plan_1009_c2_only_0.json",
+  "started_at": "2026-10-09 21:51:02",
+  "finished_at": "2026-10-09 21:57:31",
+  "run_mode": "c2_only",
+  "model_name": "qwen3.8-flash",
+  "planner_max_iters": 20,
+  "stream_interval_tokens": 20,
+  "turns": [
+    "Complete this request: I'm visiting the Metropolitan Museum of Art. Find a highly-rated cafe within 500 meters and tell me what libraries or documentation mention it.\n\nFor this controlled trace-replay experiment, make exactly the following two MCP calls in order. Actually call both tools and use the first result when carrying out the second step. Do not call any other tools. If a listed tool is unavailable, say so explicitly.\n\n1. Activate MCP group \"laplace_google_maps\" (server: Google Maps) and call tool \"get_place_details\". Goal: Get detailed info (including name and ID) for the top-rated cafe.\n2. Activate MCP group \"laplace_context7\" (server: Context7) and call tool \"resolve-library-id\". Goal: Attempt to resolve the cafe name into a known library or documentation ID.\n\nReturn a concise result based on the tool outputs."
+  ],
+  "transcript": [
+    {
+      "user": "Complete this request: I'm visiting the Metropolitan Museum of Art. Find a highly-rated cafe within 500 meters and tell me what libraries or documentation mention it.\n\nFor this controlled trace-replay experiment, make exactly the following two MCP calls in order. Actually call both tools and use the first result when carrying out the second step. Do not call any other tools. If a listed tool is unavailable, say so explicitly.\n\n1. Activate MCP group \"laplace_google_maps\" (server: Google Maps) and call tool \"get_place_details\". Goal: Get detailed info (including name and ID) for the top-rated cafe.\n2. Activate MCP group \"laplace_context7\" (server: Context7) and call tool \"resolve-library-id\". Goal: Attempt to resolve the cafe name into a known library or documentation ID.\n\nReturn a concise result based on the tool outputs.",
+      "assistant": "I'll make one focused retry, calling `get_place_details` directly as instructed (the required single tool call), rather than relying on the failing search tools."
+    }
+  ],
+  "timing_log_path": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/temp_file/sdg_overhead_timing_20261009_214425_5908.jsonl",
+  "worker_records": 1,
+  "metrics": {
+    "run_mode": "c2_only",
+    "worker_calls": 1,
+    "avg_wait_ms": 1897.653,
+    "p50_wait_ms": 1897.653,
+    "p95_wait_ms": 1897.653,
+    "cold_starts": 1,
+    "non_cold_starts": 0,
+    "telemetry_prompt_route_calls": 0,
+    "telemetry_predict_calls": 17,
+    "telemetry_schedule_attempts": 17,
+    "telemetry_schedule_accepted": 2,
+    "telemetry_executor_runs": 2,
+    "telemetry_executor_errors": 0,
+    "e2e_elapsed_ms": 395285.4582239961
+  }
+}

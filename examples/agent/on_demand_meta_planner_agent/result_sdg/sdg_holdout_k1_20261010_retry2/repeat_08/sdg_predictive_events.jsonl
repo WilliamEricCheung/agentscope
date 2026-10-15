@@ -1,0 +1,2 @@
+{"repeat_id": 8, "record_index": 0, "event_index": 1, "timestamp_unix_ms": 1791596107064.264, "current_server": "laplace-context7", "status": "completed", "candidate_count": 1}
+{"repeat_id": 8, "record_index": 1, "event_index": 1, "timestamp_unix_ms": 1791596171432.4, "current_server": "laplace-huggingface", "status": "completed", "candidate_count": 1}

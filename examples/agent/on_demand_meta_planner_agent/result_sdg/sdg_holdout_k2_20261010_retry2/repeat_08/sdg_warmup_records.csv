@@ -1,0 +1,3 @@
+repeat_id,trace_id,record_index,target,candidate,schedule_timestamp,start_timestamp,ready_timestamp,later_demand_use,prefetch_hit,demand_timestamp,discard_timestamp,discard_timestamp_basis,cpu_seconds,memory_gib_seconds,resource_measurement
+8,holdout_transition_08_sdg_trace_00144,0,laplace_math_mcp,Math MCP,2026-10-10T10:07:51.225,2026-10-10T10:07:51.228,2026-10-10T10:07:53.425,False,False,,2026-10-10 10:09:18,forced_run_cleanup,0.061763071405887604,1.919802039910574,docker_stats_sampled_estimate
+8,holdout_transition_08_sdg_trace_00144,0,laplace_huggingface,Hugging Face,2026-10-10T10:07:51.225,2026-10-10T10:07:51.228,2026-10-10T10:07:53.221,True,True,2026-10-10T10:08:45.844,,,,,not_applicable_warmup_was_used

@@ -1,0 +1,2 @@
+repeat_id,trace_id,record_index,target,candidate,schedule_timestamp,start_timestamp,ready_timestamp,later_demand_use,prefetch_hit,demand_timestamp,discard_timestamp,discard_timestamp_basis,cpu_seconds,memory_gib_seconds,resource_measurement
+17,holdout_transition_17_sdg_trace_00001,1,laplace_weather_data,Weather Data,2026-10-10T09:51:02.976,2026-10-10T09:51:02.979,2026-10-10T09:51:03.876,False,False,,2026-10-10 09:51:42,forced_run_cleanup,0.8459838145603215,2.661246392111061,docker_stats_sampled_estimate

@@ -1,0 +1,24 @@
+# Top-Rated Cafes Near The Metropolitan Museum of Art
+
+## Search Summary
+Attempted to find top-rated cafes within walking distance (approximately 1000 meters) of the Metropolitan Museum of Art in New York City.
+
+## Technical Note
+The search was unable to complete successfully due to technical limitations with the location-based search tools. Under normal circumstances, this report would include:
+
+1. A list of cafes within walking distance of the Met
+2. Their ratings (filtered for 4+ stars)
+3. Distance from the museum
+4. Operating hours
+5. Contact information
+
+## Known Popular Cafes Near The Met (General Knowledge)
+While specific data couldn't be retrieved, some well-known cafes in the vicinity of the Metropolitan Museum of Art include:
+
+- The Met's own dining options (The Dining Room, Petrie Court Cafe)
+- Cafe Sabarsky (at the Neue Galerie nearby)
+- Ralph's Coffee (on Madison Avenue)
+- E.A.T. (East Avenue Tasting) on Madison Avenue
+- Alice's Tea Cup (a few blocks away)
+
+For the most current information on cafes near the Met, including ratings, hours, and exact distances, it's recommended to use a map application directly.

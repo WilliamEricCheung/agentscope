@@ -1,0 +1,37 @@
+# Top 3 Cafes Near The Metropolitan Museum of Art
+
+Based on a search within 500 meters of the Metropolitan Museum of Art (1000 5th Ave, New York, NY 10028), here are the top 3 cafe options ranked by rating and number of reviews:
+
+## 1. 787 Coffee
+- **Rating**: 4.9/5 (3,482 reviews)
+- **Address**: 228 E 80th St, New York, NY 10075
+- **Phone**: (646) 850-0234
+- **Website**: http://www.787coffee.com/
+- **Distance from Met**: Approximately 0.4 miles (650m walking distance)
+- **Specialties**: Rum-infused coffee beans, unique coffee flavors, fresh baked pastries
+- **Atmosphere**: Cozy neighborhood spot with friendly staff who remember regular customers
+- **Notable Features**: Swing seat by the window, dog-friendly, fast WiFi
+- **Current Status**: Currently closed (as of query time)
+
+## 2. Dear Coffee
+- **Rating**: 4.6/5 (331 reviews)
+- **Address**: 1246 Lexington Ave, New York, NY 10028
+- **Website**: https://www.dearcoffeenyc.com/
+- **Distance from Met**: Approximately 0.3 miles (500m walking distance)
+- **Specialties**: Matcha lattes, peach soda, Onyx Coffee Lab beans
+- **Atmosphere**: Minimalist Upper East Side cafe with excellent coffee quality
+- **Notable Features**: No laptop policy, no restrooms, good for quick coffee to-go
+- **Current Status**: Currently closed (as of query time)
+
+## 3. Café Blériot XI
+- **Rating**: 4.6/5 (310 reviews)
+- **Address**: 226 E 83rd St, New York, NY 10028
+- **Phone**: (646) 244-9539
+- **Price Level**: $ (Inexpensive)
+- **Distance from Met**: Approximately 0.4 miles (650m walking distance)
+- **Specialties**: French pastries, ham and cheese croissants, specialty cold brew
+- **Atmosphere**: Charming French-inspired cafe with limited seating (4 small tables)
+- **Notable Features**: Buy one get one free pastries after 5 PM, no laptop policy
+- **Current Status**: Currently closed (as of query time)
+
+Note: Detailed operating hours were not available through the current data source. It's recommended to check the respective websites or call ahead before visiting.

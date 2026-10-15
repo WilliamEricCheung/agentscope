@@ -1,0 +1,30 @@
+# National Parks and Monuments in Colorado
+
+Based on the National Parks Service data, here are all 17 national parks, monuments, and historic sites located in Colorado:
+
+## National Parks
+1. **Black Canyon Of The Gunnison National Park** - Features some of the steepest cliffs, oldest rock, and craggiest spires in North America.
+2. **Great Sand Dunes National Park & Preserve** - Home to the tallest dunes in North America, along with diverse landscapes including grasslands, wetlands, forests, alpine lakes, and tundra.
+3. **Mesa Verde National Park** - Protects the rich cultural heritage of 27 Pueblos and Tribes, featuring Ancestral Pueblo cliff dwellings built over 700 years ago.
+4. **Rocky Mountain National Park** - Encompasses 415 square miles of spectacular mountain environments, from meadows to alpine lakes and towering peaks.
+
+## National Monuments
+5. **Colorado National Monument** - Preserves one of the grand landscapes of the American West with towering monoliths within a vast plateau and canyon panorama.
+6. **Curecanti National Recreation Area** - Three reservoirs and surrounding lands offering year-round recreation on both land and water.
+7. **Dinosaur National Monument** - Contains embedded dinosaur fossils from 150 million years ago, along with mountains, desert, rivers, and petroglyphs (shared with Utah).
+8. **Florissant Fossil Beds National Monument** - One of the richest and most diverse fossil deposits in the world, featuring petrified redwood stumps and detailed insect fossils.
+9. **Hovenweep National Monument** - Preserves six prehistoric sites built between 1200-1300 CE, including multistory towers perched on canyon rims (shared with Utah).
+10. **Yucca House National Monument** - A large unexcavated pueblo in Montezuma Valley, nestled between Mesa Verde and Ute Mountain.
+
+## National Historic Sites
+11. **Amache National Historic Site** - Formerly the Granada Relocation Center, one of ten incarceration sites for Japanese Americans during World War II.
+12. **Bent's Old Fort National Historic Site** - An adobe trading post on the Santa Fe Trail where traders, trappers, travelers, and Native tribes met for trade.
+13. **Sand Creek Massacre National Historic Site** - Commemorates the tragic 1864 massacre of Cheyenne and Arapaho people by U.S. forces.
+
+## National Historic Trails (portions in Colorado)
+14. **California National Historic Trail** - Over 5,000 miles long covering portions of 10 states, including Colorado.
+15. **Old Spanish National Historic Trail** - Follows routes of mule pack trains across six states between Santa Fe, New Mexico, and Los Angeles, California.
+16. **Pony Express National Historic Trail** - The historic mail delivery route that operated through eight states.
+17. **Santa Fe National Historic Trail** - The historic trade route between western Missouri and Santa Fe, New Mexico.
+
+This list includes all national park service units that are either entirely within Colorado or have significant portions within the state.

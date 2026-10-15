@@ -1,0 +1,3 @@
+{"repeat_id": 14, "record_index": 0, "event_index": 1, "timestamp_unix_ms": 1791598652065.616, "current_server": "laplace-math-mcp", "status": "completed", "candidate_count": 2}
+{"repeat_id": 14, "record_index": 1, "event_index": 1, "timestamp_unix_ms": 1791598665307.007, "current_server": "laplace-google-maps", "status": "completed", "candidate_count": 2}
+{"repeat_id": 14, "record_index": 1, "event_index": 6, "timestamp_unix_ms": 1791598666609.976, "current_server": "laplace-google-maps", "status": "completed", "candidate_count": 2}

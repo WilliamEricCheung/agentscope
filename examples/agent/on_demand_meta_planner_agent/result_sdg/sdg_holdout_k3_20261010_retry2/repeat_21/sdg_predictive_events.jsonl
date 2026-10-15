@@ -1,0 +1,10 @@
+{"repeat_id": 21, "record_index": 0, "event_index": 1, "timestamp_unix_ms": 1791601702323.6, "current_server": "laplace-wikipedia", "status": "completed", "candidate_count": 3}
+{"repeat_id": 21, "record_index": 0, "event_index": 8, "timestamp_unix_ms": 1791601703668.442, "current_server": "laplace-wikipedia", "status": "completed", "candidate_count": 3}
+{"repeat_id": 21, "record_index": 0, "event_index": 14, "timestamp_unix_ms": 1791601705185.079, "current_server": "laplace-wikipedia", "status": "completed", "candidate_count": 3}
+{"repeat_id": 21, "record_index": 0, "event_index": 19, "timestamp_unix_ms": 1791601707021.19, "current_server": "laplace-wikipedia", "status": "completed", "candidate_count": 3}
+{"repeat_id": 21, "record_index": 0, "event_index": 23, "timestamp_unix_ms": 1791601708313.758, "current_server": "laplace-wikipedia", "status": "completed", "candidate_count": 3}
+{"repeat_id": 21, "record_index": 0, "event_index": 27, "timestamp_unix_ms": 1791601709542.591, "current_server": "laplace-wikipedia", "status": "completed", "candidate_count": 3}
+{"repeat_id": 21, "record_index": 0, "event_index": 31, "timestamp_unix_ms": 1791601711833.363, "current_server": "laplace-wikipedia", "status": "completed", "candidate_count": 3}
+{"repeat_id": 21, "record_index": 0, "event_index": 35, "timestamp_unix_ms": 1791601715422.91, "current_server": "laplace-wikipedia", "status": "completed", "candidate_count": 3}
+{"repeat_id": 21, "record_index": 0, "event_index": 39, "timestamp_unix_ms": 1791601718904.207, "current_server": "laplace-wikipedia", "status": "completed", "candidate_count": 3}
+{"repeat_id": 21, "record_index": 1, "event_index": 1, "timestamp_unix_ms": 1791601754921.366, "current_server": "laplace-weather-data", "status": "completed", "candidate_count": 3}

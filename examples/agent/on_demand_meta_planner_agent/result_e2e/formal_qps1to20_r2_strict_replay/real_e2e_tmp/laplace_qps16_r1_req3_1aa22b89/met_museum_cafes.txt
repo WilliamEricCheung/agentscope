@@ -1,0 +1,60 @@
+# Top Cafes Near The Metropolitan Museum of Art (Within 500m)
+
+## 1. 787 Coffee ⭐⭐⭐⭐⭐ (4.9/5 from 3,472 reviews)
+- **Address**: 228 E 80th St, New York, NY 10075
+- **Phone**: (646) 850-0234
+- **Website**: http://www.787coffee.com/
+- **Distance from Met**: ~500m (southeast)
+- **Price Level**: Not specified
+- **Specialties**: Rum-infused coffee beans, unique drinks like Matcha Latte and Rum-Infused Cappuccino
+- **Atmosphere**: Cozy neighborhood spot with swing seating by the window, dog-friendly
+- **Notable Features**: Fast WiFi, friendly staff who remember regulars, fresh baked pastries all day
+
+## 2. Dear Coffee ⭐⭐⭐⭐⭐ (4.6/5 from 330 reviews)
+- **Address**: 1246 Lexington Ave, New York, NY 10028
+- **Website**: https://www.dearcoffeenyc.com/
+- **Distance from Met**: ~400m (east)
+- **Price Level**: Not specified
+- **Specialties**: Apricot Matcha, Peach Soda, Onyx Coffee Lab beans
+- **Atmosphere**: Minimalist Upper East Side cafe
+- **Notable Features**: No laptop workspace, no restroom, good for quick coffee to-go
+
+## 3. Antonucci Cafe ⭐⭐⭐⭐⭐ (4.5/5 from 428 reviews)
+- **Address**: 170 E 81st St, New York, NY 10028
+- **Phone**: (212) 570-5100
+- **Website**: https://antonuccicafe81.com/
+- **Distance from Met**: ~450m (southeast)
+- **Price Level**: $$$ (High-end)
+- **Specialties**: Italian cuisine, Burrata salad, sea bass, fettuccini with mushrooms
+- **Atmosphere**: Small, cozy Italian restaurant with artwork on walls
+- **Notable Features**: Some desserts only available in the evening, gluten-free pasta available
+
+## 4. Café Blériot XI ⭐⭐⭐⭐⭐ (4.6/5 from 310 reviews)
+- **Address**: 226 E 83rd St, New York, NY 10028
+- **Phone**: (646) 244-9539
+- **Distance from Met**: ~500m (northeast)
+- **Price Level**: $ (Budget-friendly)
+- **Specialties**: French pastries, ham & cheese croissants, lattes
+- **Atmosphere**: Charming French bistro feel with only 4 small tables
+- **Notable Features**: No laptops allowed, pastries BOGO after 5 PM
+
+## 5. Cabuc Coffee ⭐⭐⭐⭐⭐ (4.6/5 from 153 reviews)
+- **Address**: 1211 Lexington Ave, New York, NY 10028
+- **Phone**: (646) 891-0011
+- **Distance from Met**: ~400m (east)
+- **Price Level**: Not specified
+- **Specialties**: Turkish coffee, Baklava latte, salty honey croissant
+- **Atmosphere**: Bright, spacious with Turkish music
+- **Notable Features**: Good for working (WiFi available), ceramic cups for in-house use
+
+## Other Notable Options:
+- **Church of Heavenly Rest Café** (4.4/5, 2,256 reviews)
+- **Rosa's Cafe & Bakery** (4.3/5, 32 reviews)
+- **Tarallucci e Vino at Cooper Hewitt** (4.5/5, 30 reviews)
+- **Variety Coffee Roasters** (4.4/5, 615 reviews)
+- **Café Fledermaus** (4.2/5, 40 reviews)
+- **Eataly Caffè** (4.1/5, 134 reviews)
+- **Le Pain Quotidien** (3.9/5, 880 reviews)
+- **Nectar** (3.6/5, 1,040 reviews)
+
+Note: Operating hours were not available through the API. It's recommended to check the individual websites or call ahead before visiting.

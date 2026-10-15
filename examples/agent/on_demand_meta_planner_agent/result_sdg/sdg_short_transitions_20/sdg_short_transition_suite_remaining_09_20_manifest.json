@@ -1,0 +1,214 @@
+{
+  "suite_name": "SDG short transitions, remaining cases 09-20",
+  "source_trace_file": "/mnt/d/Project/agentscope/laplace/mcp_dataset/laplace_sdg_traces.json",
+  "selection": "One representative from each of the most frequent distinct directed cross-server edges in the trace file; self-transitions excluded; ties broken lexicographically. Each script replays the two adjacent source trace steps only.",
+  "case_count": 12,
+  "transition_population": 450,
+  "unique_cross_server_edges": 47,
+  "cases": [
+    {
+      "case_index": 9,
+      "trace_id": "transition_09_sdg_trace_00145",
+      "source_trace_id": "sdg_trace_00145",
+      "source_step_index": 4,
+      "target_step_index": 5,
+      "server_path": [
+        "Google Maps",
+        "Huge Icons"
+      ],
+      "tool_path": [
+        "search_nearby",
+        "search_icons"
+      ],
+      "source_edge_frequency": 15,
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_short_transitions_20/transition_09_sdg_trace_00145.json"
+    },
+    {
+      "case_index": 10,
+      "trace_id": "transition_10_sdg_trace_00011",
+      "source_trace_id": "sdg_trace_00011",
+      "source_step_index": 3,
+      "target_step_index": 4,
+      "server_path": [
+        "Google Maps",
+        "Wikipedia"
+      ],
+      "tool_path": [
+        "get_place_details",
+        "search_wikipedia"
+      ],
+      "source_edge_frequency": 15,
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_short_transitions_20/transition_10_sdg_trace_00011.json"
+    },
+    {
+      "case_index": 11,
+      "trace_id": "transition_11_sdg_trace_00010",
+      "source_trace_id": "sdg_trace_00010",
+      "source_step_index": 2,
+      "target_step_index": 3,
+      "server_path": [
+        "Wikipedia",
+        "Google Maps"
+      ],
+      "tool_path": [
+        "get_summary",
+        "maps_geocode"
+      ],
+      "source_edge_frequency": 14,
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_short_transitions_20/transition_11_sdg_trace_00010.json"
+    },
+    {
+      "case_index": 12,
+      "trace_id": "transition_12_sdg_trace_00031",
+      "source_trace_id": "sdg_trace_00031",
+      "source_step_index": 5,
+      "target_step_index": 6,
+      "server_path": [
+        "Weather Data",
+        "Google Maps"
+      ],
+      "tool_path": [
+        "get_weather_forecast_tool",
+        "search_nearby"
+      ],
+      "source_edge_frequency": 9,
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_short_transitions_20/transition_12_sdg_trace_00031.json"
+    },
+    {
+      "case_index": 13,
+      "trace_id": "transition_13_sdg_trace_00032",
+      "source_trace_id": "sdg_trace_00032",
+      "source_step_index": 5,
+      "target_step_index": 6,
+      "server_path": [
+        "Wikipedia",
+        "Game Trends"
+      ],
+      "tool_path": [
+        "get_summary",
+        "get_all_trending_games"
+      ],
+      "source_edge_frequency": 9,
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_short_transitions_20/transition_13_sdg_trace_00032.json"
+    },
+    {
+      "case_index": 14,
+      "trace_id": "transition_14_sdg_trace_00012",
+      "source_trace_id": "sdg_trace_00012",
+      "source_step_index": 3,
+      "target_step_index": 4,
+      "server_path": [
+        "Google Maps",
+        "Metropolitan Museum"
+      ],
+      "tool_path": [
+        "get_place_details",
+        "search-museum-objects"
+      ],
+      "source_edge_frequency": 7,
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_short_transitions_20/transition_14_sdg_trace_00012.json"
+    },
+    {
+      "case_index": 15,
+      "trace_id": "transition_15_sdg_trace_00145",
+      "source_trace_id": "sdg_trace_00145",
+      "source_step_index": 6,
+      "target_step_index": 7,
+      "server_path": [
+        "Wikipedia",
+        "Paper Search"
+      ],
+      "tool_path": [
+        "search_wikipedia",
+        "search_google_scholar"
+      ],
+      "source_edge_frequency": 6,
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_short_transitions_20/transition_15_sdg_trace_00145.json"
+    },
+    {
+      "case_index": 16,
+      "trace_id": "transition_16_sdg_trace_00011",
+      "source_trace_id": "sdg_trace_00011",
+      "source_step_index": 5,
+      "target_step_index": 6,
+      "server_path": [
+        "Wikipedia",
+        "Weather Data"
+      ],
+      "tool_path": [
+        "get_summary",
+        "get_weather_forecast_tool"
+      ],
+      "source_edge_frequency": 6,
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_short_transitions_20/transition_16_sdg_trace_00011.json"
+    },
+    {
+      "case_index": 17,
+      "trace_id": "transition_17_sdg_trace_00012",
+      "source_trace_id": "sdg_trace_00012",
+      "source_step_index": 4,
+      "target_step_index": 5,
+      "server_path": [
+        "Metropolitan Museum",
+        "Context7"
+      ],
+      "tool_path": [
+        "search-museum-objects",
+        "resolve-library-id"
+      ],
+      "source_edge_frequency": 5,
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_short_transitions_20/transition_17_sdg_trace_00012.json"
+    },
+    {
+      "case_index": 18,
+      "trace_id": "transition_18_sdg_trace_00027",
+      "source_trace_id": "sdg_trace_00027",
+      "source_step_index": 4,
+      "target_step_index": 5,
+      "server_path": [
+        "Weather Data",
+        "Wikipedia"
+      ],
+      "tool_path": [
+        "get_current_weather_tool",
+        "search_wikipedia"
+      ],
+      "source_edge_frequency": 4,
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_short_transitions_20/transition_18_sdg_trace_00027.json"
+    },
+    {
+      "case_index": 19,
+      "trace_id": "transition_19_sdg_trace_00041",
+      "source_trace_id": "sdg_trace_00041",
+      "source_step_index": 3,
+      "target_step_index": 4,
+      "server_path": [
+        "Google Maps",
+        "Playwright"
+      ],
+      "tool_path": [
+        "get_place_details",
+        "browser_navigate"
+      ],
+      "source_edge_frequency": 3,
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_short_transitions_20/transition_19_sdg_trace_00041.json"
+    },
+    {
+      "case_index": 20,
+      "trace_id": "transition_20_sdg_trace_00145",
+      "source_trace_id": "sdg_trace_00145",
+      "source_step_index": 5,
+      "target_step_index": 6,
+      "server_path": [
+        "Huge Icons",
+        "Wikipedia"
+      ],
+      "tool_path": [
+        "search_icons",
+        "search_wikipedia"
+      ],
+      "source_edge_frequency": 3,
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_short_transitions_20/transition_20_sdg_trace_00145.json"
+    }
+  ]
+}

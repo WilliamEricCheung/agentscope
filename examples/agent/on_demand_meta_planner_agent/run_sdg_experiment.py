@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+from contextlib import contextmanager
 import importlib
 import json
 import os
@@ -31,7 +32,6 @@ from pathlib import Path
 from typing import Any
 
 from agentscope.agent import ReActAgent
-from agentscope.formatter import DashScopeChatFormatter
 from agentscope.mcp import (
     MCPLaplaceController,
     MCPLaplaceControllerConfig,
@@ -40,17 +40,25 @@ from agentscope.mcp import (
     build_mcp_speculative_executor,
 )
 from agentscope.message import Msg
-from agentscope.model import DashScopeChatModel
 from agentscope.plan import PlanNotebook
 from agentscope.tool import Toolkit
 
 
 _MODE_C1_ONLY = "c1_only"
 _MODE_C1_C2 = "c1_c2"
-_MODE_CHOICES = (_MODE_C1_ONLY, _MODE_C1_C2)
+_MODE_C2_ONLY = "c2_only"
+_MODE_ON_DEMAND = "on_demand"
+_MODE_CHOICES = (
+    _MODE_C1_ONLY,
+    _MODE_C1_C2,
+    _MODE_C2_ONLY,
+    _MODE_ON_DEMAND,
+)
 _DEFAULT_TURN_SCRIPT_FILE = (
     Path(__file__).resolve().parent / "multiturn_plan_dialogue_script.json"
 )
+_DEFAULT_TURN_SCRIPTS_DIR = Path(__file__).resolve().parent / "dialogue_scripts"
+_TEMP_FILE_DIR = Path(__file__).resolve().parent / "temp_file"
 
 _FIXED_TURNS = [
     (
@@ -85,6 +93,33 @@ def _resolve_mcp_lifecycle_dir() -> Path:
         return Path(configured).expanduser().resolve()
 
     return Path(__file__).resolve().parents[4] / "laplace" / "mcp_lifecycle"
+
+
+def _ensure_temp_file_dir() -> Path:
+    """Ensure temp_file directory exists and return path.
+
+    Returns:
+        `Path`:
+            temp_file directory path.
+    """
+    _TEMP_FILE_DIR.mkdir(parents=True, exist_ok=True)
+    return _TEMP_FILE_DIR
+
+
+@contextmanager
+def _temporary_cwd(target_dir: Path):
+    """Temporarily switch current working directory.
+
+    Args:
+        target_dir (`Path`):
+            Target current working directory.
+    """
+    previous = Path.cwd()
+    os.chdir(target_dir)
+    try:
+        yield
+    finally:
+        os.chdir(previous)
 
 
 def _cleanup_experiment_mcp_runtime(registrations: list[Any]) -> None:
@@ -131,20 +166,63 @@ def _load_experiment_registrations() -> list[Any]:
             Filtered registration list for browser/github groups.
     """
     all_registrations = load_laplace_registration_configs()
-    registrations = [
-        reg
-        for reg in all_registrations.values()
-        if reg.group_name in {"browser_tools", "github_tools"}
-    ]
+    requested_names_raw = os.getenv(
+        "AGENTSCOPE_EXPERIMENT_SERVER_NAMES",
+        "",
+    ).strip()
+    requested_names: set[str] | None = None
+    if requested_names_raw:
+        try:
+            payload = json.loads(requested_names_raw)
+            if isinstance(payload, list):
+                requested_names = {
+                    str(item).strip()
+                    for item in payload
+                    if str(item).strip()
+                }
+        except json.JSONDecodeError:
+            requested_names = None
+        if requested_names is None:
+            requested_names = {
+                item.strip()
+                for item in requested_names_raw.split(",")
+                if item.strip()
+            }
+
+    registrations = []
+    for registry_name, registration in all_registrations.items():
+        if requested_names is None:
+            enabled = registration.group_name in {
+                "browser_tools",
+                "github_tools",
+            }
+        else:
+            enabled = bool(
+                requested_names
+                & {
+                    str(registry_name).strip(),
+                    str(registration.group_name).strip(),
+                    str(getattr(registration, "server_name", "")).strip(),
+                },
+            )
+        if enabled:
+            registrations.append(registration)
     if "GITHUB_PERSONAL_ACCESS_TOKEN" not in os.environ:
         registrations = [
             reg
             for reg in registrations
             if reg.group_name != "github_tools"
         ]
-    if not any(reg.group_name == "browser_tools" for reg in registrations):
+    if requested_names is None and not any(
+        reg.group_name == "browser_tools"
+        for reg in registrations
+    ):
         raise ValueError(
             "`browser_tools` registration is missing in laplace_mcp_manifest.json.",
+        )
+    if not registrations:
+        raise ValueError(
+            "No MCP registrations match AGENTSCOPE_EXPERIMENT_SERVER_NAMES.",
         )
     return registrations
 
@@ -208,6 +286,8 @@ class RunMetrics:
             Sum of executor runs.
         telemetry_executor_errors (`int`):
             Sum of executor errors.
+        e2e_elapsed_ms (`float | None`):
+            End-to-end elapsed time for one run.
     """
 
     run_mode: str
@@ -223,6 +303,7 @@ class RunMetrics:
     telemetry_schedule_accepted: int
     telemetry_executor_runs: int
     telemetry_executor_errors: int
+    e2e_elapsed_ms: float | None = None
 
 
 def _default_output_dir() -> Path:
@@ -259,6 +340,103 @@ def _next_run_path(output_dir: Path, mode: str, ext: str) -> Path:
         if not path.exists():
             return path
         index += 1
+
+
+def _latest_run_path(output_dir: Path, mode: str, ext: str) -> Path | None:
+    """Find latest existing run artifact path for one mode.
+
+    Args:
+        output_dir (`Path`):
+            Base output directory.
+        mode (`str`):
+            Run mode label.
+        ext (`str`):
+            File extension including dot.
+
+    Returns:
+        `Path | None`:
+            Latest existing path, or `None` when no artifact exists.
+    """
+    prefix = time.strftime("%m%d", time.localtime())
+    latest: Path | None = None
+    latest_index = -1
+    pattern = f"multiturn_plan_{prefix}_{mode}_*{ext}"
+    for path in output_dir.glob(pattern):
+        stem = path.stem
+        index_text = stem.rsplit("_", maxsplit=1)[-1]
+        if not index_text.isdigit():
+            continue
+        index = int(index_text)
+        if index > latest_index:
+            latest_index = index
+            latest = path
+    return latest
+
+
+def _sanitize_case_name(name: str) -> str:
+    """Normalize one case name for directory usage.
+
+    Args:
+        name (`str`):
+            Raw case name.
+
+    Returns:
+        `str`:
+            Normalized case name.
+    """
+
+    cleaned = "".join(ch if (ch.isalnum() or ch in "-_") else "_" for ch in name)
+    return cleaned.strip("_") or "case"
+
+
+def _resolve_batch_turn_script_files(
+    turn_script_files: list[str] | None,
+    turn_script_dir: str | None,
+    turn_script_glob: str | None,
+) -> list[Path]:
+    """Resolve multi-case turn script files.
+
+    Args:
+        turn_script_files (`list[str] | None`):
+            Explicit script file paths.
+        turn_script_dir (`str | None`):
+            Script directory for glob search.
+        turn_script_glob (`str | None`):
+            Glob pattern under directory.
+
+    Returns:
+        `list[Path]`:
+            Sorted unique script paths.
+    """
+
+    resolved: list[Path] = []
+    seen: set[Path] = set()
+
+    if turn_script_files:
+        for item in turn_script_files:
+            path = Path(item).expanduser().resolve()
+            if path in seen:
+                continue
+            seen.add(path)
+            resolved.append(path)
+
+    if turn_script_dir or turn_script_glob:
+        script_dir = (
+            Path(turn_script_dir).expanduser().resolve()
+            if turn_script_dir is not None
+            else _DEFAULT_TURN_SCRIPTS_DIR
+        )
+        pattern = turn_script_glob or "*.json"
+        for path in sorted(script_dir.glob(pattern)):
+            if not path.is_file():
+                continue
+            full = path.resolve()
+            if full in seen:
+                continue
+            seen.add(full)
+            resolved.append(full)
+
+    return resolved
 
 
 def _format_number(value: float | int | None) -> str:
@@ -322,6 +500,7 @@ def _load_jsonl(path: Path) -> list[dict[str, Any]]:
 def _aggregate_metrics(
     mode: str,
     records: list[dict[str, Any]],
+    e2e_elapsed_ms: float | None = None,
 ) -> RunMetrics:
     """Aggregate worker timing + controller telemetry metrics.
 
@@ -330,6 +509,8 @@ def _aggregate_metrics(
             Run mode label.
         records (`list[dict[str, Any]]`):
             Raw worker timing records.
+        e2e_elapsed_ms (`float | None`):
+            End-to-end elapsed time for one run.
 
     Returns:
         `RunMetrics`:
@@ -382,6 +563,7 @@ def _aggregate_metrics(
         telemetry_schedule_accepted=telemetry_schedule_accepted,
         telemetry_executor_runs=telemetry_executor_runs,
         telemetry_executor_errors=telemetry_executor_errors,
+        e2e_elapsed_ms=e2e_elapsed_ms,
     )
 
 
@@ -409,6 +591,7 @@ def _build_run_markdown(
     """
     rows = [
         ["Mode", mode],
+        ["E2E Elapsed (ms)", _format_number(metrics.e2e_elapsed_ms)],
         ["Worker Calls", str(metrics.worker_calls)],
         ["Avg Wait (ms)", _format_number(metrics.avg_wait_ms)],
         ["P50 Wait (ms)", _format_number(metrics.p50_wait_ms)],
@@ -497,6 +680,18 @@ def _build_compare_markdown(
             conclusion = "C1+C2 and C1 only are equivalent on average wait."
 
     rows = [
+        (
+            "E2E Elapsed (ms)",
+            _format_number(left.e2e_elapsed_ms),
+            _format_number(right.e2e_elapsed_ms),
+            _format_number(
+                (
+                    right.e2e_elapsed_ms - left.e2e_elapsed_ms
+                    if left.e2e_elapsed_ms is not None and right.e2e_elapsed_ms is not None
+                    else None
+                ),
+            ),
+        ),
         (
             "Worker Calls",
             str(left.worker_calls),
@@ -590,7 +785,125 @@ def _build_compare_markdown(
     return "\n".join(lines) + "\n"
 
 
-def _set_runtime_config(mode: str, stream_interval_tokens: int | None) -> None:
+def _build_batch_summary_markdown(cases: list[dict[str, Any]]) -> str:
+    """Build one markdown summary across multiple dialogue-script cases.
+
+    Args:
+        cases (`list[dict[str, Any]]`):
+            Case-level summary records.
+
+    Returns:
+        `str`:
+            Markdown report.
+    """
+
+    lines = [
+        "# Multi-case SDG Comparison Summary",
+        "",
+        "This summary compares C1-only vs C1+C2 across multiple dialogue scripts.",
+        "",
+        "| Case | Repeats | Script | C1 E2E p50 (ms) | C1 E2E p95 (ms) | C1+C2 E2E p50 (ms) | C1+C2 E2E p95 (ms) | Delta E2E p50 (ms) | Delta E2E p95 (ms) | C1 Avg Wait (ms) | C1+C2 Avg Wait (ms) | Delta Wait (C1+C2-C1) | C1 Cold Starts | C1+C2 Cold Starts | Compare Reports |",
+        "| --- | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |",
+    ]
+
+    all_c1_e2e: list[float] = []
+    all_c2_e2e: list[float] = []
+    all_delta_e2e: list[float] = []
+
+    for case in cases:
+        c1 = RunMetrics(**case["c1_metrics"])
+        c2 = RunMetrics(**case["c2_metrics"])
+        delta = (
+            c2.avg_wait_ms - c1.avg_wait_ms
+            if c1.avg_wait_ms is not None and c2.avg_wait_ms is not None
+            else None
+        )
+
+        repeats = int(case.get("repeats", 1) or 1)
+        compare_reports = case.get("compare_reports") or []
+        c1_e2e_values = [
+            float(value)
+            for value in (case.get("c1_e2e_values") or [])
+            if isinstance(value, (int, float))
+        ]
+        c2_e2e_values = [
+            float(value)
+            for value in (case.get("c2_e2e_values") or [])
+            if isinstance(value, (int, float))
+        ]
+        delta_e2e_values = [
+            float(value)
+            for value in (case.get("delta_e2e_values") or [])
+            if isinstance(value, (int, float))
+        ]
+
+        all_c1_e2e.extend(c1_e2e_values)
+        all_c2_e2e.extend(c2_e2e_values)
+        all_delta_e2e.extend(delta_e2e_values)
+
+        c1_e2e_p50 = statistics.median(c1_e2e_values) if c1_e2e_values else None
+        c2_e2e_p50 = statistics.median(c2_e2e_values) if c2_e2e_values else None
+        delta_e2e_p50 = statistics.median(delta_e2e_values) if delta_e2e_values else None
+        c1_e2e_p95 = _p95(c1_e2e_values)
+        c2_e2e_p95 = _p95(c2_e2e_values)
+        delta_e2e_p95 = _p95(delta_e2e_values)
+
+        lines.append(
+            "| {case_name} | {repeats} | {script_name} | {c1_e2e_p50} | {c1_e2e_p95} | {c2_e2e_p50} | {c2_e2e_p95} | {delta_e2e_p50} | {delta_e2e_p95} | {c1_avg} | {c2_avg} | {delta_wait} | {c1_cold} | {c2_cold} | {report_paths} |".format(
+                case_name=case["case_name"],
+                repeats=repeats,
+                script_name=case["script_name"],
+                c1_e2e_p50=_format_number(c1_e2e_p50),
+                c1_e2e_p95=_format_number(c1_e2e_p95),
+                c2_e2e_p50=_format_number(c2_e2e_p50),
+                c2_e2e_p95=_format_number(c2_e2e_p95),
+                delta_e2e_p50=_format_number(delta_e2e_p50),
+                delta_e2e_p95=_format_number(delta_e2e_p95),
+                c1_avg=_format_number(c1.avg_wait_ms),
+                c2_avg=_format_number(c2.avg_wait_ms),
+                delta_wait=_format_number(delta),
+                c1_cold=c1.cold_starts,
+                c2_cold=c2.cold_starts,
+                report_paths=", ".join(compare_reports) if compare_reports else str(case.get("compare_report_path", "-")),
+            ),
+        )
+
+    overall_c1_e2e_p50 = statistics.median(all_c1_e2e) if all_c1_e2e else None
+    overall_c2_e2e_p50 = statistics.median(all_c2_e2e) if all_c2_e2e else None
+    overall_delta_e2e_p50 = statistics.median(all_delta_e2e) if all_delta_e2e else None
+    overall_c1_e2e_p95 = _p95(all_c1_e2e)
+    overall_c2_e2e_p95 = _p95(all_c2_e2e)
+    overall_delta_e2e_p95 = _p95(all_delta_e2e)
+
+    lines.extend(
+        [
+            "",
+            "## Overall E2E (All Repeats Across Cases)",
+            "",
+            "| Metric | Value |",
+            "| --- | ---: |",
+            f"| C1 E2E p50 (ms) | {_format_number(overall_c1_e2e_p50)} |",
+            f"| C1 E2E p95 (ms) | {_format_number(overall_c1_e2e_p95)} |",
+            f"| C1+C2 E2E p50 (ms) | {_format_number(overall_c2_e2e_p50)} |",
+            f"| C1+C2 E2E p95 (ms) | {_format_number(overall_c2_e2e_p95)} |",
+            f"| Delta E2E p50 (ms) | {_format_number(overall_delta_e2e_p50)} |",
+            f"| Delta E2E p95 (ms) | {_format_number(overall_delta_e2e_p95)} |",
+            "",
+            "## Notes",
+            "- E2E p50/p95 are computed over repeated runs per case.",
+            "- Heavy MCP servers should appear in later turns (not first tool call) by script design.",
+            "- Use enough cases to avoid single-case bias in paper claims.",
+        ],
+    )
+    return "\n".join(lines) + "\n"
+
+
+def _set_runtime_config(
+    mode: str,
+    stream_interval_tokens: int | None,
+    predictive_top_k: int = 1,
+    predictive_transition_matrix_path: str | None = None,
+) -> None:
     """Set runtime config values before loading worker tool module.
 
     Args:
@@ -598,11 +911,27 @@ def _set_runtime_config(mode: str, stream_interval_tokens: int | None) -> None:
             Experiment mode.
         stream_interval_tokens (`int | None`):
             Stream speculation interval.
+        predictive_top_k (`int`):
+            Number of SDG candidates to prewarm.
+        predictive_transition_matrix_path (`str | None`):
+            Optional SDG transition matrix override.
     """
     import config
 
-    config.ON_DEMAND_PREWARM_ENABLED = True
-    config.ON_DEMAND_PREDICTIVE_PREWARM_ENABLED = mode == _MODE_C1_C2
+    if predictive_top_k < 1:
+        raise ValueError("predictive_top_k must be >= 1.")
+    config.ON_DEMAND_PREWARM_ENABLED = mode in {
+        _MODE_C1_ONLY,
+        _MODE_C1_C2,
+    }
+    config.ON_DEMAND_PREDICTIVE_PREWARM_ENABLED = mode in {
+        _MODE_C2_ONLY,
+        _MODE_C1_C2,
+    }
+    config.ON_DEMAND_PREDICTIVE_TOP_K = predictive_top_k
+    config.ON_DEMAND_PREDICTIVE_TRANSITION_MATRIX_PATH = (
+        predictive_transition_matrix_path
+    )
     config.ON_DEMAND_PREWARM_TELEMETRY_ENABLED = True
     config.ON_DEMAND_PREWARM_TELEMETRY_MAX_EVENTS = 2048
     config.ON_DEMAND_STREAM_TEXT_SPECULATION_INTERVAL_TOKENS = (
@@ -617,6 +946,8 @@ def _build_planner(
     model_name: str,
     planner_max_iters: int,
     stream_interval_tokens: int | None,
+    predictive_top_k: int = 1,
+    predictive_transition_matrix_path: str | None = None,
 ) -> ReActAgent:
     """Construct planner for one experiment run.
 
@@ -629,12 +960,23 @@ def _build_planner(
             Max reasoning iterations.
         stream_interval_tokens (`int | None`):
             Stream speculation interval tokens.
+        predictive_top_k (`int`):
+            Number of SDG candidates to prewarm.
+        predictive_transition_matrix_path (`str | None`):
+            Optional SDG transition matrix override.
 
     Returns:
         `ReActAgent`:
             Configured planner agent.
     """
-    _set_runtime_config(mode, stream_interval_tokens)
+    import config
+
+    _set_runtime_config(
+        mode,
+        stream_interval_tokens,
+        predictive_top_k,
+        predictive_transition_matrix_path,
+    )
 
     tool_module = importlib.import_module("tool")
     tool_module = importlib.reload(tool_module)
@@ -644,15 +986,30 @@ def _build_planner(
 
     planner_prewarm_registrations = _load_experiment_registrations()
 
-    predictive_enabled = mode == _MODE_C1_C2
+    prompt_prewarm_enabled = mode in {
+        _MODE_C1_ONLY,
+        _MODE_C1_C2,
+    }
+    predictive_enabled = mode in {
+        _MODE_C2_ONLY,
+        _MODE_C1_C2,
+    }
     planner_controller = MCPLaplaceController(
-        prompt_prewarm_router=MCPPrewarmHybridRouter(),
+        prompt_prewarm_router=(
+            MCPPrewarmHybridRouter()
+            if prompt_prewarm_enabled
+            else None
+        ),
         prompt_prewarm_executor=build_mcp_speculative_executor(
             planner_prewarm_registrations,
         ),
         config=MCPLaplaceControllerConfig(
-            prompt_prewarm_enabled=True,
+            prompt_prewarm_enabled=prompt_prewarm_enabled,
             predictive_warmer_enabled=predictive_enabled,
+            predictive_top_k=predictive_top_k,
+            predictive_transition_matrix_path=(
+                predictive_transition_matrix_path
+            ),
             telemetry_enabled=True,
             telemetry_max_events=2048,
             telemetry_name=f"multiturn_planner_{mode}",
@@ -666,12 +1023,11 @@ def _build_planner(
             "Always create a plan first, then execute subtasks in order by "
             "creating worker agents via create_worker when needed."
         ),
-        model=DashScopeChatModel(
+        model=config.build_experiment_chat_model(
             model_name=model_name,
-            api_key=os.environ["DASHSCOPE_API_KEY"],
-            stream_text_speculation_interval_tokens=stream_interval_tokens,
+            stream_interval_tokens=stream_interval_tokens,
         ),
-        formatter=DashScopeChatFormatter(),
+        formatter=config.get_experiment_chat_formatter(),
         plan_notebook=PlanNotebook(),
         toolkit=toolkit,
         max_iters=planner_max_iters,
@@ -746,6 +1102,8 @@ def run_once(
     planner_max_iters: int,
     stream_interval_tokens: int | None,
     turn_script_file: str | None,
+    predictive_top_k: int = 1,
+    predictive_transition_matrix_path: str | None = None,
 ) -> dict[str, Any]:
     """Run one experiment and persist artifacts.
 
@@ -762,6 +1120,10 @@ def run_once(
             Stream speculation interval.
         turn_script_file (`str | None`):
             Optional custom turn script file.
+        predictive_top_k (`int`):
+            Number of SDG candidates to prewarm.
+        predictive_transition_matrix_path (`str | None`):
+            Optional SDG transition matrix override.
 
     Returns:
         `dict[str, Any]`:
@@ -770,6 +1132,10 @@ def run_once(
     if mode not in _MODE_CHOICES:
         raise ValueError(f"Unsupported mode: {mode}")
 
+    run_started_perf = time.perf_counter()
+    os.environ["AGENTSCOPE_EXPERIMENT_MODEL_NAME"] = model_name
+    temp_file_dir = _ensure_temp_file_dir()
+    os.environ["AGENTSCOPE_ON_DEMAND_TEMP_DIR"] = str(temp_file_dir)
     turns = _load_turn_script(turn_script_file)
     planner_prewarm_registrations = _load_experiment_registrations()
 
@@ -778,7 +1144,8 @@ def run_once(
 
     # Reset worker timing log for isolated run accounting.
     tool_module = importlib.import_module("tool")
-    timing_log_path = Path(getattr(tool_module, "_TIMING_LOG_PATH"))
+    timing_log_path = Path(getattr(tool_module, "_TIMING_LOG_PATH")).resolve()
+    timing_log_path.parent.mkdir(parents=True, exist_ok=True)
     timing_log_path.write_text("", encoding="utf-8")
 
     planner = _build_planner(
@@ -786,17 +1153,25 @@ def run_once(
         model_name=model_name,
         planner_max_iters=planner_max_iters,
         stream_interval_tokens=stream_interval_tokens,
+        predictive_top_k=predictive_top_k,
+        predictive_transition_matrix_path=predictive_transition_matrix_path,
     )
 
     started_at = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
     try:
-        transcript = asyncio.run(_run_dialogue(planner, turns))
+        with _temporary_cwd(temp_file_dir):
+            transcript = asyncio.run(_run_dialogue(planner, turns))
     finally:
         # Clean again so the next mode/run also starts from a clean state.
         _cleanup_experiment_mcp_runtime(planner_prewarm_registrations)
 
+    run_elapsed_ms = (time.perf_counter() - run_started_perf) * 1000.0
     timing_records = _load_jsonl(timing_log_path)
-    metrics = _aggregate_metrics(mode, timing_records)
+    metrics = _aggregate_metrics(
+        mode,
+        timing_records,
+        e2e_elapsed_ms=run_elapsed_ms,
+    )
 
     run_json_path = _next_run_path(output_dir, mode, ".json")
     run_md_path = run_json_path.with_suffix(".md")
@@ -804,6 +1179,7 @@ def run_once(
     payload = {
         "artifact_path": str(run_json_path),
         "started_at": started_at,
+        "finished_at": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
         "run_mode": mode,
         "model_name": model_name,
         "planner_max_iters": planner_max_iters,
@@ -830,6 +1206,118 @@ def run_once(
     )
 
     return payload
+
+
+def run_batch_cases(
+    output_dir: Path,
+    script_files: list[Path],
+    model_name: str,
+    planner_max_iters: int,
+    stream_interval_tokens: int | None,
+    resume: bool,
+    batch_output_path: Path | None,
+    batch_repeats: int,
+) -> Path:
+    """Run one-click A/B for each script and build one aggregate summary.
+
+    Args:
+        output_dir (`Path`):
+            Base output directory.
+        script_files (`list[Path]`):
+            Dialogue script files.
+        model_name (`str`):
+            Planner model.
+        planner_max_iters (`int`):
+            Planner max iterations.
+        stream_interval_tokens (`int | None`):
+            Stream speculation interval.
+        resume (`bool`):
+            Reuse per-case existing artifacts when possible.
+        batch_output_path (`Path | None`):
+            Optional aggregate summary path.
+        batch_repeats (`int`):
+            Number of repeats per case.
+
+    Returns:
+        `Path`:
+            Aggregate summary markdown path.
+    """
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    if batch_repeats < 1:
+        raise ValueError("--batch-repeats must be >= 1.")
+
+    cases: list[dict[str, Any]] = []
+
+    for script_file in script_files:
+        case_name = _sanitize_case_name(script_file.stem)
+        case_output_dir = output_dir / case_name
+        case_output_dir.mkdir(parents=True, exist_ok=True)
+
+        compare_reports: list[str] = []
+        c1_e2e_values: list[float] = []
+        c2_e2e_values: list[float] = []
+        delta_e2e_values: list[float] = []
+        c1_payload: dict[str, Any] | None = None
+        c2_payload: dict[str, Any] | None = None
+
+        for repeat_idx in range(batch_repeats):
+            repeat_output_dir = case_output_dir / f"repeat_{repeat_idx}"
+            compare_report_path = run_one_click(
+                output_dir=repeat_output_dir,
+                model_name=model_name,
+                planner_max_iters=planner_max_iters,
+                stream_interval_tokens=stream_interval_tokens,
+                turn_script_file=str(script_file),
+                output_path=None,
+                resume=resume,
+            )
+            compare_reports.append(str(compare_report_path))
+
+            c1_json_path = _latest_run_path(repeat_output_dir, _MODE_C1_ONLY, ".json")
+            c2_json_path = _latest_run_path(repeat_output_dir, _MODE_C1_C2, ".json")
+            if c1_json_path is None or c2_json_path is None:
+                raise RuntimeError(
+                    f"Missing c1/c2 JSON artifacts for case '{case_name}' in {repeat_output_dir}",
+                )
+
+            c1_payload = json.loads(c1_json_path.read_text(encoding="utf-8"))
+            c2_payload = json.loads(c2_json_path.read_text(encoding="utf-8"))
+
+            c1_e2e = c1_payload.get("metrics", {}).get("e2e_elapsed_ms")
+            c2_e2e = c2_payload.get("metrics", {}).get("e2e_elapsed_ms")
+            if isinstance(c1_e2e, (int, float)):
+                c1_e2e_values.append(float(c1_e2e))
+            if isinstance(c2_e2e, (int, float)):
+                c2_e2e_values.append(float(c2_e2e))
+            if isinstance(c1_e2e, (int, float)) and isinstance(c2_e2e, (int, float)):
+                delta_e2e_values.append(float(c2_e2e) - float(c1_e2e))
+
+        if c1_payload is None or c2_payload is None:
+            raise RuntimeError(f"Batch repeats produced no payloads for case '{case_name}'.")
+
+        cases.append(
+            {
+                "case_name": case_name,
+                "script_name": script_file.name,
+                "script_path": str(script_file),
+                "compare_report_path": compare_reports[-1] if compare_reports else "",
+                "compare_reports": compare_reports,
+                "repeats": batch_repeats,
+                "c1_e2e_values": c1_e2e_values,
+                "c2_e2e_values": c2_e2e_values,
+                "delta_e2e_values": delta_e2e_values,
+                "c1_metrics": c1_payload["metrics"],
+                "c2_metrics": c2_payload["metrics"],
+            },
+        )
+
+    summary_path = batch_output_path or _next_run_path(output_dir, "sdg_batch_summary", ".md")
+    summary_path.write_text(
+        _build_batch_summary_markdown(cases),
+        encoding="utf-8",
+    )
+    return summary_path
 
 
 def compare_runs(
@@ -875,7 +1363,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--model-name",
-        default="qwen3-max",
+        default="qwen3.8-flash",
         help="Planner model name used in both runs.",
     )
     parser.add_argument(
@@ -896,9 +1384,47 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help="Optional JSON file for custom turn script (list[str]).",
     )
     parser.add_argument(
+        "--turn-script-files",
+        nargs="*",
+        default=None,
+        help="Optional multiple JSON files for batch experiments.",
+    )
+    parser.add_argument(
+        "--turn-script-dir",
+        default=None,
+        help=(
+            "Optional script directory for batch mode. "
+            "If used with --turn-script-glob, all matched files are included."
+        ),
+    )
+    parser.add_argument(
+        "--turn-script-glob",
+        default=None,
+        help="Optional glob pattern for batch script discovery (e.g. 'case_*.json').",
+    )
+    parser.add_argument(
         "--output-path",
         default=None,
         help="Optional final compare report path.",
+    )
+    parser.add_argument(
+        "--batch-output-path",
+        default=None,
+        help="Optional final aggregate markdown path for batch mode.",
+    )
+    parser.add_argument(
+        "--batch-repeats",
+        type=int,
+        default=1,
+        help="Repeat count per script case in batch mode (>=1).",
+    )
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help=(
+            "Reuse latest existing c1_only/c1_c2 run artifacts in output-dir "
+            "and only run missing phases before building compare report."
+        ),
     )
     return parser
 
@@ -910,6 +1436,7 @@ def run_one_click(
     stream_interval_tokens: int | None,
     turn_script_file: str | None,
     output_path: Path | None,
+    resume: bool,
 ) -> Path:
     """Run c1_only + c1_c2 sequentially and compare automatically.
 
@@ -926,29 +1453,51 @@ def run_one_click(
             Optional custom turn script file.
         output_path (`Path | None`):
             Optional final compare report path.
+        resume (`bool`):
+            Reuse existing per-mode artifacts when available.
 
     Returns:
         `Path`:
             Final comparison report path.
     """
     output_dir.mkdir(parents=True, exist_ok=True)
+    expected_turns = _load_turn_script(turn_script_file)
 
-    run_c1 = run_once(
-        mode=_MODE_C1_ONLY,
-        output_dir=output_dir,
-        model_name=model_name,
-        planner_max_iters=planner_max_iters,
-        stream_interval_tokens=stream_interval_tokens,
-        turn_script_file=turn_script_file,
-    )
-    run_c2 = run_once(
-        mode=_MODE_C1_C2,
-        output_dir=output_dir,
-        model_name=model_name,
-        planner_max_iters=planner_max_iters,
-        stream_interval_tokens=stream_interval_tokens,
-        turn_script_file=turn_script_file,
-    )
+    run_c1: dict[str, Any] | None = None
+    run_c2: dict[str, Any] | None = None
+
+    if resume:
+        existing_c1 = _latest_run_path(output_dir, _MODE_C1_ONLY, ".json")
+        if existing_c1 is not None:
+            payload = json.loads(existing_c1.read_text(encoding="utf-8"))
+            if payload.get("turns") == expected_turns:
+                run_c1 = payload
+
+        existing_c2 = _latest_run_path(output_dir, _MODE_C1_C2, ".json")
+        if existing_c2 is not None:
+            payload = json.loads(existing_c2.read_text(encoding="utf-8"))
+            if payload.get("turns") == expected_turns:
+                run_c2 = payload
+
+    if run_c1 is None:
+        run_c1 = run_once(
+            mode=_MODE_C1_ONLY,
+            output_dir=output_dir,
+            model_name=model_name,
+            planner_max_iters=planner_max_iters,
+            stream_interval_tokens=stream_interval_tokens,
+            turn_script_file=turn_script_file,
+        )
+
+    if run_c2 is None:
+        run_c2 = run_once(
+            mode=_MODE_C1_C2,
+            output_dir=output_dir,
+            model_name=model_name,
+            planner_max_iters=planner_max_iters,
+            stream_interval_tokens=stream_interval_tokens,
+            turn_script_file=turn_script_file,
+        )
 
     report_path = output_path or _next_run_path(output_dir, "sdg_compare", ".md")
     compare_runs(
@@ -984,14 +1533,37 @@ def main() -> None:
     interval = args.stream_interval_tokens
     stream_interval_tokens = interval if interval > 0 else None
     output_path = Path(args.output_path) if args.output_path else None
-    report_path = run_one_click(
-        output_dir=Path(args.output_dir),
-        model_name=args.model_name,
-        planner_max_iters=args.planner_max_iters,
-        stream_interval_tokens=stream_interval_tokens,
-        turn_script_file=args.turn_script_file,
-        output_path=output_path,
+    batch_script_files = _resolve_batch_turn_script_files(
+        turn_script_files=args.turn_script_files,
+        turn_script_dir=args.turn_script_dir,
+        turn_script_glob=args.turn_script_glob,
     )
+
+    if batch_script_files:
+        report_path = run_batch_cases(
+            output_dir=Path(args.output_dir),
+            script_files=batch_script_files,
+            model_name=args.model_name,
+            planner_max_iters=args.planner_max_iters,
+            stream_interval_tokens=stream_interval_tokens,
+            resume=args.resume,
+            batch_output_path=(
+                Path(args.batch_output_path)
+                if args.batch_output_path
+                else None
+            ),
+            batch_repeats=args.batch_repeats,
+        )
+    else:
+        report_path = run_one_click(
+            output_dir=Path(args.output_dir),
+            model_name=args.model_name,
+            planner_max_iters=args.planner_max_iters,
+            stream_interval_tokens=stream_interval_tokens,
+            turn_script_file=args.turn_script_file,
+            output_path=output_path,
+            resume=args.resume,
+        )
     # Keep stdout minimal for automation consumption.
     print(str(report_path))
     return

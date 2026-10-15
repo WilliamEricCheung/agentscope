@@ -1,0 +1,36 @@
+{
+  "artifact_path": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_c2_only_20repeats_20261009/repeat_20/multiturn_plan_1009_c2_only_0.json",
+  "started_at": "2026-10-09 18:43:08",
+  "finished_at": "2026-10-09 18:43:27",
+  "run_mode": "c2_only",
+  "model_name": "qwen3.8-flash",
+  "planner_max_iters": 20,
+  "stream_interval_tokens": 20,
+  "turns": [
+    "Create one worker task and make the tool calls in this exact order: first use the Math MCP group to calculate the mean of 12 and 24; next activate and use the Unit Converter group to convert 3 kilometers to meters. Do not skip either tool call or compute the answers mentally. Return only the two tool results."
+  ],
+  "transcript": [
+    {
+      "user": "Create one worker task and make the tool calls in this exact order: first use the Math MCP group to calculate the mean of 12 and 24; next activate and use the Unit Converter group to convert 3 kilometers to meters. Do not skip either tool call or compute the answers mentally. Return only the two tool results.",
+      "assistant": "Both tool calls were executed in the required order (Math group → `mean`, then Unit Converter group → `convert_length`).\n\n**Tool results:**\n\n1. **Math MCP — mean of 12 and 24:** `18`\n2. **Unit Converter MCP — 3 kilometers to meters:** `3000` meters"
+    }
+  ],
+  "timing_log_path": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/temp_file/sdg_overhead_timing_20261009_183627_35319.jsonl",
+  "worker_records": 1,
+  "metrics": {
+    "run_mode": "c2_only",
+    "worker_calls": 1,
+    "avg_wait_ms": 1786.124,
+    "p50_wait_ms": 1786.124,
+    "p95_wait_ms": 1786.124,
+    "cold_starts": 0,
+    "non_cold_starts": 1,
+    "telemetry_prompt_route_calls": 0,
+    "telemetry_predict_calls": 2,
+    "telemetry_schedule_attempts": 2,
+    "telemetry_schedule_accepted": 2,
+    "telemetry_executor_runs": 2,
+    "telemetry_executor_errors": 0,
+    "e2e_elapsed_ms": 19153.76718599873
+  }
+}

@@ -1,0 +1,77 @@
+# National Parks and Sites in Colorado
+
+Based on the National Parks Service data, there are 17 national park sites located within the state of Colorado. These include national parks, national monuments, national historic sites, and national historic trails that pass through Colorado.
+
+## National Parks (3)
+1. **Black Canyon Of The Gunnison National Park** (blca)
+   - Description: Features some of the steepest cliffs, oldest rock, and craggiest spires in North America. The Gunnison River sculpted this canyon over two million years.
+   - Location: Latitude 38.5778, Longitude -107.7243
+
+2. **Great Sand Dunes National Park & Preserve** (grsa)
+   - Description: Home to the tallest dunes in North America, set against a diverse landscape of grasslands, wetlands, forests, alpine lakes, and tundra.
+   - Location: Latitude 37.7926, Longitude -105.5920
+
+3. **Mesa Verde National Park** (meve)
+   - Description: Protects the cultural heritage of 27 Pueblos and Tribes, featuring Ancestral Pueblo cliff dwellings built over 700 years ago.
+   - Location: Latitude 37.2391, Longitude -108.4624
+
+4. **Rocky Mountain National Park** (romo)
+   - Description: Encompasses 415 square miles of mountain environments, from montane meadows to alpine lakes and towering peaks, with over 300 miles of hiking trails.
+   - Location: Latitude 40.3557, Longitude -105.6973
+
+## National Monuments (4)
+1. **Colorado National Monument** (colm)
+   - Description: Preserves a grand landscape of red rock canyons and towering monoliths along Rim Rock Drive.
+   - Location: Latitude 39.0505, Longitude -108.6921
+
+2. **Curecanti National Recreation Area** (cure)
+   - Description: Comprises three reservoirs and surrounding lands in western Colorado, offering both natural and human-made features.
+   - Location: Latitude 38.4658, Longitude -107.3303
+
+3. **Dinosaur National Monument** (dino)
+   - Description: Contains embedded dinosaur fossils from 150 million years ago, along with mountains, desert, rivers, and petroglyphs.
+   - Location: Latitude 40.5074, Longitude -108.9334 (shared with Utah)
+
+4. **Florissant Fossil Beds National Monument** (flfo)
+   - Description: Contains one of the richest and most diverse fossil deposits in the world, including petrified redwood stumps and detailed insect fossils.
+   - Location: Latitude 38.9126, Longitude -105.2803
+
+5. **Hovenweep National Monument** (hove)
+   - Description: Preserves six prehistoric sites built between 1200 and 1300 CE, featuring multistory towers perched on canyon rims.
+   - Location: Latitude 37.3913, Longitude -109.0048 (shared with Utah)
+
+6. **Yucca House National Monument** (yuho)
+   - Description: Preserves a large unexcavated pueblo in Montezuma Valley, between Mesa Verde and Ute Mountain.
+   - Location: Latitude 37.2478, Longitude -108.6861
+
+## National Historic Sites (3)
+1. **Amache National Historic Site** (amch)
+   - Description: Formerly the Granada Relocation Center, one of ten incarceration sites for Japanese Americans during World War II.
+   - Location: Latitude 38.0496, Longitude -102.3290
+
+2. **Bent's Old Fort National Historic Site** (beol)
+   - Description: A reconstructed adobe trading post on the Santa Fe Trail where traders, trappers, travelers, and Native American tribes met for trade.
+   - Location: Latitude 38.0398, Longitude -103.4266
+
+3. **Sand Creek Massacre National Historic Site** (sand)
+   - Description: Commemorates the tragic 1864 massacre of Cheyenne and Arapaho people by U.S. forces.
+   - Location: Latitude 38.5641, Longitude -102.5170
+
+## National Historic Trails (4)
+1. **California National Historic Trail** (cali)
+   - Description: Follows the route of over 250,000 emigrants who traveled to California during the 1840s and 1850s.
+   - Passes through: CA, CO, ID, KS, MO, NE, NV, OR, UT, WY
+
+2. **Old Spanish National Historic Trail** (olsp)
+   - Description: Follows the routes of mule pack trains between Santa Fe, New Mexico, and Los Angeles, California.
+   - Passes through: AZ, CA, CO, NV, NM, UT
+
+3. **Pony Express National Historic Trail** (poex)
+   - Description: Marks the route where young men carried mail from Missouri to California in just 10 days.
+   - Passes through: CA, CO, KS, MO, NE, NV, UT, WY
+
+4. **Santa Fe National Historic Trail** (safe)
+   - Description: Follows the historic commercial highway between Missouri and Santa Fe, New Mexico.
+   - Passes through: CO, KS, MO, NM, OK
+
+Total count: 17 national park sites in Colorado

@@ -1,0 +1,2 @@
+{"repeat_id": 2, "record_index": 0, "event_index": 1, "timestamp_unix_ms": 1791595351210.111, "current_server": "laplace-google-maps", "status": "completed", "candidate_count": 1}
+{"repeat_id": 2, "record_index": 1, "event_index": 1, "timestamp_unix_ms": 1791595371012.132, "current_server": "laplace-weather-data", "status": "completed", "candidate_count": 1}

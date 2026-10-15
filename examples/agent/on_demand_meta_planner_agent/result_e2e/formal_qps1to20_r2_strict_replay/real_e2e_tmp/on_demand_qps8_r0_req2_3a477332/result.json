@@ -1,0 +1,1 @@
+{"status": "ok", "error": null, "mode": "on_demand", "trace_id": "sdg_trace_00108", "attempt_id": 1, "request_id": 2, "repeat_id": 0, "qps": 8, "e2e_ms": 20478.27264, "tool_cumulative_ms": 1095.855, "worker_calls": 1, "worker_enforcement_turns": 0, "mcp_container_namespace": "on_demand_qps8_r0_req2_3a477332", "mcp_container_port": 24162}

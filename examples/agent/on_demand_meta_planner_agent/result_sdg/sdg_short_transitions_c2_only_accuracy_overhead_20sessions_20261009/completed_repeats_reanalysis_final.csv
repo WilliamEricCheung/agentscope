@@ -1,0 +1,21 @@
+repeat_id,trace_id,status,e2e_elapsed_s,eligible_sandbox_requests,prefetch_hits,started_predictive_warmups,discarded_warmups,false_positives,late_warmups_used,discarded_cpu_seconds,cpu_integral_complete,discarded_memory_gib_seconds,memory_integral_complete,source
+1,transition_01_sdg_trace_00005,completed,159.614565847005,1,1,2,1,1,0,0.03220907838344574,True,0.9408823649352418,True,initial 8 repeats; cross-worker reanalysis
+2,transition_02_sdg_trace_00002,completed,127.40639509799803,2,1,2,1,1,0,0.2859088196277619,True,3.8583872898120894,True,initial 8 repeats; cross-worker reanalysis
+3,transition_03_sdg_trace_00001,completed,112.6157822210007,1,0,1,1,1,0,0.21032201565504077,True,4.869535749518546,True,initial 8 repeats; cross-worker reanalysis
+4,transition_04_sdg_trace_00002,completed,395.2854582239961,1,0,2,2,2,0,0.3377103165030479,True,9.032824608247028,True,initial 8 repeats; cross-worker reanalysis
+5,transition_05_sdg_trace_00001,completed,79.03931404699688,1,1,2,1,1,0,0.03377418999671936,True,0.7559687609993854,True,initial 8 repeats; cross-worker reanalysis
+6,transition_06_sdg_trace_00001,completed,97.53196554000169,1,1,2,1,1,0,0.10194721696376802,True,3.0325796152674593,True,initial 8 repeats; cross-worker reanalysis
+7,transition_07_sdg_trace_00004,completed,157.1700844060033,1,1,2,1,1,0,0.10894795508384705,True,2.7786003913893365,True,initial 8 repeats; cross-worker reanalysis
+8,transition_08_sdg_trace_00005,completed,65.57328366000002,1,0,2,1,1,1,1.4848121400237082,True,2.4020719008322344,True,initial 8 repeats; cross-worker reanalysis
+9,transition_09_sdg_trace_00145,completed,77.39279341800284,1,0,2,2,2,0,1.8427028028130532,True,4.96543079920928,True,rerun repeats 09-20
+10,transition_10_sdg_trace_00011,completed,73.86693497700617,0,0,0,0,0,0,0.0,True,0.0,True,rerun repeats 09-20
+11,transition_11_sdg_trace_00010,completed,87.57304449599906,1,1,2,1,1,0,0.06353166358470917,True,2.297892038746504,True,rerun repeats 09-20
+12,transition_12_sdg_trace_00031,completed,105.36454647299979,1,0,1,1,1,0,0.21913576490879055,True,1.8046581402933228,True,rerun repeats 09-20
+13,transition_13_sdg_trace_00032,completed,120.07248925999738,1,0,1,1,1,0,0.05410505964756012,True,2.321370074219303,True,rerun repeats 09-20
+14,transition_14_sdg_trace_00012,completed,123.73693230399658,1,0,1,1,1,0,0.13273816000223157,True,6.482386046100873,True,rerun repeats 09-20
+15,transition_15_sdg_trace_00145,completed,119.89032424899779,1,0,1,1,1,0,0.02031541345119477,True,2.2817548741109213,True,rerun repeats 09-20
+16,transition_16_sdg_trace_00011,completed,109.79615316700074,1,0,1,1,1,0,0.026152900540828708,True,1.891916641023708,True,rerun repeats 09-20
+17,transition_17_sdg_trace_00012,completed,135.42342000200006,1,0,1,1,1,0,0.10353075816631319,True,2.101543961307034,True,rerun repeats 09-20
+18,transition_18_sdg_trace_00027,completed,74.72145652300242,1,0,2,2,2,0,0.027844466316699984,True,1.660948908093851,True,rerun repeats 09-20
+19,transition_19_sdg_trace_00041,completed,98.20194381999318,1,0,2,2,2,0,0.1100802632212639,True,5.102644805206219,True,rerun repeats 09-20
+20,transition_20_sdg_trace_00145,completed,108.80478314900392,1,1,2,1,1,0,0.058457055878639225,True,1.2859744314302224,True,rerun repeats 09-20

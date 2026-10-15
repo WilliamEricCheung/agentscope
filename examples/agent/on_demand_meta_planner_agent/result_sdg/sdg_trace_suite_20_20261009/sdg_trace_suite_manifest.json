@@ -1,0 +1,720 @@
+{
+  "suite_name": "SDG 20 diverse trace paths",
+  "source_trace_file": "/mnt/d/Project/agentscope/laplace/mcp_dataset/laplace_sdg_traces.json",
+  "selection": "Greedy coverage of all distinct server labels and directed transition edges; one representative per unique server path; only trace steps whose tool names are in the runtime manifest.",
+  "case_count": 20,
+  "server_labels_covered": [
+    "Bibliomantic",
+    "BioMCP",
+    "Context7",
+    "Game Trends",
+    "Google Maps",
+    "Huge Icons",
+    "Hugging Face",
+    "Math MCP",
+    "Medical Calculator",
+    "Metropolitan Museum",
+    "NASA Data",
+    "National Parks",
+    "Paper Search",
+    "Playwright",
+    "Time MCP",
+    "Unit Converter",
+    "Weather Data",
+    "Wikipedia"
+  ],
+  "directed_edges_covered_by_selected_cases": [
+    [
+      "Bibliomantic",
+      "Wikipedia"
+    ],
+    [
+      "BioMCP",
+      "Medical Calculator"
+    ],
+    [
+      "Context7",
+      "Context7"
+    ],
+    [
+      "Context7",
+      "Google Maps"
+    ],
+    [
+      "Context7",
+      "Hugging Face"
+    ],
+    [
+      "Context7",
+      "Math MCP"
+    ],
+    [
+      "Context7",
+      "Wikipedia"
+    ],
+    [
+      "Game Trends",
+      "Wikipedia"
+    ],
+    [
+      "Google Maps",
+      "Context7"
+    ],
+    [
+      "Google Maps",
+      "Game Trends"
+    ],
+    [
+      "Google Maps",
+      "Google Maps"
+    ],
+    [
+      "Google Maps",
+      "Huge Icons"
+    ],
+    [
+      "Google Maps",
+      "Math MCP"
+    ],
+    [
+      "Google Maps",
+      "Metropolitan Museum"
+    ],
+    [
+      "Google Maps",
+      "Playwright"
+    ],
+    [
+      "Google Maps",
+      "Time MCP"
+    ],
+    [
+      "Google Maps",
+      "Unit Converter"
+    ],
+    [
+      "Google Maps",
+      "Weather Data"
+    ],
+    [
+      "Google Maps",
+      "Wikipedia"
+    ],
+    [
+      "Huge Icons",
+      "Context7"
+    ],
+    [
+      "Huge Icons",
+      "Huge Icons"
+    ],
+    [
+      "Huge Icons",
+      "Wikipedia"
+    ],
+    [
+      "Hugging Face",
+      "Context7"
+    ],
+    [
+      "Hugging Face",
+      "Hugging Face"
+    ],
+    [
+      "Hugging Face",
+      "Paper Search"
+    ],
+    [
+      "Math MCP",
+      "Context7"
+    ],
+    [
+      "Math MCP",
+      "Google Maps"
+    ],
+    [
+      "Math MCP",
+      "Huge Icons"
+    ],
+    [
+      "Math MCP",
+      "National Parks"
+    ],
+    [
+      "Math MCP",
+      "Unit Converter"
+    ],
+    [
+      "Medical Calculator",
+      "Medical Calculator"
+    ],
+    [
+      "Medical Calculator",
+      "NASA Data"
+    ],
+    [
+      "Metropolitan Museum",
+      "Context7"
+    ],
+    [
+      "Metropolitan Museum",
+      "Google Maps"
+    ],
+    [
+      "Metropolitan Museum",
+      "Metropolitan Museum"
+    ],
+    [
+      "NASA Data",
+      "Wikipedia"
+    ],
+    [
+      "National Parks",
+      "Google Maps"
+    ],
+    [
+      "National Parks",
+      "Math MCP"
+    ],
+    [
+      "National Parks",
+      "National Parks"
+    ],
+    [
+      "Paper Search",
+      "BioMCP"
+    ],
+    [
+      "Paper Search",
+      "Hugging Face"
+    ],
+    [
+      "Paper Search",
+      "Paper Search"
+    ],
+    [
+      "Playwright",
+      "Context7"
+    ],
+    [
+      "Playwright",
+      "Playwright"
+    ],
+    [
+      "Time MCP",
+      "Weather Data"
+    ],
+    [
+      "Weather Data",
+      "Google Maps"
+    ],
+    [
+      "Weather Data",
+      "Math MCP"
+    ],
+    [
+      "Weather Data",
+      "Metropolitan Museum"
+    ],
+    [
+      "Weather Data",
+      "Unit Converter"
+    ],
+    [
+      "Weather Data",
+      "Weather Data"
+    ],
+    [
+      "Wikipedia",
+      "Game Trends"
+    ],
+    [
+      "Wikipedia",
+      "Google Maps"
+    ],
+    [
+      "Wikipedia",
+      "Paper Search"
+    ],
+    [
+      "Wikipedia",
+      "Wikipedia"
+    ]
+  ],
+  "cases": [
+    {
+      "case_index": 1,
+      "trace_id": "sdg_trace_00156",
+      "server_path": [
+        "Metropolitan Museum",
+        "Metropolitan Museum",
+        "Google Maps",
+        "Context7",
+        "Context7",
+        "Wikipedia",
+        "Wikipedia",
+        "Game Trends"
+      ],
+      "tool_path": [
+        "search-museum-objects",
+        "get-museum-object",
+        "maps_geocode",
+        "resolve-library-id",
+        "get-library-docs",
+        "search_wikipedia",
+        "get_summary",
+        "get_all_trending_games"
+      ],
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_trace_suite_20_20261009/trace_01_sdg_trace_00156.json",
+      "user_request": "I'm designing a retro-futuristic board game inspired by 19th-century scientific instruments in the Met collection. Find relevant museum objects, locate their physical display location, get technical documentation if available, summarize historical context from Wikipedia, and check if any similar-themed games are trending."
+    },
+    {
+      "case_index": 2,
+      "trace_id": "sdg_trace_00152",
+      "server_path": [
+        "NASA Data",
+        "Wikipedia",
+        "Paper Search",
+        "Paper Search",
+        "BioMCP",
+        "Medical Calculator",
+        "NASA Data"
+      ],
+      "tool_path": [
+        "get_solar_flare",
+        "search_wikipedia",
+        "search_pubmed",
+        "read_pubmed_paper",
+        "think",
+        "has_bled_score",
+        "get_notifications"
+      ],
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_trace_suite_20_20261009/trace_02_sdg_trace_00152.json",
+      "user_request": "I read about a recent solar flare that might affect pacemaker patients. Can you assess the clinical risk using real biomedical data and space weather reports?"
+    },
+    {
+      "case_index": 3,
+      "trace_id": "sdg_trace_00047",
+      "server_path": [
+        "Google Maps",
+        "Google Maps",
+        "Google Maps",
+        "Weather Data",
+        "Weather Data",
+        "Math MCP",
+        "Unit Converter"
+      ],
+      "tool_path": [
+        "maps_geocode",
+        "search_nearby",
+        "get_place_details",
+        "search_locations_tool",
+        "get_weather_forecast_tool",
+        "mean",
+        "convert_temperature"
+      ],
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_trace_suite_20_20261009/trace_03_sdg_trace_00047.json",
+      "user_request": "Find a highly-rated outdoor cafe near Central Park and check if the weather will be suitable for sitting outside this afternoon."
+    },
+    {
+      "case_index": 4,
+      "trace_id": "sdg_trace_00175",
+      "server_path": [
+        "Bibliomantic",
+        "Wikipedia",
+        "Paper Search",
+        "Hugging Face",
+        "Hugging Face",
+        "Context7",
+        "Context7"
+      ],
+      "tool_path": [
+        "get_hexagram_details",
+        "search_wikipedia",
+        "search_semantic",
+        "search-models",
+        "get-model-info",
+        "resolve-library-id",
+        "get-library-docs"
+      ],
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_trace_suite_20_20261009/trace_04_sdg_trace_00175.json",
+      "user_request": "I received hexagram 36 (Ming Yi) from an I Ching reading about my research direction. Can you interpret its meaning, find related academic papers on 'obscured insight in scientific discovery', locate relevant machine learning models that handle uncertainty or partial observability, and check if any core libraries used in those models have documentation about handling ambiguous inputs?"
+    },
+    {
+      "case_index": 5,
+      "trace_id": "sdg_trace_00140",
+      "server_path": [
+        "National Parks",
+        "National Parks",
+        "Math MCP",
+        "National Parks",
+        "Google Maps",
+        "Google Maps",
+        "Google Maps"
+      ],
+      "tool_path": [
+        "findParks",
+        "getParkDetails",
+        "max",
+        "getVisitorCenters",
+        "maps_geocode",
+        "search_nearby",
+        "get_place_details"
+      ],
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_trace_suite_20_20261009/trace_05_sdg_trace_00140.json",
+      "user_request": "Find national parks in California, pick the most visited one, and locate highly-rated cafes within 5 miles of its main visitor center."
+    },
+    {
+      "case_index": 6,
+      "trace_id": "sdg_trace_00124",
+      "server_path": [
+        "Google Maps",
+        "Google Maps",
+        "Google Maps",
+        "Math MCP",
+        "Huge Icons",
+        "Context7",
+        "Context7"
+      ],
+      "tool_path": [
+        "maps_geocode",
+        "search_nearby",
+        "get_place_details",
+        "max",
+        "search_icons",
+        "resolve-library-id",
+        "get-library-docs"
+      ],
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_trace_suite_20_20261009/trace_06_sdg_trace_00124.json",
+      "user_request": "I'm visiting the Metropolitan Museum of Art and want to find a highly-rated cafe within walking distance. Then, check if any open-source UI libraries used in popular cafe-finding apps reference documentation about location-based search."
+    },
+    {
+      "case_index": 7,
+      "trace_id": "sdg_trace_00041",
+      "server_path": [
+        "Google Maps",
+        "Google Maps",
+        "Google Maps",
+        "Playwright",
+        "Playwright",
+        "Context7",
+        "Context7"
+      ],
+      "tool_path": [
+        "maps_geocode",
+        "search_nearby",
+        "get_place_details",
+        "browser_navigate",
+        "browser_snapshot",
+        "resolve-library-id",
+        "get-library-docs"
+      ],
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_trace_suite_20_20261009/trace_07_sdg_trace_00041.json",
+      "user_request": "Find a cafe near the Metropolitan Museum of Art and check if any open-source libraries are commonly used in apps that review such cafes."
+    },
+    {
+      "case_index": 8,
+      "trace_id": "sdg_trace_00186",
+      "server_path": [
+        "Metropolitan Museum",
+        "Google Maps",
+        "Google Maps",
+        "Google Maps",
+        "Time MCP",
+        "Weather Data",
+        "Weather Data"
+      ],
+      "tool_path": [
+        "search-museum-objects",
+        "maps_geocode",
+        "search_nearby",
+        "get_place_details",
+        "get_current_time",
+        "search_locations_tool",
+        "get_weather_forecast_tool"
+      ],
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_trace_suite_20_20261009/trace_08_sdg_trace_00186.json",
+      "user_request": "I'm planning a visit to The Met in New York next Tuesday. Find out what special exhibitions are currently on, locate the nearest highly-rated coffee shop within 400 meters, and check if it will rain that day so I know whether to bring an umbrella."
+    },
+    {
+      "case_index": 9,
+      "trace_id": "sdg_trace_00067",
+      "server_path": [
+        "Google Maps",
+        "Google Maps",
+        "Game Trends",
+        "Wikipedia",
+        "Google Maps",
+        "Wikipedia"
+      ],
+      "tool_path": [
+        "maps_geocode",
+        "search_nearby",
+        "get_all_trending_games",
+        "search_wikipedia",
+        "get_place_details",
+        "get_summary"
+      ],
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_trace_suite_20_20261009/trace_09_sdg_trace_00067.json",
+      "user_request": "I'm visiting the Metropolitan Museum of Art in New York. Find trending video games people are discussing there and check if any nearby cafes are named after famous games."
+    },
+    {
+      "case_index": 10,
+      "trace_id": "sdg_trace_00029",
+      "server_path": [
+        "Google Maps",
+        "Google Maps",
+        "Google Maps",
+        "Metropolitan Museum",
+        "Context7",
+        "Context7",
+        "Math MCP"
+      ],
+      "tool_path": [
+        "maps_geocode",
+        "search_nearby",
+        "get_place_details",
+        "search-museum-objects",
+        "resolve-library-id",
+        "get-library-docs",
+        "mean"
+      ],
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_trace_suite_20_20261009/trace_10_sdg_trace_00029.json",
+      "user_request": "I'm visiting the Metropolitan Museum of Art and want to find a highly-rated cafe within walking distance. Also, check if the museum has any official documentation about on-site dining options."
+    },
+    {
+      "case_index": 11,
+      "trace_id": "sdg_trace_00151",
+      "server_path": [
+        "Metropolitan Museum",
+        "Metropolitan Museum",
+        "Google Maps",
+        "Google Maps",
+        "Huge Icons",
+        "Wikipedia",
+        "Game Trends"
+      ],
+      "tool_path": [
+        "search-museum-objects",
+        "get-museum-object",
+        "maps_geocode",
+        "search_nearby",
+        "search_icons",
+        "search_wikipedia",
+        "get_all_trending_games"
+      ],
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_trace_suite_20_20261009/trace_11_sdg_trace_00151.json",
+      "user_request": "I'm designing a retro-futuristic board game themed around ancient artifacts. Find three iconic museum objects from different cultures, get their visual descriptions, locate where they're displayed, find nearby cafes for playtesting sessions, and identify trending indie games with similar themes to benchmark mechanics."
+    },
+    {
+      "case_index": 12,
+      "trace_id": "sdg_trace_00144",
+      "server_path": [
+        "Metropolitan Museum",
+        "Metropolitan Museum",
+        "Google Maps",
+        "Context7",
+        "Hugging Face",
+        "Paper Search"
+      ],
+      "tool_path": [
+        "search-museum-objects",
+        "get-museum-object",
+        "maps_geocode",
+        "resolve-library-id",
+        "search-models",
+        "search_semantic"
+      ],
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_trace_suite_20_20261009/trace_12_sdg_trace_00144.json",
+      "user_request": "I'm researching how AI models interpret classical art. Find a famous Greek vase in the Met collection, locate its physical display location, retrieve its documentation ID, then find any Hugging Face models trained on similar artifacts, and finally pull academic papers that cite those models."
+    },
+    {
+      "case_index": 13,
+      "trace_id": "sdg_trace_00015",
+      "server_path": [
+        "Google Maps",
+        "Google Maps",
+        "Google Maps",
+        "Math MCP",
+        "Google Maps",
+        "Unit Converter"
+      ],
+      "tool_path": [
+        "maps_geocode",
+        "search_nearby",
+        "get_place_details",
+        "mean",
+        "get_place_details",
+        "convert_length"
+      ],
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_trace_suite_20_20261009/trace_13_sdg_trace_00015.json",
+      "user_request": "Find a cafe near the museum and compare the best nearby options."
+    },
+    {
+      "case_index": 14,
+      "trace_id": "sdg_trace_00181",
+      "server_path": [
+        "NASA Data",
+        "Wikipedia",
+        "Paper Search",
+        "BioMCP",
+        "Medical Calculator",
+        "Medical Calculator",
+        "Medical Calculator"
+      ],
+      "tool_path": [
+        "get_exoplanet_data",
+        "search_wikipedia",
+        "search_arxiv",
+        "think",
+        "ibw_calculator",
+        "bmi_bsa_calculator",
+        "map_calculator"
+      ],
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_trace_suite_20_20261009/trace_14_sdg_trace_00181.json",
+      "user_request": "I read a NASA article mentioning a newly discovered exoplanet that might support life. Can you find details about this planet, check if there are any recent scientific papers on it, and assess whether its conditions could theoretically support human physiology using clinical metrics?"
+    },
+    {
+      "case_index": 15,
+      "trace_id": "sdg_trace_00182",
+      "server_path": [
+        "Metropolitan Museum",
+        "Metropolitan Museum",
+        "Google Maps",
+        "Weather Data",
+        "Weather Data",
+        "Weather Data",
+        "Unit Converter"
+      ],
+      "tool_path": [
+        "list-departments",
+        "search-museum-objects",
+        "maps_geocode",
+        "search_locations_tool",
+        "get_weather_forecast_tool",
+        "get_current_weather_tool",
+        "convert_temperature"
+      ],
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_trace_suite_20_20261009/trace_15_sdg_trace_00182.json",
+      "user_request": "I'm planning a visit to The Met tomorrow afternoon. Find what special exhibitions are currently on, locate the museum precisely, check if there are any weather alerts for that time, and suggest whether I should bring an umbrella."
+    },
+    {
+      "case_index": 16,
+      "trace_id": "sdg_trace_00192",
+      "server_path": [
+        "Metropolitan Museum",
+        "Metropolitan Museum",
+        "Google Maps",
+        "Google Maps",
+        "Google Maps",
+        "Huge Icons",
+        "Huge Icons"
+      ],
+      "tool_path": [
+        "list-departments",
+        "search-museum-objects",
+        "maps_geocode",
+        "search_nearby",
+        "search_nearby",
+        "search_icons",
+        "get_platform_usage"
+      ],
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_trace_suite_20_20261009/trace_16_sdg_trace_00192.json",
+      "user_request": "I'm designing an accessibility guide for visually impaired visitors to the Met. First, find which departments have tactile exhibits, then locate the nearest accessible entrances and restrooms, and finally suggest appropriate iconography for wayfinding signs."
+    },
+    {
+      "case_index": 17,
+      "trace_id": "sdg_trace_00178",
+      "server_path": [
+        "Metropolitan Museum",
+        "Metropolitan Museum",
+        "Google Maps",
+        "Weather Data",
+        "Weather Data",
+        "Weather Data",
+        "Google Maps"
+      ],
+      "tool_path": [
+        "list-departments",
+        "search-museum-objects",
+        "maps_geocode",
+        "search_locations_tool",
+        "get_weather_forecast_tool",
+        "get_current_weather_tool",
+        "get_place_details"
+      ],
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_trace_suite_20_20261009/trace_17_sdg_trace_00178.json",
+      "user_request": "I'm planning a visit to The Met next Tuesday. Find what special exhibitions are open then, locate the museum on a map, check if there are any weather alerts for that day, and suggest whether I should bring an umbrella."
+    },
+    {
+      "case_index": 18,
+      "trace_id": "sdg_trace_00168",
+      "server_path": [
+        "Metropolitan Museum",
+        "Metropolitan Museum",
+        "Google Maps",
+        "Google Maps",
+        "Weather Data",
+        "Weather Data",
+        "Metropolitan Museum"
+      ],
+      "tool_path": [
+        "list-departments",
+        "search-museum-objects",
+        "maps_geocode",
+        "get_place_details",
+        "search_locations_tool",
+        "get_weather_forecast_tool",
+        "get-museum-object"
+      ],
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_trace_suite_20_20261009/trace_18_sdg_trace_00168.json",
+      "user_request": "I'm planning a visit to The Met in New York next week. Find current exhibits, check if there are any weather alerts for that day, and suggest the best time to go based on crowd levels and weather."
+    },
+    {
+      "case_index": 19,
+      "trace_id": "sdg_trace_00146",
+      "server_path": [
+        "Context7",
+        "Context7",
+        "Google Maps",
+        "Metropolitan Museum",
+        "Metropolitan Museum",
+        "Google Maps",
+        "Metropolitan Museum"
+      ],
+      "tool_path": [
+        "resolve-library-id",
+        "get-library-docs",
+        "maps_geocode",
+        "list-departments",
+        "search-museum-objects",
+        "search_nearby",
+        "get-museum-object"
+      ],
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_trace_suite_20_20261009/trace_19_sdg_trace_00146.json",
+      "user_request": "I found a reference to library ID 'lib-8892' in an old museum catalog. Can you identify what this library is, find its physical location, and check if it's near any current museum exhibitions?"
+    },
+    {
+      "case_index": 20,
+      "trace_id": "sdg_trace_00085",
+      "server_path": [
+        "Google Maps",
+        "Google Maps",
+        "Google Maps",
+        "Math MCP",
+        "Context7",
+        "Context7"
+      ],
+      "tool_path": [
+        "maps_geocode",
+        "search_nearby",
+        "get_place_details",
+        "max",
+        "resolve-library-id",
+        "get-library-docs"
+      ],
+      "turn_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_trace_suite_20_20261009/trace_20_sdg_trace_00085.json",
+      "user_request": "I'm visiting the Metropolitan Museum of Art and want to find a highly-rated cafe within walking distance. Then, check if any open-source libraries are commonly used in apps that recommend such places."
+    }
+  ]
+}

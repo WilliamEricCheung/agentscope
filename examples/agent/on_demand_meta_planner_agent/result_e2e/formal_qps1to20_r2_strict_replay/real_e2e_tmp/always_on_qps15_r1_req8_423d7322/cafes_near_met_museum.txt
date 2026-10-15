@@ -1,0 +1,44 @@
+# Cafes Near The Metropolitan Museum of Art
+
+The Metropolitan Museum of Art is located at 1000 5th Ave, New York, NY 10028.
+
+## Currently Open Cafes
+
+### 1. Cabuc Coffee
+- **Address**: 1211 Lexington Ave, New York, NY 10028
+- **Rating**: 4.6/5 (153 reviews)
+- **Phone**: (646) 891-0011
+- **Currently Open**: Yes
+- **Highlights**: 
+  - Highly rated for their Turkish coffee and baklava latte
+  - Friendly staff and pleasant atmosphere
+  - Offers Wi-Fi, suitable for working
+  - Unique menu items including salted honey croissant
+
+### 2. Starbucks
+- **Address**: 1142 Madison Ave, New York, NY 10028
+- **Rating**: 4.1/5 (927 reviews)
+- **Phone**: (212) 288-1506
+- **Website**: https://www.starbucks.com/store-locator/store/1015661
+- **Price Level**: $$
+- **Currently Open**: Yes
+- **Highlights**:
+  - Convenient location near Central Park
+  - Has restrooms available
+  - Mobile ordering available
+  - Spacious seating area
+
+## Other Notable Cafes (Currently Closed)
+
+### 1. 787 Coffee
+- **Rating**: 4.9/5 (3,477 reviews) - Highest rated!
+- **Location**: Near the Met
+
+### 2. Cabuc Coffee Alternatives
+- **Café Fledermaus**: 4.2/5 (40 reviews)
+- **Antonucci Cafe**: 4.5/5 (428 reviews)
+- **Dear Coffee**: 4.6/5 (331 reviews)
+- **Café Blériot XI**: 4.6/5 (310 reviews)
+- **Variety Coffee Roasters**: 4.4/5 (616 reviews)
+
+All cafes listed are within 500 meters (approximately 0.3 miles) of the Metropolitan Museum of Art.

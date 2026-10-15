@@ -1,0 +1,3 @@
+{"repeat_id": 4, "record_index": 0, "event_index": 1, "timestamp_unix_ms": 1791597736908.428, "current_server": "laplace-national-parks", "status": "completed", "candidate_count": 2}
+{"repeat_id": 4, "record_index": 0, "event_index": 6, "timestamp_unix_ms": 1791597738512.819, "current_server": "laplace-national-parks", "status": "completed", "candidate_count": 2}
+{"repeat_id": 4, "record_index": 1, "event_index": 1, "timestamp_unix_ms": 1791597767237.671, "current_server": "laplace-google-maps", "status": "completed", "candidate_count": 2}

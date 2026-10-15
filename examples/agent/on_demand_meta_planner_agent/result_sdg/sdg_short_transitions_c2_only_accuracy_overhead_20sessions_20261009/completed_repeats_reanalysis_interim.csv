@@ -1,0 +1,9 @@
+repeat_id,trace_id,trace_server_path,status,e2e_elapsed_s,eligible_sandbox_requests,prefetch_hits,prefetch_hit_rate,started_predictive_warmups,discarded_warmups,false_positive_rate,late_warmups_used,discarded_cpu_seconds,discarded_cpu_integral_complete,discarded_memory_gib_seconds,discarded_memory_integral_complete
+1,transition_01_sdg_trace_00005,"[""Google Maps"", ""Weather Data""]",completed,159.614565847005,1,1,1.0,2,1,0.5,0,0.03220907838344574,True,0.9408823649352418,True
+2,transition_02_sdg_trace_00002,"[""Metropolitan Museum"", ""Google Maps""]",completed,127.40639509799803,2,1,0.5,2,1,0.5,0,0.2859088196277619,True,3.8583872898120894,True
+3,transition_03_sdg_trace_00001,"[""Google Maps"", ""Math MCP""]",completed,112.6157822210007,1,0,0.0,1,1,1.0,0,0.21032201565504077,True,4.869535749518546,True
+4,transition_04_sdg_trace_00002,"[""Google Maps"", ""Context7""]",completed,395.2854582239961,1,0,0.0,2,2,1.0,0,0.3377103165030479,True,9.032824608247028,True
+5,transition_05_sdg_trace_00001,"[""Math MCP"", ""Unit Converter""]",completed,79.03931404699688,1,1,1.0,2,1,0.5,0,0.03377418999671936,True,0.7559687609993854,True
+6,transition_06_sdg_trace_00001,"[""Unit Converter"", ""Google Maps""]",completed,97.53196554000169,1,1,1.0,2,1,0.5,0,0.10194721696376802,True,3.0325796152674593,True
+7,transition_07_sdg_trace_00004,"[""National Parks"", ""Google Maps""]",completed,157.1700844060033,1,1,1.0,2,1,0.5,0,0.10894795508384705,True,2.7786003913893365,True
+8,transition_08_sdg_trace_00005,"[""Weather Data"", ""Math MCP""]",completed,65.57328366000002,1,0,0.0,2,1,0.5,1,1.4848121400237082,True,2.4020719008322344,True

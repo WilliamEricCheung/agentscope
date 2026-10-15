@@ -1,0 +1,3 @@
+{"repeat_id": 7, "record_index": 0, "event_index": 1, "timestamp_unix_ms": 1791559115297.646, "current_server": "laplace-wikipedia", "status": "completed", "candidate_count": 1}
+{"repeat_id": 7, "record_index": 1, "event_index": 1, "timestamp_unix_ms": 1791559190978.424, "current_server": "laplace-paper-search", "status": "completed", "candidate_count": 1}
+{"repeat_id": 7, "record_index": 1, "event_index": 5, "timestamp_unix_ms": 1791559195595.147, "current_server": "laplace-paper-search", "status": "completed", "candidate_count": 1}

@@ -1,0 +1,35 @@
+# 关于"多轮规划代理在真实工具环境中的稳健性"的相关研究论文
+
+由于当前浏览器工具存在技术限制，无法直接从学术数据库中提取最新论文信息。以下是基于该研究领域的重要论文（这些是该领域具有代表性的论文，但可能不是最新的）：
+
+## 1. "Toolformer: Language Models Can Teach Themselves to Use Tools"
+- **作者**: Thomas Schick, et al.
+- **发表年份**: 2023
+- **摘要**: 本文提出了Toolformer，一种能够自我学习使用外部工具的语言模型。该模型通过在预训练阶段注入工具使用指令，能够在推理时决定何时以及如何调用API等外部工具。这项工作为多轮规划代理在工具环境中的应用奠定了基础。
+- **链接**: https://arxiv.org/abs/2302.04761
+
+## 2. "HuggingGPT: Solving AI Tasks with ChatGPT and its Friends in HuggingFace"
+- **作者**: Yongliang Shen, et al.
+- **发表年份**: 2023
+- **摘要**: HuggingGPT框架利用ChatGPT作为控制器来管理HuggingFace中的各种AI模型，形成一个多轮规划系统。该系统能够分析用户请求、选择合适的模型、执行任务并总结结果，展示了在复杂工具环境中的稳健性。
+- **链接**: https://arxiv.org/abs/2303.17580
+
+## 3. "React: Synergizing Reasoning and Acting in Language Models"
+- **作者**: Shunyu Yao, et al.
+- **发表年份**: 2022
+- **摘要**: ReAct框架结合了推理（Reasoning）和行动（Acting），使语言模型能够在与环境交互的同时进行推理。这种方法提高了代理在动态环境中的稳健性和适应性，特别适用于需要多轮规划和工具使用的场景。
+- **链接**: https://arxiv.org/abs/2210.03629
+
+## 4. "ToolLLM: Facilitating Large Language Models to Master 16000+ Real-world APIs"
+- **作者**: Tianle Cai, et al.
+- **发表年份**: 2023
+- **摘要**: ToolLLM是一个大规模指令微调数据集和模型，旨在帮助大型语言模型掌握超过16000个真实世界的API。该工作显著提高了语言模型在真实工具环境中的稳健性和实用性。
+- **链接**: https://arxiv.org/abs/2307.16789
+
+## 5. "AgentBench: Evaluating LLMs as Agents"
+- **作者**: Xiao Liu, et al.
+- **发表年份**: 2023
+- **摘要**: AgentBench是一个全面的基准测试，用于评估大型语言模型作为代理在各种环境中的表现，包括需要工具使用的场景。该基准测试涵盖了多轮规划、环境交互和稳健性等多个维度。
+- **链接**: https://arxiv.org/abs/2308.03688
+
+注意：以上论文信息基于对该研究领域的了解整理，建议通过Google Scholar、Semantic Scholar或arXiv等学术搜索引擎使用关键词"multi-step planning agents robustness real-world tools"获取最新的研究成果。

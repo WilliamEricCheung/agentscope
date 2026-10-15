@@ -1,0 +1,23 @@
+# Cafes Near The Metropolitan Museum of Art
+
+## Location Information
+The Metropolitan Museum of Art is located at 1000 Fifth Avenue, New York, NY 10028.
+Approximate coordinates: 40.7794° N, 73.9632° W
+
+## Search Attempt Results
+Multiple attempts were made to use the Google Maps tools to find cafes near the Metropolitan Museum of Art:
+1. Geocoding the museum's address
+2. Direct search using the museum name as a landmark
+3. Search using known coordinates of the museum
+
+All attempts resulted in errors with the mapping tools.
+
+## Known Cafes in the Area (Based on General Knowledge)
+While unable to retrieve current data through the tools, the following cafes are typically found near the Met:
+- The Met's own dining options (The Dining Room, Petrie Court Cafe)
+- Cafe Sabarsky (within the Neue Galerie nearby)
+- Sarabeth's (Madison Avenue location)
+- Alice's Tea Cup (Upper East Side location)
+- Various cafes along Madison Avenue and Lexington Avenue in the vicinity
+
+Note: This information is based on general knowledge and may not reflect current operating status, hours, or exact locations.

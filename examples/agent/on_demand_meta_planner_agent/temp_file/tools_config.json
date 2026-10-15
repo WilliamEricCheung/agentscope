@@ -1,0 +1,35 @@
+{
+  "tools": {
+    "web_search": {
+      "description": "执行网络搜索",
+      "parameters": {"query": "string", "num_results": "integer"},
+      "failure_modes": ["rate_limit", "timeout", "invalid_query"],
+      "success_rate": 0.95,
+      "processing_time": 0.1
+    },
+    "file_system": {
+      "description": "文件系统操作",
+      "parameters": {"operation": "string", "path": "string", "content": "string"},
+      "failure_modes": ["permission_denied", "disk_full", "file_not_found"],
+      "success_rate": 0.98
+    },
+    "api_call": {
+      "description": "调用外部API",
+      "parameters": {"endpoint": "string", "method": "string", "data": "object"},
+      "failure_modes": ["network_error", "auth_failure", "rate_limit"],
+      "success_rate": 0.90
+    },
+    "database_query": {
+      "description": "数据库查询操作",
+      "parameters": {"query": "string", "database": "string"},
+      "failure_modes": ["connection_error", "syntax_error", "timeout"],
+      "success_rate": 0.92
+    },
+    "code_execution": {
+      "description": "代码执行环境",
+      "parameters": {"code": "string", "language": "string"},
+      "failure_modes": ["syntax_error", "runtime_error", "timeout"],
+      "success_rate": 0.85
+    }
+  }
+}

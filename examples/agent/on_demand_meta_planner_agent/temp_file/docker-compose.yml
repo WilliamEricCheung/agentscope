@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  agent-env:
+    image: nixos-agent-env:latest
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM nixos/nix:2.18.1
+        
+        # Install essential packages
+        RUN nix-env -iA nixpkgs.python311 nixpkgs.bash nixpkgs.curl nixpkgs.jq
+        
+        # Create workspace directory
+        WORKDIR /workspace
+        
+        # Copy project files
+        COPY . /workspace/
+        
+        # Install Python dependencies using Nix
+        RUN nix-shell --run "pip install requests beautifulsoup4 selenium playwright openai anthropic langchain pydantic fastapi uvicorn numpy pandas"
+        
+        # Expose ports for web tools and APIs
+        EXPOSE 8000  # FastAPI default port
+        EXPOSE 4444  # Selenium Grid
+        
+        CMD ["/bin/bash"]
+    
+    volumes:
+      - .:/workspace
+      - /var/run/docker.sock:/var/run/docker.sock  # For Docker-in-Docker
+    
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PROJECT_ENV=docker
+      - DISPLAY=:99
+    
+    networks:
+      - agent-network
+
+  browser-tools:
+    image: selenium/standalone-chrome:latest
+    shm_size: 2gb
+    ports:
+      - "4444:4444"
+      - "7900:7900"  # VNC access
+    environment:
+      - START_XVFB=false
+    networks:
+      - agent-network
+
+  test-runner:
+    image: nixos-agent-env:latest
+    depends_on:
+      - agent-env
+      - browser-tools
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+    command: ["nix", "run", ".#run-tests"]
+    environment:
+      - SELENIUM_HOST=browser-tools
+      - SELENIUM_PORT=4444
+
+networks:
+  agent-network:
+    driver: bridge
+
+volumes:
+  nix-store:

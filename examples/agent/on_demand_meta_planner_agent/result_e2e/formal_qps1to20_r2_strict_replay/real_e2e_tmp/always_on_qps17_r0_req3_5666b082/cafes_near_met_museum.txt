@@ -1,0 +1,60 @@
+# Cafes Near The Metropolitan Museum of Art
+
+Based on Google Maps search results within 500 meters of the Metropolitan Museum of Art (1000 5th Ave, New York, NY 10028).
+
+## Currently Open Cafes
+
+### 787 Coffee ⭐ 4.9/5 (3,477 reviews)
+- **Address**: 228 E 80th St, New York, NY 10075
+- **Phone**: (646) 850-0234
+- **Website**: http://www.787coffee.com/
+- **Highlights**: 
+  - Exceptionally high rating (4.9/5)
+  - Known for unique rum-infused coffee beans
+  - Friendly staff who remember regular customers
+  - Pet-friendly with fast WiFi
+  - Features a swing seat by the window
+
+### Le Pain Quotidien ⭐ 3.9/5 (881 reviews)
+- **Address**: 1131 Madison Ave, New York, NY 10028
+- **Phone**: (212) 327-4900
+- **Website**: https://lepainquotidien.com/us/stores/114:%20madison_avenue
+- **Price Level**: $$
+- **Highlights**:
+  - Convenient location near the museum
+  - Offers breakfast bowls and sandwiches
+  - Mixed reviews on food quality and service speed
+
+### Starbucks ⭐ 4.1/5 (927 reviews)
+- **Address**: 1142 Madison Ave, New York, NY 10028
+- **Phone**: (212) 288-1506
+- **Website**: https://www.starbucks.com/store-locator/store/1015661
+- **Price Level**: $$
+- **Highlights**:
+  - Reliable option with familiar menu
+  - Has restrooms (convenient for tourists)
+  - Mobile ordering available
+  - Can get crowded, especially in mornings
+
+## Currently Closed Cafes (May reopen later)
+
+### Rosa's Cafe & Bakery ⭐ 4.4/5 (34 reviews)
+- **Address**: Near E 77th St & Lexington Ave
+
+### Café Fledermaus ⭐ 4.2/5 (40 reviews)
+- **Address**: Near E 82nd St & 5th Ave
+
+### Church of Heavenly Rest Café ⭐ 4.4/5 (2,274 reviews)
+- **Address**: Near E 90th St & 5th Ave
+
+### Tarallucci e Vino at Cooper Hewitt ⭐ 4.5/5 (30 reviews)
+- **Address**: Near E 91st St & 5th Ave
+
+### Antonucci Cafe ⭐ 4.5/5 (428 reviews)
+- **Address**: Near E 75th St & Lexington Ave
+
+### Café Blériot XI ⭐ 4.6/5 (310 reviews)
+- **Address**: Near E 75th St & 1st Ave
+
+## Recommendation
+For the best cafe experience near the Met, **787 Coffee** stands out with its exceptional 4.9/5 rating, unique offerings like rum-infused coffee, and consistently excellent customer service. It's slightly further from the museum (about 0.5 miles) but worth the short walk.

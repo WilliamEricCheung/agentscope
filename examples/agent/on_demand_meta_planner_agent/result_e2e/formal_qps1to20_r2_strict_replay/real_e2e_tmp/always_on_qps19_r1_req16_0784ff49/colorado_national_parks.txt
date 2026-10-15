@@ -1,0 +1,71 @@
+# National Parks and Sites in Colorado
+
+Based on the National Parks Service data, here are all 17 national parks, monuments, historic sites, and trails located in Colorado:
+
+1. **Amache National Historic Site**
+   - Designation: National Historic Site
+   - Description: Former incarceration site for Japanese Americans during World War II near Granada, Colorado.
+
+2. **Bent's Old Fort National Historic Site**
+   - Designation: National Historic Site
+   - Description: Adobe trading post on the Santa Fe Trail from the 1840s where traders, trappers, travelers, and Native American tribes came together for trade.
+
+3. **Black Canyon Of The Gunnison National Park**
+   - Designation: National Park
+   - Description: Features some of the steepest cliffs, oldest rock, and craggiest spires in North America, carved by the Gunnison River over two million years.
+
+4. **California National Historic Trail**
+   - Designation: National Historic Trail
+   - Description: Over 5,000 miles long covering portions of 10 states including Colorado, following the route of emigrants who traveled to California during the 1840s and 1850s.
+
+5. **Colorado National Monument**
+   - Designation: National Monument
+   - Description: Preserves dramatic red rock canyons and towering monoliths with opportunities to see bighorn sheep and eagles along Rim Rock Drive.
+
+6. **Curecanti National Recreation Area**
+   - Designation: National Recreation Area
+   - Description: Three reservoirs and surrounding lands in western Colorado offering water recreation and showcasing both natural and human-made features.
+
+7. **Dinosaur National Monument**
+   - Designation: National Monument (shared with Utah)
+   - Description: Contains embedded dinosaur fossils from 150 million years ago, plus mountains, desert, rivers, petroglyphs, and diverse wildlife.
+
+8. **Florissant Fossil Beds National Monument**
+   - Designation: National Monument
+   - Description: One of the richest and most diverse fossil deposits in the world, featuring petrified redwood stumps and detailed fossils of insects and plants.
+
+9. **Great Sand Dunes National Park & Preserve**
+   - Designation: National Park & Preserve
+   - Description: Home to the tallest dunes in North America within a diverse landscape of grasslands, wetlands, forests, alpine lakes, and tundra.
+
+10. **Hovenweep National Monument**
+    - Designation: National Monument (shared with Utah)
+    - Description: Preserves six prehistoric sites built between 1200 and 1300 CE, featuring multistory towers perched on canyon rims and balanced on boulders.
+
+11. **Mesa Verde National Park**
+    - Designation: National Park
+    - Description: Protects the cultural heritage of Ancestral Pueblo people who built communities on mesas and in cliffs for over 700 years.
+
+12. **Old Spanish National Historic Trail**
+    - Designation: National Historic Trail
+    - Description: Follows routes of mule pack trains across six states including Colorado, connecting Santa Fe, New Mexico, and Los Angeles, California.
+
+13. **Pony Express National Historic Trail**
+    - Designation: National Historic Trail
+    - Description: Commemorates the relay mail system that carried mail from Missouri to California in just 10 days, passing through eight states including Colorado.
+
+14. **Rocky Mountain National Park**
+    - Designation: National Park
+    - Description: Encompasses 415 square miles of mountain environments from meadows to alpine lakes to towering peaks, with over 300 miles of hiking trails.
+
+15. **Sand Creek Massacre National Historic Site**
+    - Designation: National Historic Site
+    - Description: Commemorates the tragic 1864 massacre of Cheyenne and Arapaho people by U.S. forces, preserving this painful memory for future generations.
+
+16. **Santa Fe National Historic Trail**
+    - Designation: National Historic Trail
+    - Description: Follows the route of freight wagons carrying cargo between western Missouri and Santa Fe, New Mexico, passing through five states including Colorado.
+
+17. **Yucca House National Monument**
+    - Designation: National Monument
+    - Description: Preserves a large unexcavated pueblo in Montezuma Valley between Mesa Verde and Ute Mountain, largely untouched since its protection in 1919.

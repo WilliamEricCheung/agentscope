@@ -1,0 +1,3 @@
+{"repeat_id": 12, "record_index": 0, "event_index": 1, "timestamp_unix_ms": 1791598435654.014, "current_server": "laplace-huggingface", "status": "completed", "candidate_count": 1}
+{"repeat_id": 12, "record_index": 0, "event_index": 4, "timestamp_unix_ms": 1791598437330.254, "current_server": "laplace-huggingface", "status": "completed", "candidate_count": 1}
+{"repeat_id": 12, "record_index": 1, "event_index": 1, "timestamp_unix_ms": 1791598466454.218, "current_server": "laplace-paper-search", "status": "completed", "candidate_count": 2}

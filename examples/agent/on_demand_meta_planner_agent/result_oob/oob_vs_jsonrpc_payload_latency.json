@@ -1,0 +1,289 @@
+{
+  "model": "payload_latency_scaling",
+  "range": {
+    "min_mb": 1.0,
+    "max_mb": 1000.0,
+    "points": 40
+  },
+  "assumptions": {
+    "oob_shared_memory_latency_pattern": "sub-10ms, close to initial RPC at small payload, with very slow growth and bounded fluctuation",
+    "oob_latency_ms_range": {
+      "min": 1.95,
+      "max": 5.974057
+    },
+    "network_profile": {
+      "base_rtt_ms": 0.8,
+      "rpc_fixed_overhead_ms": 0.35,
+      "mtu_bytes": 1400,
+      "packet_overhead_us": 0.15,
+      "json_parse_ms_per_kb": 8e-05
+    },
+    "jsonrpc_latency_formula": "fixed_overhead + RTT + transfer_time(size/throughput) + packetization_overhead + json_cpu(size) + expected_retrans_penalty",
+    "throughput_regimes_mbps": {
+      "<=20MB": 9000.0,
+      "20MB-100MB": 7500.0,
+      "100MB-500MB": 6000.0,
+      ">500MB": 5000.0
+    },
+    "calibration_note": "JSON-RPC path calibrated to practical 10GbE-class effective throughput with transport and parsing overhead."
+  },
+  "references": [
+    {
+      "title": "Bandwidth-delay product",
+      "url": "https://en.wikipedia.org/wiki/Bandwidth-delay_product",
+      "used_for": "transfer-time and RTT interpretation"
+    },
+    {
+      "title": "Nagle's algorithm",
+      "url": "https://en.wikipedia.org/wiki/Nagle%27s_algorithm",
+      "used_for": "small-packet and ACK/packetization latency behavior"
+    },
+    {
+      "title": "gRPC Performance Best Practices",
+      "url": "https://grpc.io/docs/guides/performance/",
+      "used_for": "RPC transport overhead and connection behavior context"
+    }
+  ],
+  "series": [
+    {
+      "payload_bytes": 1048576,
+      "payload_human": "1.00MB",
+      "oob_latency_ms": 1.95,
+      "jsonrpc_latency_ms": 2.280716
+    },
+    {
+      "payload_bytes": 1251766,
+      "payload_human": "1.19MB",
+      "oob_latency_ms": 2.153714,
+      "jsonrpc_latency_ms": 2.499512
+    },
+    {
+      "payload_bytes": 1494328,
+      "payload_human": "1.43MB",
+      "oob_latency_ms": 2.350523,
+      "jsonrpc_latency_ms": 2.760465
+    },
+    {
+      "payload_bytes": 1783894,
+      "payload_human": "1.70MB",
+      "oob_latency_ms": 2.534042,
+      "jsonrpc_latency_ms": 3.072013
+    },
+    {
+      "payload_bytes": 2129571,
+      "payload_human": "2.03MB",
+      "oob_latency_ms": 2.698879,
+      "jsonrpc_latency_ms": 3.443867
+    },
+    {
+      "payload_bytes": 2542233,
+      "payload_human": "2.42MB",
+      "oob_latency_ms": 2.841043,
+      "jsonrpc_latency_ms": 3.887593
+    },
+    {
+      "payload_bytes": 3034858,
+      "payload_human": "2.89MB",
+      "oob_latency_ms": 2.958238,
+      "jsonrpc_latency_ms": 4.4174
+    },
+    {
+      "payload_bytes": 3622943,
+      "payload_human": "3.46MB",
+      "oob_latency_ms": 3.050042,
+      "jsonrpc_latency_ms": 5.049776
+    },
+    {
+      "payload_bytes": 4324984,
+      "payload_human": "4.12MB",
+      "oob_latency_ms": 3.117933,
+      "jsonrpc_latency_ms": 5.804714
+    },
+    {
+      "payload_bytes": 5163065,
+      "payload_human": "4.92MB",
+      "oob_latency_ms": 3.165179,
+      "jsonrpc_latency_ms": 6.705672
+    },
+    {
+      "payload_bytes": 6163547,
+      "payload_human": "5.88MB",
+      "oob_latency_ms": 3.196597,
+      "jsonrpc_latency_ms": 7.781302
+    },
+    {
+      "payload_bytes": 7357898,
+      "payload_human": "7.02MB",
+      "oob_latency_ms": 3.218187,
+      "jsonrpc_latency_ms": 9.065189
+    },
+    {
+      "payload_bytes": 8783687,
+      "payload_human": "8.38MB",
+      "oob_latency_ms": 3.236686,
+      "jsonrpc_latency_ms": 10.597872
+    },
+    {
+      "payload_bytes": 10485760,
+      "payload_human": "10.00MB",
+      "oob_latency_ms": 3.259064,
+      "jsonrpc_latency_ms": 12.427223
+    },
+    {
+      "payload_bytes": 12517655,
+      "payload_human": "11.94MB",
+      "oob_latency_ms": 3.291997,
+      "jsonrpc_latency_ms": 14.611176
+    },
+    {
+      "payload_bytes": 14943285,
+      "payload_human": "14.25MB",
+      "oob_latency_ms": 3.341374,
+      "jsonrpc_latency_ms": 17.217995
+    },
+    {
+      "payload_bytes": 17838944,
+      "payload_human": "17.01MB",
+      "oob_latency_ms": 3.41185,
+      "jsonrpc_latency_ms": 20.330018
+    },
+    {
+      "payload_bytes": 21295715,
+      "payload_human": "20.31MB",
+      "oob_latency_ms": 3.506502,
+      "jsonrpc_latency_ms": 27.830691
+    },
+    {
+      "payload_bytes": 25422327,
+      "payload_human": "24.24MB",
+      "oob_latency_ms": 3.626593,
+      "jsonrpc_latency_ms": 32.998679
+    },
+    {
+      "payload_bytes": 30348580,
+      "payload_human": "28.94MB",
+      "oob_latency_ms": 3.771483,
+      "jsonrpc_latency_ms": 39.168059
+    },
+    {
+      "payload_bytes": 36229426,
+      "payload_human": "34.55MB",
+      "oob_latency_ms": 3.938674,
+      "jsonrpc_latency_ms": 46.530995
+    },
+    {
+      "payload_bytes": 43249842,
+      "payload_human": "41.25MB",
+      "oob_latency_ms": 4.123998,
+      "jsonrpc_latency_ms": 55.320009
+    },
+    {
+      "payload_bytes": 51630652,
+      "payload_human": "49.24MB",
+      "oob_latency_ms": 4.321929,
+      "jsonrpc_latency_ms": 65.81234
+    },
+    {
+      "payload_bytes": 61635466,
+      "payload_human": "58.78MB",
+      "oob_latency_ms": 4.525995,
+      "jsonrpc_latency_ms": 78.337668
+    },
+    {
+      "payload_bytes": 73578979,
+      "payload_human": "70.17MB",
+      "oob_latency_ms": 4.729266,
+      "jsonrpc_latency_ms": 93.290152
+    },
+    {
+      "payload_bytes": 87836867,
+      "payload_human": "83.77MB",
+      "oob_latency_ms": 4.924872,
+      "jsonrpc_latency_ms": 111.140063
+    },
+    {
+      "payload_bytes": 104857600,
+      "payload_human": "100.00MB",
+      "oob_latency_ms": 5.106516,
+      "jsonrpc_latency_ms": 132.448957
+    },
+    {
+      "payload_bytes": 125176554,
+      "payload_human": "119.38MB",
+      "oob_latency_ms": 5.268947,
+      "jsonrpc_latency_ms": 191.26729
+    },
+    {
+      "payload_bytes": 149432846,
+      "payload_human": "142.51MB",
+      "oob_latency_ms": 5.408353,
+      "jsonrpc_latency_ms": 228.102936
+    },
+    {
+      "payload_bytes": 178389441,
+      "payload_human": "170.13MB",
+      "oob_latency_ms": 5.522647,
+      "jsonrpc_latency_ms": 272.076563
+    },
+    {
+      "payload_bytes": 212957148,
+      "payload_human": "203.09MB",
+      "oob_latency_ms": 5.611623,
+      "jsonrpc_latency_ms": 324.571091
+    },
+    {
+      "payload_bytes": 254223268,
+      "payload_human": "242.45MB",
+      "oob_latency_ms": 5.67697,
+      "jsonrpc_latency_ms": 387.2379
+    },
+    {
+      "payload_bytes": 303485800,
+      "payload_human": "289.43MB",
+      "oob_latency_ms": 5.722149,
+      "jsonrpc_latency_ms": 462.047961
+    },
+    {
+      "payload_bytes": 362294259,
+      "payload_human": "345.51MB",
+      "oob_latency_ms": 5.752129,
+      "jsonrpc_latency_ms": 551.354551
+    },
+    {
+      "payload_bytes": 432498423,
+      "payload_human": "412.46MB",
+      "oob_latency_ms": 5.77302,
+      "jsonrpc_latency_ms": 657.966703
+    },
+    {
+      "payload_bytes": 516306515,
+      "payload_human": "492.39MB",
+      "oob_latency_ms": 5.79161,
+      "jsonrpc_latency_ms": 785.237783
+    },
+    {
+      "payload_bytes": 616354658,
+      "payload_human": "587.80MB",
+      "oob_latency_ms": 5.814861,
+      "jsonrpc_latency_ms": 1101.53226
+    },
+    {
+      "payload_bytes": 735789794,
+      "payload_human": "701.70MB",
+      "oob_latency_ms": 5.849387,
+      "jsonrpc_latency_ms": 1314.755998
+    },
+    {
+      "payload_bytes": 878368669,
+      "payload_human": "837.68MB",
+      "oob_latency_ms": 5.900955,
+      "jsonrpc_latency_ms": 1569.297473
+    },
+    {
+      "payload_bytes": 1048576000,
+      "payload_human": "1000.00MB",
+      "oob_latency_ms": 5.974057,
+      "jsonrpc_latency_ms": 1873.16305
+    }
+  ]
+}

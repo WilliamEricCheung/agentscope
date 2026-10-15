@@ -1,0 +1,92 @@
+# National Parks and Monuments in Colorado
+
+Based on the National Parks Service data, there are 17 national parks, monuments, and historic sites in Colorado:
+
+## National Parks
+1. **Black Canyon Of The Gunnison National Park** (blca)
+   - Description: Features some of the steepest cliffs, oldest rock, and craggiest spires in North America, carved by the Gunnison River over two million years.
+   - Activities: Astronomy, camping, climbing, fishing, hiking, horseback riding, kayaking, skiing, snowshoeing, wildlife watching
+   - Entrance Fee: $30 per vehicle (7-day pass)
+
+2. **Great Sand Dunes National Park & Preserve** (grsa)
+   - Description: Home to the tallest dunes in North America, set against a diverse landscape of grasslands, wetlands, forests, alpine lakes, and tundra.
+   - Activities: Sand sledding, camping, hiking, fishing, horseback riding, hunting (in preserve), swimming, wildlife watching
+   - Entrance Fee: $25 per vehicle
+
+3. **Mesa Verde National Park** (meve)
+   - Description: Protects the cultural heritage of 27 Pueblos and Tribes, featuring Ancestral Pueblo cliff dwellings built over 700 years ago.
+   - Activities: Guided tours, hiking, camping, scenic driving, stargazing, museum exhibits
+   - Entrance Fee: $30 per vehicle (7-day pass)
+
+4. **Rocky Mountain National Park** (romo)
+   - Description: Encompasses 415 square miles of spectacular mountain environments, from montane meadows to alpine lakes and towering peaks.
+   - Activities: Camping, hiking, wildlife viewing, fishing, climbing, scenic driving, stargazing
+   - Entrance Fee: $35 per vehicle (7-day pass)
+
+## National Monuments
+5. **Colorado National Monument** (colm)
+   - Description: Preserves dramatic red rock canyons and towering monoliths within a vast plateau landscape.
+   - Activities: Scenic driving, camping, rock climbing, hiking, wildlife watching
+   - Entrance Fee: $25 per vehicle
+
+6. **Curecanti National Recreation Area** (cure)
+   - Description: Three reservoirs and surrounding lands offering both natural and human-made features.
+   - Activities: Boating, fishing, camping, hiking, hunting, water sports, wildlife watching
+   - Entrance Fee: Free
+
+7. **Dinosaur National Monument** (dino) - *Also in Utah*
+   - Description: Contains embedded dinosaur fossils from 150 million years ago, along with mountains, desert, rivers, and petroglyphs.
+   - Activities: Fossil viewing, camping, hiking, boating, fishing, wildlife watching
+   - Entrance Fee: $25 per vehicle
+
+8. **Florissant Fossil Beds National Monument** (flfo)
+   - Description: One of the richest and most diverse fossil deposits in the world, featuring petrified redwood stumps and detailed insect fossils.
+   - Activities: Fossil viewing, hiking, picnicking, museum exhibits
+   - Entrance Fee: $10 per person
+
+9. **Hovenweep National Monument** (hove) - *Also in Utah*
+   - Description: Preserves six prehistoric sites built between 1200-1300 CE, featuring multistory towers perched on canyon rims.
+   - Activities: Hiking, camping, stargazing
+   - Entrance Fee: $20 per vehicle
+
+10. **Yucca House National Monument** (yuho)
+    - Description: A large unexcavated pueblo nestled in Montezuma Valley between Mesa Verde and Ute Mountain.
+    - Activities: Self-guided tours, guided tours
+    - Entrance Fee: Free
+
+## National Historic Sites
+11. **Amache National Historic Site** (amch)
+    - Description: Former Japanese American incarceration site during World War II, where over 10,000 people were unjustly incarcerated from 1942-1945.
+    - Activities: Guided tours, self-guided auto tours, junior ranger program
+    - Entrance Fee: Free
+
+12. **Bent's Old Fort National Historic Site** (beol)
+    - Description: Reconstructed 1840s adobe trading post on the Santa Fe Trail where traders, trappers, travelers, and Native tribes met for trade.
+    - Activities: Living history, guided tours, craft demonstrations, hiking, wildlife watching
+    - Entrance Fee: Free
+
+13. **Sand Creek Massacre National Historic Site** (sand)
+    - Description: Commemorates the tragic 1864 massacre of Cheyenne and Arapaho people by U.S. forces.
+    - Activities: Guided tours, hiking, wildlife watching
+    - Entrance Fee: Free
+
+## National Historic Trails (pass through Colorado)
+14. **California National Historic Trail** (cali)
+    - Description: Follows the route of over 250,000 emigrants who traveled to California during the 1840s-1850s.
+    - Activities: Scenic driving, hiking, horseback riding
+    - Entrance Fee: Free
+
+15. **Old Spanish National Historic Trail** (olsp)
+    - Description: Follows mule pack train routes between Santa Fe, New Mexico, and Los Angeles, California.
+    - Activities: Scenic driving, hiking, horse trekking
+    - Entrance Fee: Free
+
+16. **Pony Express National Historic Trail** (poex)
+    - Description: Marks the route where young riders carried mail from Missouri to California in just 10 days.
+    - Activities: Scenic driving, hiking, horseback riding, living history
+    - Entrance Fee: Free
+
+17. **Santa Fe National Historic Trail** (safe)
+    - Description: Follows the historic trade route between western Missouri and Santa Fe, New Mexico.
+    - Activities: Scenic driving, hiking, museum exhibits
+    - Entrance Fee: Free

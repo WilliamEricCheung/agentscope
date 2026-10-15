@@ -1,0 +1,192 @@
+{
+  "trace_schema_version": 2,
+  "trace_count": 56,
+  "training_source": "/mnt/d/Project/agentscope/laplace/mcp_dataset/laplace_sdg_traces.json",
+  "split": "deterministic grouped 80/20 by unique server path",
+  "server_transition_counts": {
+    "Metropolitan Museum": {
+      "Metropolitan Museum": 17,
+      "Google Maps": 22,
+      "Context7": 4
+    },
+    "Google Maps": {
+      "Google Maps": 93,
+      "Context7": 11,
+      "Weather Data": 18,
+      "Wikipedia": 5,
+      "Metropolitan Museum": 4,
+      "Math MCP": 4,
+      "Unit Converter": 1,
+      "Playwright": 1,
+      "Game Trends": 2,
+      "Huge Icons": 5,
+      "Time MCP": 1
+    },
+    "Context7": {
+      "Context7": 25,
+      "Math MCP": 1,
+      "Hugging Face": 1,
+      "Wikipedia": 1
+    },
+    "National Parks": {
+      "National Parks": 10,
+      "Google Maps": 7,
+      "Math MCP": 1
+    },
+    "Wikipedia": {
+      "Wikipedia": 10,
+      "Google Maps": 4,
+      "Weather Data": 2,
+      "Game Trends": 2,
+      "Paper Search": 4
+    },
+    "Weather Data": {
+      "Weather Data": 21,
+      "Math MCP": 2,
+      "Wikipedia": 2,
+      "Google Maps": 4,
+      "Metropolitan Museum": 2,
+      "Unit Converter": 1
+    },
+    "Math MCP": {
+      "Google Maps": 2,
+      "Unit Converter": 2,
+      "Math MCP": 1,
+      "Huge Icons": 1,
+      "National Parks": 1
+    },
+    "Game Trends": {
+      "Game Trends": 1,
+      "Google Maps": 1,
+      "Wikipedia": 1
+    },
+    "Playwright": {
+      "Playwright": 1,
+      "Context7": 1
+    },
+    "Hugging Face": {
+      "Hugging Face": 2,
+      "Context7": 1
+    },
+    "Huge Icons": {
+      "Context7": 1,
+      "Wikipedia": 1,
+      "Huge Icons": 4
+    },
+    "NASA Data": {
+      "Wikipedia": 2
+    },
+    "Paper Search": {
+      "Paper Search": 1,
+      "BioMCP": 2,
+      "Hugging Face": 1
+    },
+    "BioMCP": {
+      "Medical Calculator": 2
+    },
+    "Medical Calculator": {
+      "NASA Data": 1,
+      "Medical Calculator": 2
+    },
+    "Bibliomantic": {
+      "Wikipedia": 1
+    },
+    "Time MCP": {
+      "Weather Data": 1
+    }
+  },
+  "server_transition_matrix": {
+    "Metropolitan Museum": {
+      "Metropolitan Museum": 0.3953488372093023,
+      "Google Maps": 0.5116279069767442,
+      "Context7": 0.09302325581395349
+    },
+    "Google Maps": {
+      "Google Maps": 0.6413793103448275,
+      "Context7": 0.07586206896551724,
+      "Weather Data": 0.12413793103448276,
+      "Wikipedia": 0.034482758620689655,
+      "Metropolitan Museum": 0.027586206896551724,
+      "Math MCP": 0.027586206896551724,
+      "Unit Converter": 0.006896551724137931,
+      "Playwright": 0.006896551724137931,
+      "Game Trends": 0.013793103448275862,
+      "Huge Icons": 0.034482758620689655,
+      "Time MCP": 0.006896551724137931
+    },
+    "Context7": {
+      "Context7": 0.8928571428571429,
+      "Math MCP": 0.03571428571428571,
+      "Hugging Face": 0.03571428571428571,
+      "Wikipedia": 0.03571428571428571
+    },
+    "National Parks": {
+      "National Parks": 0.5555555555555556,
+      "Google Maps": 0.3888888888888889,
+      "Math MCP": 0.05555555555555555
+    },
+    "Wikipedia": {
+      "Wikipedia": 0.45454545454545453,
+      "Google Maps": 0.18181818181818182,
+      "Weather Data": 0.09090909090909091,
+      "Game Trends": 0.09090909090909091,
+      "Paper Search": 0.18181818181818182
+    },
+    "Weather Data": {
+      "Weather Data": 0.65625,
+      "Math MCP": 0.0625,
+      "Wikipedia": 0.0625,
+      "Google Maps": 0.125,
+      "Metropolitan Museum": 0.0625,
+      "Unit Converter": 0.03125
+    },
+    "Math MCP": {
+      "Google Maps": 0.2857142857142857,
+      "Unit Converter": 0.2857142857142857,
+      "Math MCP": 0.14285714285714285,
+      "Huge Icons": 0.14285714285714285,
+      "National Parks": 0.14285714285714285
+    },
+    "Game Trends": {
+      "Game Trends": 0.3333333333333333,
+      "Google Maps": 0.3333333333333333,
+      "Wikipedia": 0.3333333333333333
+    },
+    "Playwright": {
+      "Playwright": 0.5,
+      "Context7": 0.5
+    },
+    "Hugging Face": {
+      "Hugging Face": 0.6666666666666666,
+      "Context7": 0.3333333333333333
+    },
+    "Huge Icons": {
+      "Context7": 0.16666666666666666,
+      "Wikipedia": 0.16666666666666666,
+      "Huge Icons": 0.6666666666666666
+    },
+    "NASA Data": {
+      "Wikipedia": 1.0
+    },
+    "Paper Search": {
+      "Paper Search": 0.25,
+      "BioMCP": 0.5,
+      "Hugging Face": 0.25
+    },
+    "BioMCP": {
+      "Medical Calculator": 1.0
+    },
+    "Medical Calculator": {
+      "NASA Data": 0.3333333333333333,
+      "Medical Calculator": 0.6666666666666666
+    },
+    "Bibliomantic": {
+      "Wikipedia": 1.0
+    },
+    "Time MCP": {
+      "Weather Data": 1.0
+    }
+  },
+  "state_transition_counts": {},
+  "state_transition_matrix": {}
+}

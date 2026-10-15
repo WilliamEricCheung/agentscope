@@ -1,0 +1,3 @@
+repeat_id,trace_id,record_index,target,candidate,schedule_timestamp,start_timestamp,ready_timestamp,later_demand_use,prefetch_hit,demand_timestamp,discard_timestamp,discard_timestamp_basis,cpu_seconds,memory_gib_seconds,resource_measurement
+9,holdout_transition_09_sdg_trace_00151,0,laplace_weather_data,Weather Data,2026-10-10T09:36:58.519,2026-10-10T09:36:58.523,2026-10-10T09:37:01.347,False,False,,2026-10-10 09:38:16,forced_run_cleanup,0.3724278678894042,5.087116298145848,docker_stats_sampled_estimate
+9,holdout_transition_09_sdg_trace_00151,1,laplace_context7,Context7,2026-10-10T09:37:39.338,2026-10-10T09:37:39.342,2026-10-10T09:37:41.202,False,False,,2026-10-10 09:38:16,forced_run_cleanup,0.02750073254108429,0.459124392621452,docker_stats_sampled_estimate

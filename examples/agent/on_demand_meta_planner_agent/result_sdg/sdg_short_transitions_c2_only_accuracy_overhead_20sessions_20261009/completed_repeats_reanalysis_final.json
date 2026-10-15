@@ -1,0 +1,34 @@
+{
+  "snapshot": "final; all 20 repeats completed",
+  "workload_scope": "20 two-tool trace-derived cross-server transitions; not the full Section 5.2 QPS=1-20 sweep",
+  "mode": "c2_only",
+  "model_name": "qwen3.8-flash",
+  "repeats_requested": 20,
+  "sessions_completed": 20,
+  "sessions_failed": 0,
+  "eligible_sandbox_requests": 20,
+  "prefetch_hits": 7,
+  "pooled_prefetch_hit_rate": 0.35,
+  "started_effective_warmups": 31,
+  "discarded_effective_warmups": 23,
+  "false_positive_rate": 0.7419354838709677,
+  "late_warmups_used_total": 1,
+  "discarded_warmups_per_session": 1.15,
+  "discarded_warmup_cpu_seconds_total": 5.254226040768623,
+  "discarded_warmup_cpu_seconds_per_session": 0.2627113020384312,
+  "all_cpu_integrals_complete": true,
+  "discarded_warmup_memory_gib_seconds_total": 59.867371400742556,
+  "discarded_warmup_memory_gib_seconds_per_session": 2.993368570037128,
+  "all_memory_integrals_complete": true,
+  "accounting": {
+    "hit_rate": "Eligible requests include any demand preceded since the prior sandbox activation by a completed predictive candidate call with candidate_count > 0, across all worker records. Wrong-target prediction opportunities count as misses.",
+    "false_positive_rate": "Discarded effective warmups divided by started effective warmups; late warmups that served a later demand are not false positives.",
+    "resources": "Docker group-level CPU and memory sampled integrals, not process-level causal attribution.",
+    "comparison_limit": "This is a C2-only short-transition accuracy/overhead experiment, not a matched on-demand or C1 control and not an end-to-end QPS sweep."
+  },
+  "source_directories": [
+    "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_short_transitions_c2_only_accuracy_overhead_20sessions_20261009",
+    "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_short_transitions_c2_only_accuracy_overhead_20261009_repeats09_20"
+  ],
+  "per_repeat_csv": "completed_repeats_reanalysis_final.csv"
+}

@@ -1,0 +1,3 @@
+repeat_id,trace_id,record_index,target,candidate,schedule_timestamp,start_timestamp,ready_timestamp,later_demand_use,prefetch_hit,demand_timestamp,discard_timestamp,discard_timestamp_basis,cpu_seconds,memory_gib_seconds,resource_measurement
+6,transition_06_sdg_trace_00001,0,laplace_google_maps,Google Maps,2026-10-09T21:59:07.828,2026-10-09T21:59:07.833,2026-10-09T21:59:09.720,True,False,2026-10-09T21:59:36.469,,,,,not_applicable_warmup_was_used
+6,transition_06_sdg_trace_00001,1,laplace_weather_data,Weather Data,2026-10-09T21:59:37.390,2026-10-09T21:59:37.394,2026-10-09T21:59:40.234,False,False,,2026-10-09 22:00:27,forced_run_cleanup,0.10194721696376802,3.0325796152674593,docker_stats_sampled_estimate

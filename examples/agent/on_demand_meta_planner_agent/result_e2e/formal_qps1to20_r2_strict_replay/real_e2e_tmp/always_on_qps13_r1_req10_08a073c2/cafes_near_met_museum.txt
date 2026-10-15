@@ -1,0 +1,58 @@
+# Cafes Near The Metropolitan Museum of Art
+
+Based on Google Maps data, here are the top cafes near the Metropolitan Museum of Art (1000 5th Ave, New York, NY 10028):
+
+## Currently Open:
+1. **星巴克 (Starbucks)**
+   - Address: 1142 Madison Ave, New York, NY 10028
+   - Rating: 4.1/5 (927 reviews)
+   - Phone: (212) 288-1506
+   - Website: https://www.starbucks.com/store-locator/store/1015661
+   - Price Level: $$
+   - Notes: Convenient option that's currently open. Located just a short walk from the museum.
+
+## Highly Rated (Currently Closed):
+1. **787 Coffee** ⭐ HIGHEST RATED
+   - Address: 228 E 80th St, New York, NY 10075
+   - Rating: 4.9/5 (3,477 reviews)
+   - Phone: (646) 850-0234
+   - Website: http://www.787coffee.com/
+   - Notes: Exceptional coffee shop known for rum-infused coffee beans and friendly service. Features unique seating including a swing by the window. Customers praise the Matcha Latte and Rum-Infused Cappuccino.
+
+2. **Antonucci Cafe**
+   - Address: Near 40.7756958, -73.9569247
+   - Rating: 4.5/5 (428 reviews)
+
+3. **Tarallucci e Vino at Cooper Hewitt**
+   - Address: Near 40.7838404, -73.9576926
+   - Rating: 4.5/5 (30 reviews)
+
+4. **Café Blériot XI**
+   - Address: Near 40.7762309, -73.9544046
+   - Rating: 4.6/5 (310 reviews)
+
+5. **Café Fledermaus**
+   - Address: 1048 5th Ave, New York, NY 10028
+   - Rating: 4.2/5 (40 reviews)
+   - Phone: (212) 288-0665
+   - Website: http://www.neuegalerie.org/cafes/fledermaus
+   - Price Level: $$$
+   - Notes: Located in the Neue Galerie, offering European-style cuisine. Known for cakes, herring sandwiches, and hot wine. Some mixed reviews regarding service.
+
+6. **Rosa's Cafe & Bakery**
+   - Address: Near 40.7738014, -73.9599425
+   - Rating: 4.4/5 (34 reviews)
+
+7. **Church of Heavenly Rest Café**
+   - Address: Near 40.783823, -73.95852529999999
+   - Rating: 4.4/5 (2,274 reviews)
+
+8. **Le Pain Quotidien**
+   - Address: Near 40.7797392, -73.95935209999999
+   - Rating: 3.9/5 (881 reviews)
+
+9. **Nectar**
+   - Address: Near 40.7782667, -73.9609369
+   - Rating: 3.6/5 (1,040 reviews)
+
+For the best experience, 787 Coffee stands out with its exceptional 4.9/5 rating and unique offerings, though it may not always be open. If you need a cafe right now, Starbucks is your only currently open option within 500 meters of the museum.

@@ -1,0 +1,1 @@
+{"status": "ok", "error": null, "mode": "laplace", "trace_id": "sdg_trace_00194", "attempt_id": 1, "request_id": 16, "repeat_id": 0, "qps": 20, "e2e_ms": 21907.493337, "tool_cumulative_ms": 330.565, "worker_calls": 1, "worker_enforcement_turns": 0, "mcp_container_namespace": "laplace_qps20_r0_req16_56f8894a", "mcp_container_port": 29416}

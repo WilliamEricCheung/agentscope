@@ -1,0 +1,50 @@
+{
+  "status": "complete",
+  "repeats_per_configuration": 20,
+  "model_name": "qwen3.8-flash",
+  "workload": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_c2_transition_probe.json",
+  "allowed_mcp_servers": [
+    "Math MCP",
+    "Unit Converter"
+  ],
+  "modes": [
+    "c2_only",
+    "on_demand"
+  ],
+  "metric_units": {
+    "e2e_elapsed_ms": "ms",
+    "avg_wait_ms": "ms",
+    "p50_wait_ms": "ms",
+    "p95_wait_ms": "ms",
+    "cold_starts": "count"
+  },
+  "aggregation": "For each mode, arithmetic mean of the 20 per-session run metrics; paired delta is the arithmetic mean of same-index C2 minus on-demand values.",
+  "means": {
+    "e2e_elapsed_ms": {
+      "c2_only": 21027.050870200037,
+      "on_demand": 22355.69640409958,
+      "paired_delta_c2_minus_on_demand": -1328.6455338995438
+    },
+    "avg_wait_ms": {
+      "c2_only": 1802.0552,
+      "on_demand": 1801.7943500000001,
+      "paired_delta_c2_minus_on_demand": 0.26085000000002767
+    },
+    "p50_wait_ms": {
+      "c2_only": 1802.0552,
+      "on_demand": 1801.7943500000001,
+      "paired_delta_c2_minus_on_demand": 0.26085000000002767
+    },
+    "p95_wait_ms": {
+      "c2_only": 1802.0552,
+      "on_demand": 1801.7943500000001,
+      "paired_delta_c2_minus_on_demand": 0.26085000000002767
+    },
+    "cold_starts": {
+      "c2_only": 0.0,
+      "on_demand": 1.0,
+      "paired_delta_c2_minus_on_demand": -1.0
+    }
+  },
+  "interpretation_limit": "This is a controlled probe of the observed Math MCP -> Unit Converter Markov transition, not a full Section 5.2 workload sweep."
+}

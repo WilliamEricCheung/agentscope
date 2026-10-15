@@ -1,0 +1,30 @@
+# National Parks and Monuments in Colorado
+
+Based on the National Parks Service data, here are all 17 national parks, monuments, historic sites, and trails located in Colorado:
+
+## National Parks
+1. **Black Canyon Of The Gunnison National Park** - Features some of the steepest cliffs, oldest rock, and craggiest spires in North America.
+2. **Great Sand Dunes National Park & Preserve** - Home to the tallest dunes in North America, along with grasslands, wetlands, forests, alpine lakes, and tundra.
+3. **Mesa Verde National Park** - Protects the cultural heritage of 27 Pueblos and Tribes with over 700 years of Ancestral Pueblo history.
+4. **Rocky Mountain National Park** - Encompasses 415 square miles of mountain environments with over 300 miles of hiking trails.
+
+## National Monuments
+5. **Colorado National Monument** - Preserves towering monoliths within a vast plateau and canyon panorama.
+6. **Curecanti National Recreation Area** - Three reservoirs and surrounding lands with natural and human-made features.
+7. **Dinosaur National Monument** - Contains embedded dinosaur fossils from 150 million years ago (shared with Utah).
+8. **Florissant Fossil Beds National Monument** - One of the richest and most diverse fossil deposits in the world.
+9. **Hovenweep National Monument** - Preserves six prehistoric sites built between 1200-1300 CE (shared with Utah).
+10. **Yucca House National Monument** - A large unexcavated pueblo in Montezuma Valley.
+
+## National Historic Sites
+11. **Amache National Historic Site** - Former Japanese American incarceration site during World War II.
+12. **Bent's Old Fort National Historic Site** - Adobe trading post on the Santa Fe Trail from the 1840s.
+13. **Sand Creek Massacre National Historic Site** - Commemorates the tragic 1864 massacre of Cheyenne and Arapaho people.
+
+## National Historic Trails (portions in Colorado)
+14. **California National Historic Trail** - Follows the route of over 250,000 emigrants who traveled to California during the 1840s-1850s.
+15. **Old Spanish National Historic Trail** - Route of mule pack trains between Santa Fe, New Mexico, and Los Angeles, California.
+16. **Pony Express National Historic Trail** - The relay mail system that carried mail from Missouri to California in just 10 days.
+17. **Santa Fe National Historic Trail** - Freight wagon route between western Missouri and Santa Fe, New Mexico.
+
+This list includes all units of the National Park Service that are either entirely within Colorado or have significant portions within the state.

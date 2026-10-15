@@ -1,0 +1,55 @@
+# National Parks and Monuments in Colorado
+
+Based on the National Parks Service data, here are the national parks and monuments located in Colorado:
+
+1. **Amache National Historic Site**
+   - Designation: National Historic Site
+   - Description: One of ten incarceration sites established during World War II to unjustly incarcerate Japanese Americans.
+   - Activities: Guided Tours, Self-Guided Tours - Auto, Junior Ranger Program
+
+2. **Bent's Old Fort National Historic Site**
+   - Designation: National Historic Site
+   - Description: An adobe trading post on the Santa Fe Trail where traders, trappers, travelers, and Native American tribes came together for trade.
+   - Activities: Arts and Culture, Craft Demonstrations, Cultural Demonstrations, Biking, Guided Tours, Hiking, Living History, Junior Ranger Program, Wildlife Watching, Birdwatching, Park Film, Museum Exhibits, Shopping
+
+3. **Black Canyon Of The Gunnison National Park**
+   - Designation: National Park
+   - Description: Features some of the steepest cliffs, oldest rock, and craggiest spires in North America, carved by the Gunnison River over two million years.
+   - Activities: Astronomy, Stargazing, Camping, Climbing, Fishing, Hiking, Horseback Riding, Paddling, Kayaking, Junior Ranger Program, Skiing, Snowshoeing, Wildlife Watching, Birdwatching, Park Film, Shopping
+
+4. **California National Historic Trail** (partially in Colorado)
+   - Designation: National Historic Trail
+   - Description: Follows the route of over 250,000 emigrants who traveled to California during the 1840s and 1850s.
+   - Activities: Auto and ATV, Scenic Driving, Guided Tours, Self-Guided Tours - Auto, Hiking, Horseback Riding, Junior Ranger Program, Museum Exhibits
+
+5. **Colorado National Monument**
+   - Designation: National Monument
+   - Description: Preserves towering monoliths within a vast plateau and canyon panorama with sheer-walled, red rock canyons.
+   - Activities: Auto and ATV, Scenic Driving, Biking, Camping, Climbing, Picnicking, Hiking, Junior Ranger Program, Wildlife Watching, Park Film, Shopping
+
+6. **Curecanti National Recreation Area**
+   - Designation: National Recreation Area
+   - Description: Three reservoirs and surrounding lands featuring both natural and human-made features.
+   - Activities: Astronomy, Boating, Camping, Climbing, Fishing, Hiking, Horseback Riding, Hunting, Ice Skating, Paddling, Junior Ranger Program, Skiing, Snowmobiling, Snowshoeing, Swimming, Water Skiing, Wildlife Watching, Birdwatching, Shopping
+
+7. **Dinosaur National Monument** (shared with Utah)
+   - Designation: National Monument
+   - Description: Contains dinosaur fossils embedded in rocks along with mountains, desert, rivers, petroglyphs, and historical homesteader sites.
+   - Activities: Astronomy, Biking, Camping, Fishing, Guided Tours, Hiking, Paddling, Kayaking, Whitewater Rafting, Junior Ranger Program, Skiing, Wildlife Watching, Birdwatching, Park Film, Shopping
+
+8. **Florissant Fossil Beds National Monument**
+   - Designation: National Monument
+   - Description: Contains one of the richest and most diverse fossil deposits in the world, including petrified redwood stumps and detailed fossils of insects and plants.
+   - Activities: Astronomy, Picnicking, Guided Tours, Hiking, Horseback Riding, Junior Ranger Program, Snowshoeing, Park Film, Museum Exhibits, Shopping
+
+9. **Great Sand Dunes National Park & Preserve**
+   - Designation: National Park & Preserve
+   - Description: Home to the tallest dunes in North America within a diverse landscape of grasslands, wetlands, forests, alpine lakes, and tundra.
+   - Activities: Arts and Culture, Auto Off-Roading, Astronomy, Biking, Camping, Mountain Climbing, Fishing, Dining, Picnicking, Guided Tours, Hiking, Horseback Riding, Hunting, Junior Ranger Program, Tubing, Skiing, Snow Play, Snowshoeing, Swimming, Wildlife Watching, Birdwatching, Park Film, Museum Exhibits, Shopping
+
+10. **Hovenweep National Monument** (shared with Utah)
+    - Designation: National Monument
+    - Description: Preserves six prehistoric sites built between 1200 and 1300 CE which may have served as ceremonial centers.
+    - Activities: Astronomy, Stargazing, Camping, Hiking, Junior Ranger Program, Park Film, Shopping
+
+Note: The search returned 10 results out of a total of 17 national park sites in Colorado. To see the complete list, additional queries would be needed.

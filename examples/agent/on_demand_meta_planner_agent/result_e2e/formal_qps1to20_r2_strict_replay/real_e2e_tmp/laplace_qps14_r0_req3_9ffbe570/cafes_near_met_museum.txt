@@ -1,0 +1,89 @@
+# Cafes Near The Metropolitan Museum of Art
+
+The Metropolitan Museum of Art is located at:
+- Address: 1000 5th Ave, New York, NY 10028
+- Coordinates: 40.7794366, -73.963244
+
+## Nearby Cafes (within 500 meters)
+
+1. **Church of Heavenly Rest Café**
+   - Rating: 4.4/5 (2,256 reviews)
+   - Location: 40.783823, -73.958525
+
+2. **Antonucci Cafe**
+   - Rating: 4.5/5 (428 reviews)
+   - Location: 40.775696, -73.956925
+
+3. **Dear Coffee**
+   - Rating: 4.6/5 (330 reviews)
+   - Location: 40.778151, -73.956735
+
+4. **Lady M Cake Boutique - Upper East Side**
+   - Rating: 4.3/5 (915 reviews)
+   - Location: 40.775578, -73.962246
+
+5. **Café Fledermaus**
+   - Rating: 4.2/5 (40 reviews)
+   - Location: 40.781264, -73.960327
+
+6. **Tarallucci e Vino at Cooper Hewitt**
+   - Rating: 4.5/5 (30 reviews)
+   - Location: 40.783840, -73.957693
+
+7. **Cabuc Coffee**
+   - Rating: 4.6/5 (153 reviews)
+   - Location: 40.776992, -73.957248
+
+8. **Butterfield Market**
+   - Rating: 4.3/5 (453 reviews)
+   - Location: 40.780365, -73.959415
+
+9. **Serafina Juice Bar**
+   - Rating: 3.5/5 (26 reviews)
+   - Location: 40.776114, -73.962470
+
+10. **Le Pain Quotidien**
+    - Rating: 3.9/5 (880 reviews)
+    - Location: 40.779739, -73.959352
+
+11. **JOE & THE JUICE**
+    - Rating: 3.9/5 (240 reviews)
+    - Location: 40.775822, -73.958495
+
+12. **Casa Tevere**
+    - Rating: 4.8/5 (37 reviews) - Highest rated!
+    - Location: 40.776624, -73.957465
+
+13. **Sant Ambroeus Madison**
+    - Rating: 4.3/5 (993 reviews)
+    - Location: 40.775416, -73.962989
+
+14. **Nectar**
+    - Rating: 3.6/5 (1,040 reviews)
+    - Location: 40.778267, -73.960937
+
+15. **Starbucks**
+    - Rating: 4.1/5 (927 reviews)
+    - Location: 40.779900, -73.959710
+
+16. **Central Park cafe**
+    - Rating: 3.8/5 (16 reviews)
+    - Location: 40.779640, -73.962016
+
+17. **Eli Zabar's**
+    - Rating: 3.0/5 (1,155 reviews)
+    - Location: 40.777317, -73.961625
+
+18. **Mykonian House - Authentic Greek Restaurant**
+    - Rating: 4.2/5 (237 reviews)
+    - Location: 40.779170, -73.960629
+
+19. **Café Carlyle**
+    - Rating: 4.5/5 (502 reviews)
+    - Location: 40.774357, -73.963036
+
+20. **American Wing Cafe** (Inside the Met)
+    - Rating: 1.8/5 (109 reviews)
+    - Location: 40.780272, -73.963576
+
+Note: All cafes were showing as currently closed at the time of search.

@@ -1,0 +1,49 @@
+# Cafes Near The Metropolitan Museum of Art
+
+The Metropolitan Museum of Art is located at 1000 5th Ave, New York, NY 10028.
+
+## Currently Open Cafes
+
+### 1. Café Maud
+- **Address**: 1640 2nd Ave, New York, NY 10028
+- **Rating**: 4.2/5 (268 reviews)
+- **Phone**: (929) 630-3420
+- **Website**: https://www.cafemaud.com/ues
+- **Currently Open**: Yes
+- **Highlights**: Known for delicious breakfast burritos and eggs benedict. Offers lemon ricotta pancakes as a complimentary dessert for celebrations. Bright, comfortable atmosphere suitable for family and friend gatherings.
+
+### 2. Inès
+- **Address**: 419 E 74th St, New York, NY 10021
+- **Rating**: 4.5/5 (422 reviews)
+- **Phone**: (845) 283-0535
+- **Price Level**: $$
+- **Currently Open**: Yes
+- **Highlights**: French-style café that transforms into a wine bar in the evening. Offers a variety of wines, Spanish tapas, and excellent happy hour options. Cozy atmosphere with dim lighting in the evening.
+
+## Other Highly-Rated Cafes (Currently Closed)
+
+### 1. 787 Coffee
+- **Rating**: 4.9/5 (3,482 reviews)
+- **Location**: Approximately 0.5 miles from the Met
+
+### 2. Cositas Café
+- **Rating**: 4.8/5 (184 reviews)
+- **Location**: Approximately 0.7 miles from the Met
+
+### 3. La Bomboniera
+- **Rating**: 4.7/5 (560 reviews)
+- **Location**: Approximately 0.5 miles from the Met
+
+### 4. Ella's Cafe Espresso & Wine Bar
+- **Rating**: 4.7/5 (544 reviews)
+- **Location**: Approximately 0.8 miles from the Met
+
+### 5. JJ Brown Cup
+- **Rating**: 4.6/5 (119 reviews)
+- **Location**: Approximately 0.4 miles from the Met
+
+### 6. Café Blériot XI
+- **Rating**: 4.6/5 (310 reviews)
+- **Location**: Approximately 0.6 miles from the Met
+
+Note: All distances are approximate based on the search radius of 1000 meters (0.62 miles) from the Metropolitan Museum of Art.

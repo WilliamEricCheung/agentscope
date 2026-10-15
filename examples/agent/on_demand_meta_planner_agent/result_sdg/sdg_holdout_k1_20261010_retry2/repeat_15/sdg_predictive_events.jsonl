@@ -1,0 +1,2 @@
+{"repeat_id": 15, "record_index": 0, "event_index": 1, "timestamp_unix_ms": 1791596827168.16, "current_server": "laplace-math-mcp", "status": "completed", "candidate_count": 1}
+{"repeat_id": 15, "record_index": 1, "event_index": 1, "timestamp_unix_ms": 1791596850828.164, "current_server": "laplace-unit-converter", "status": "completed", "candidate_count": 0}

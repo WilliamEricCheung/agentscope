@@ -1,0 +1,39 @@
+Cafes within 500 meters of the Metropolitan Museum of Art (40.7794366, -73.963244)
+
+1. Café Fledermaus
+   Rating: 4.2/5 (40 reviews)
+   Location: 40.781264, -73.9603267
+
+2. Rosa's Cafe & Bakery
+   Rating: 4.4/5 (34 reviews)
+   Currently closed
+
+3. Church of Heavenly Rest Café
+   Rating: 4.4/5 (2,292 reviews)
+   Currently closed
+
+4. Tarallucci e Vino at Cooper Hewitt
+   Rating: 4.5/5 (30 reviews)
+   Currently closed
+
+5. Antonucci Cafe
+   Rating: 4.5/5 (428 reviews)
+   Currently closed
+
+6. Le Pain Quotidien
+   Rating: 3.9/5 (881 reviews)
+   Currently closed
+
+7. 787 Coffee
+   Rating: 4.9/5 (3,482 reviews)
+   Currently closed
+
+8. Café Blériot XI
+   Rating: 4.6/5 (310 reviews)
+   Currently closed
+
+9. Nectar
+   Rating: 3.6/5 (1,039 reviews)
+   Currently closed
+
+Note: Most cafes appear to be currently closed based on the data retrieved.

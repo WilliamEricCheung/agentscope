@@ -1,0 +1,90 @@
+# National Parks and Monuments in Colorado
+
+Based on the National Parks Service data, here are all 17 national parks, monuments, historic sites, and trails located in Colorado:
+
+1. **Amache National Historic Site**
+   - Designation: National Historic Site
+   - Description: Former incarceration site for Japanese Americans during World War II
+   - Location: Near Granada, Colorado
+
+2. **Bent's Old Fort National Historic Site**
+   - Designation: National Historic Site
+   - Description: Adobe trading post on the Santa Fe Trail from the 1840s
+   - Location: Along the Arkansas River
+
+3. **Black Canyon Of The Gunnison National Park**
+   - Designation: National Park
+   - Description: Features some of the steepest cliffs, oldest rock, and craggiest spires in North America
+   - Location: Western Colorado
+
+4. **California National Historic Trail**
+   - Designation: National Historic Trail
+   - Description: Over 5,000 miles long trail that passes through portions of 10 states including Colorado
+   - Note: Only a portion of this trail runs through Colorado
+
+5. **Colorado National Monument**
+   - Designation: National Monument
+   - Description: Preserves towering monoliths within a vast plateau and canyon panorama
+   - Location: Near Grand Junction
+
+6. **Curecanti National Recreation Area**
+   - Designation: National Recreation Area
+   - Description: Three reservoirs and surrounding lands in western Colorado
+   - Features: Blue Mesa, Morrow Point, and Crystal Reservoirs
+
+7. **Dinosaur National Monument**
+   - Designation: National Monument
+   - Description: Contains dinosaur fossils embedded in rocks, mountains, desert, and rivers
+   - Note: Spans both Colorado and Utah
+
+8. **Florissant Fossil Beds National Monument**
+   - Designation: National Monument
+   - Description: One of the richest and most diverse fossil deposits in the world
+   - Features: Petrified redwood stumps and detailed fossils of insects and plants
+
+9. **Great Sand Dunes National Park & Preserve**
+   - Designation: National Park & Preserve
+   - Description: Home to the tallest dunes in North America
+   - Features: Diverse landscape of grasslands, wetlands, forests, alpine lakes, and tundra
+
+10. **Hovenweep National Monument**
+    - Designation: National Monument
+    - Description: Preserves six prehistoric sites built between 1200 and 1300 CE
+    - Note: Spans both Colorado and Utah
+
+11. **Mesa Verde National Park**
+    - Designation: National Park
+    - Description: Protects Ancestral Pueblo communities built on mesas and in cliffs
+    - Features: Over 700 years of cultural heritage, World Heritage Site
+
+12. **Old Spanish National Historic Trail**
+    - Designation: National Historic Trail
+    - Description: Route of mule pack trains across the Southwest between Santa Fe and Los Angeles
+    - Note: Only a portion of this trail runs through Colorado
+
+13. **Pony Express National Historic Trail**
+    - Designation: National Historic Trail
+    - Description: Relay system for mail delivery from Missouri to California
+    - Note: Only a portion of this trail runs through Colorado
+
+14. **Rocky Mountain National Park**
+    - Designation: National Park
+    - Description: 415 square miles of mountain environments with over 300 miles of hiking trails
+    - Features: Mountain peaks, alpine lakes, and abundant wildlife
+
+15. **Sand Creek Massacre National Historic Site**
+    - Designation: National Historic Site
+    - Description: Commemorates the tragic 1864 massacre of Cheyenne and Arapaho people
+    - Location: Southeastern Colorado
+
+16. **Santa Fe National Historic Trail**
+    - Designation: National Historic Trail
+    - Description: Trade route between western Missouri and Santa Fe, New Mexico
+    - Note: Only a portion of this trail runs through Colorado
+
+17. **Yucca House National Monument**
+    - Designation: National Monument
+    - Description: Large unexcavated pueblo in Montezuma Valley
+    - Note: Located between Mesa Verde and Ute Mountain
+
+Note: Some of these sites are shared with other states, particularly the National Historic Trails which span multiple states.

@@ -1,0 +1,4 @@
+repeat_id,trace_id,record_index,target,candidate,schedule_timestamp,start_timestamp,ready_timestamp,later_demand_use,prefetch_hit,demand_timestamp,discard_timestamp,discard_timestamp_basis,cpu_seconds,memory_gib_seconds,resource_measurement
+2,sdg_trace_00152,0,laplace_wikipedia,Wikipedia,2026-10-09T20:41:27.415,2026-10-09T20:41:27.420,2026-10-09T20:41:31.377,True,True,2026-10-09T20:42:07.682,,,,,not_applicable_warmup_was_used
+2,sdg_trace_00152,1,laplace_google_maps,Google Maps,2026-10-09T20:42:30.732,2026-10-09T20:42:30.737,2026-10-09T20:42:32.690,False,False,,2026-10-09 20:50:28,forced_run_cleanup,0.4489846497893333,4.219948618952184,docker_stats_sampled_estimate
+2,sdg_trace_00152,2,laplace_biomcp,BioMCP,2026-10-09T20:48:56.298,2026-10-09T20:48:56.303,2026-10-09T20:48:58.423,False,False,,2026-10-09 20:50:28,forced_run_cleanup,1.4916376609683037,7.629231094247662,docker_stats_sampled_estimate

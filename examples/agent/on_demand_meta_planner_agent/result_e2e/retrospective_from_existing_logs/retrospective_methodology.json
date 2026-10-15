@@ -1,0 +1,56 @@
+{
+  "source_dir": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_e2e/formal_qps1to20_r2_strict_replay",
+  "source_files": [
+    "real_e2e_request_results.jsonl",
+    "real_e2e_wave_results.jsonl",
+    "real_e2e_tmp/<request_namespace>/*_timing.log.jsonl"
+  ],
+  "qps_range": [
+    1,
+    20
+  ],
+  "retained_repeats": [
+    0,
+    1
+  ],
+  "successful_request_rows": 1260,
+  "repeat_level_rows": 120,
+  "qps_mean_rows": 100,
+  "p99_aggregation": "Nearest-rank P99 over successful requests within each QPS/repeat wave, then arithmetic mean of the two repeat-level P99 values.",
+  "cumulative_latency_aggregation": "Per-request cumulative provisioning latency is the sum of worker wait-for-ready times. Average across requests within each repeat wave, then arithmetic mean across repeats.",
+  "resource_aggregation": "Use peak CPU cores and peak memory GiB recorded for each wave, then arithmetic mean across repeats.",
+  "configuration_notes": [
+    "Retained runs contain only on_demand, laplace, and always_on modes.",
+    "Laplace has prompt prewarm and predictive warmer enabled together; it maps to the requested +Prefetch stage, but cannot isolate +Prewarm.",
+    "No semantic cache or out-of-band data transmission E2E mode is present in retained runs.",
+    "The two measured modes use the same sampled trace IDs per QPS/repeat and default model parameters; the runner derives a different deterministic API seed per mode.",
+    "The retained run contains two repeats per QPS, not the requested ten."
+  ],
+  "prefetch_observation": {
+    "source": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_e2e/formal_qps1to20_r2_strict_replay",
+    "mode": "laplace",
+    "scope": "Retained successful Laplace-mode sessions only; prompt/stream C1 warmups excluded from SDG metrics.",
+    "sessions": 420,
+    "predictive_calls": 1222,
+    "candidate_targets_emitted": 0,
+    "predictive_warmups_scheduled": 0,
+    "predictive_warmups_completed": 0,
+    "predictive_warmup_records": 0,
+    "c1_effective_starts_context_only": 40,
+    "missing_timing_logs": 0,
+    "prefetch_hit_rate": null,
+    "prefetch_hit_rate_status": "undefined_zero_eligible_candidate_targets",
+    "prefetch_hit_rate_numerator": null,
+    "prefetch_hit_rate_denominator_candidate_targets": 0,
+    "false_positive_rate": null,
+    "false_positive_rate_status": "undefined_zero_started_predictive_warmups",
+    "false_positive_rate_numerator": null,
+    "false_positive_rate_denominator_started_warmups": 0,
+    "discarded_warmups_per_session": 0.0,
+    "discarded_warmup_cpu_seconds_per_session": 0.0,
+    "discarded_warmup_memory_gib_seconds_per_session": 0.0,
+    "resource_accounting": "No SDG predictive warmups were scheduled in retained successful runs, so SDG-attributable discard count and resource integrals are zero for these logs. Per-warmup CPU and memory were not recorded; host wave samples cannot attribute resources to an individual warmup. Intent-aware prompt/stream C1 warmups are a separate mechanism and are excluded.",
+    "denominator_definition": "Candidate-target denominator is the sum of candidate_count over predictive calls. The retained logs emit zero candidates, so hit rate has a zero denominator. False-positive denominator is accepted predictive-stage prewarm_schedule events; zero were recorded."
+  },
+  "status": "retrospective_partial"
+}

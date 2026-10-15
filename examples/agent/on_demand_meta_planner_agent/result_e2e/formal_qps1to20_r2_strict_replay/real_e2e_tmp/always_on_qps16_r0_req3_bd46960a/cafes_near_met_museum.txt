@@ -1,0 +1,53 @@
+# Cafes Near The Metropolitan Museum of Art
+
+The Metropolitan Museum of Art is located at:
+- Address: 1000 5th Ave, New York, NY 10028
+- Coordinates: 40.7794366, -73.963244
+
+## Nearby Cafes (within 500 meters)
+
+1. **Café Fledermaus**
+   - Rating: 4.2/5 (40 reviews)
+   - Coordinates: 40.781264, -73.9603267
+
+2. **Cabuc Coffee** (Currently Open)
+   - Rating: 4.6/5 (153 reviews)
+   - Coordinates: 40.7769918, -73.9572481
+
+3. **星巴克 (Starbucks)** (Currently Open)
+   - Rating: 4.1/5 (927 reviews)
+   - Coordinates: 40.7799, -73.95971
+
+4. **Rosa's Cafe & Bakery**
+   - Rating: 4.4/5 (34 reviews)
+   - Coordinates: 40.7738014, -73.9599425
+
+5. **Church of Heavenly Rest Café**
+   - Rating: 4.4/5 (2,274 reviews)
+   - Coordinates: 40.783823, -73.9585253
+
+6. **Tarallucci e Vino at Cooper Hewitt**
+   - Rating: 4.5/5 (30 reviews)
+   - Coordinates: 40.7838404, -73.9576926
+
+7. **Antonucci Cafe**
+   - Rating: 4.5/5 (428 reviews)
+   - Coordinates: 40.7756958, -73.9569247
+
+8. **Le Pain Quotidien**
+   - Rating: 3.9/5 (881 reviews)
+   - Coordinates: 40.7797392, -73.9593521
+
+9. **787 Coffee**
+   - Rating: 4.9/5 (3,477 reviews)
+   - Coordinates: 40.7742889, -73.9556323
+
+10. **Café Blériot XI**
+    - Rating: 4.6/5 (310 reviews)
+    - Coordinates: 40.7762309, -73.9544046
+
+11. **Nectar**
+    - Rating: 3.6/5 (1,040 reviews)
+    - Coordinates: 40.7782667, -73.9609369
+
+Note: Only Cabuc Coffee and Starbucks are currently open according to the data.

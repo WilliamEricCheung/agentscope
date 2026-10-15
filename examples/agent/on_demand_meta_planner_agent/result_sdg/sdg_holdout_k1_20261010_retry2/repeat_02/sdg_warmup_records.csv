@@ -1,0 +1,2 @@
+repeat_id,trace_id,record_index,target,candidate,schedule_timestamp,start_timestamp,ready_timestamp,later_demand_use,prefetch_hit,demand_timestamp,discard_timestamp,discard_timestamp_basis,cpu_seconds,memory_gib_seconds,resource_measurement
+2,holdout_transition_02_sdg_trace_00005,0,laplace_weather_data,Weather Data,2026-10-10T09:22:31.210,2026-10-10T09:22:31.214,2026-10-10T09:22:35.098,True,True,2026-10-10T09:22:49.406,,,,,not_applicable_warmup_was_used

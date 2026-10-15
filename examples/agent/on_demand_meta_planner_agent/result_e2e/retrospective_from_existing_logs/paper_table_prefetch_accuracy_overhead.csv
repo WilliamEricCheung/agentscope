@@ -1,0 +1,6 @@
+metric,value,unit,numerator,denominator,status,accounting
+Prefetch hit rate,,fraction,,0,undefined_zero_eligible_candidate_targets,No candidate targets were emitted; target names and later demand use are not recorded.
+False-positive rate,,fraction,0,0,undefined_zero_started_predictive_warmups,Denominator is accepted predictive-stage schedules; none were recorded.
+Discarded warmups per session,0.0,warmups/session,0,420,measured_no_predictive_warmups_started,SDG predictive-stage schedules were zero; prompt/stream C1 warmups excluded.
+Discarded-warmup CPU time per session,0.0,CPU-seconds/session,0,420,measured_no_predictive_warmups_started,"Zero SDG warmups, therefore zero SDG-attributable CPU integral; not a per-warmup resource measurement."
+Discarded-warmup memory per session,0.0,GiB-seconds/session,0,420,measured_no_predictive_warmups_started,"Zero SDG warmups, therefore zero SDG-attributable memory integral; not a per-warmup resource measurement."

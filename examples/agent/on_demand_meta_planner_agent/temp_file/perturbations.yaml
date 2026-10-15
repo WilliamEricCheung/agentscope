@@ -1,0 +1,87 @@
+version: 1
+# =====================================================================
+# 扰动算子注册表（五层：网络运行时 / 语义返回值 / 状态 / 引用 / 顺序）
+# status 取值：implemented | stub | stub_verified_primitive | nonexistent_api
+# implemented 的三项与 code_snippets.py 片段 3 一一对应，可确定性抽样注入。
+# nixos-test 事实核查结论（直接采用，勿重新发明）：
+#   - block() / unblock() / crash() 已核实可用；
+#   - VirtioTestDriver、create_block_snapshot、rollback_to_snapshot 不存在，
+#     状态回滚须自建 qcow2 overlay —— 工程推断，非官方 API；
+#   - Nix flake 官方标注 Experimental。
+# =====================================================================
+
+sampling:
+  # PerturbationScheduler 用 random.Random(seed) 在 implemented 算子上独立抽样，
+  # 同一 seed 必须产生完全相同的 (operator, epsilon) 序列（Trace Determinism Score 前提）。
+  default_eps_grid: [0.0, 0.1, 0.25, 0.5]
+
+layers:
+
+  network_runtime:
+    - op_id: net_timeout
+      kind: timeout
+      status: implemented
+      eps_grid: [0.0, 0.1, 0.25, 0.5]
+      params: {normal_latency_ms: 200}
+      semantics: "budget = (1-eps)*normal_latency；真实调用照常发生，超时则替换为 error_class=TimeoutError"
+    - op_id: net_flaky_conn
+      kind: connection_reset
+      status: stub
+      note: "TODO: 模拟 TCP RST / DNS 抖动；接口签名同 apply_perturbation(op, eps, call, args)"
+    - op_id: net_throttle
+      kind: bandwidth_cap
+      status: stub
+      note: "TODO: nixos-test 内 tc netem 限速；block()/unblock()（已核实可用）可作粗粒度等价物"
+
+  semantic_return:
+    - op_id: sem_field_drop
+      kind: field_drop
+      status: implemented
+      eps_grid: [0.0, 0.1, 0.25, 0.5]
+      semantics: "eps = 丢弃响应字段的 fraction；按 key 字典序切片丢弃以保持确定性"
+    - op_id: sem_wrong_unit
+      kind: value_perturb
+      status: stub
+      note: "TODO: 数值字段乘确定性因子（单位/量纲错乱），喂 D2 Failure Mode Distribution"
+    - op_id: sem_empty_but_ok
+      kind: empty_success
+      status: stub
+      note: "TODO: 返回 200 + 空 payload，诱导代理误判成功（考验 D1 Verifiable Outcome Rate）"
+
+  state:
+    - op_id: st_crash_midwrite
+      kind: vm_crash
+      status: stub_verified_primitive
+      note: "底层 crash() 已核实可用；编排逻辑待实现（写入中途崩溃 -> 检查 terminal_state_diff）"
+    - op_id: st_block_disk
+      kind: io_block
+      status: stub_verified_primitive
+      note: "block()/unblock() 已核实可用；用于制造挂起而非报错（考验 D6 Tool Wait Time 占比）"
+    - op_id: st_rollback
+      kind: snapshot_rollback
+      status: nonexistent_api
+      note: >
+        create_block_snapshot / rollback_to_snapshot / VirtioTestDriver 均不存在。
+        替代路线（工程推断）：qemu-img create -f qcow2 -b base.qcow2 overlay.img，
+        回滚 = 丢弃 overlay 重建。报告须标注此为自建方案而非官方能力，先小规模验证。
+
+  reference:
+    - op_id: ref_nonexistent_id
+      kind: nonexistent_id
+      status: implemented
+      eps_grid: [0.0, 0.1, 0.25, 0.5]
+      semantics: "eps>=0.5 时将响应中的资源 id 替换为确定性的不存在 id（喂 D4 Hallucinated Reference Rate）"
+    - op_id: ref_stale_version
+      kind: stale_reference
+      status: stub
+      note: "TODO: 返回历史版本的资源快照，考验 D5 Cross-Turn Contradiction Rate"
+
+  ordering:
+    - op_id: ord_shuffle_results
+      kind: result_reorder
+      status: stub
+      note: "TODO: 多工具并行结果的到达顺序打乱（seed 决定置换，保持可复现）"
+    - op_id: ord_duplicate_delivery
+      kind: duplicate_msg
+      status: stub
+      note: "TODO: 重复投递同一响应，考验 D4 Idempotency Violation Count"

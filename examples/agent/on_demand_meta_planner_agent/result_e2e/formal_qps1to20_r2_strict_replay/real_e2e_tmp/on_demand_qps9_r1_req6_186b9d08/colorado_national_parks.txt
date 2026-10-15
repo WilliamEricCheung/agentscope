@@ -1,0 +1,77 @@
+# National Parks in Colorado
+
+Based on the National Parks Service data, there are 17 national park sites located within the state of Colorado. These include National Parks, National Monuments, National Historic Sites, and National Historic Trails that pass through Colorado.
+
+## National Parks
+1. **Black Canyon Of The Gunnison National Park** (blca)
+   - Designation: National Park
+   - Description: Features some of the steepest cliffs, oldest rock, and craggiest spires in North America, carved by the Gunnison River over two million years.
+
+2. **Great Sand Dunes National Park & Preserve** (grsa)
+   - Designation: National Park & Preserve
+   - Description: Home to the tallest dunes in North America, set against a diverse landscape of grasslands, wetlands, forests, alpine lakes, and tundra.
+
+3. **Mesa Verde National Park** (meve)
+   - Designation: National Park
+   - Description: Protects the cultural heritage of 27 Pueblos and Tribes, featuring over 700 years of Ancestral Pueblo communities built on mesas and in cliffs.
+
+4. **Rocky Mountain National Park** (romo)
+   - Designation: National Park
+   - Description: Encompasses 415 square miles of spectacular mountain environments, from montane meadows to alpine lakes and towering peaks.
+
+## National Monuments
+5. **Colorado National Monument** (colm)
+   - Designation: National Monument
+   - Description: Preserves one of the grand landscapes of the American West with towering monoliths within a vast plateau and canyon panorama.
+
+6. **Curecanti National Recreation Area** (cure)
+   - Designation: National Recreation Area
+   - Description: Comprises three reservoirs and surrounding lands in western Colorado, featuring both natural and human-made features.
+
+7. **Dinosaur National Monument** (dino)
+   - Designation: National Monument (shared with Utah)
+   - Description: Contains dinosaur fossils embedded in rocks, along with mountains, desert, rivers, petroglyphs, and historical homesteader sites.
+
+8. **Florissant Fossil Beds National Monument** (flfo)
+   - Designation: National Monument
+   - Description: Contains one of the richest and most diverse fossil deposits in the world, including petrified redwood stumps and detailed insect fossils.
+
+9. **Hovenweep National Monument** (hove)
+   - Designation: National Monument (shared with Utah)
+   - Description: Preserves six prehistoric sites built between 1200 and 1300 CE, featuring multistory towers perched on canyon rims.
+
+10. **Yucca House National Monument** (yuho)
+    - Designation: National Monument
+    - Description: Preserves a large unexcavated pueblo in Montezuma Valley, largely untouched since its protection as a national monument in 1919.
+
+## National Historic Sites
+11. **Amache National Historic Site** (amch)
+    - Designation: National Historic Site
+    - Description: Formerly the Granada Relocation Center, one of ten incarceration sites for Japanese Americans during World War II.
+
+12. **Bent's Old Fort National Historic Site** (beol)
+    - Designation: National Historic Site
+    - Description: A reconstructed adobe trading post on the Santa Fe Trail where traders, trappers, travelers, and Native tribes met for trade.
+
+13. **Sand Creek Massacre National Historic Site** (sand)
+    - Designation: National Historic Site
+    - Description: Commemorates the tragic 1864 massacre of Cheyenne and Arapaho people by U.S. forces.
+
+## National Historic Trails (that pass through Colorado)
+14. **California National Historic Trail** (cali)
+    - Designation: National Historic Trail
+    - Description: Follows the route of over 250,000 emigrants who traveled to California during the 1840s and 1850s.
+
+15. **Old Spanish National Historic Trail** (olsp)
+    - Designation: National Historic Trail
+    - Description: Follows the routes of mule pack trains across the Southwest between Santa Fe, New Mexico, and Los Angeles, California.
+
+16. **Pony Express National Historic Trail** (poex)
+    - Designation: National Historic Trail
+    - Description: Marks the route where young men carried mail from Missouri to California in just 10 days before the telegraph.
+
+17. **Santa Fe National Historic Trail** (safe)
+    - Designation: National Historic Trail
+    - Description: Follows the historic commercial highway between western Missouri and Santa Fe, New Mexico.
+
+Note: Some sites like Dinosaur National Monument and Hovenweep National Monument are shared with other states (Utah), but have significant portions within Colorado.

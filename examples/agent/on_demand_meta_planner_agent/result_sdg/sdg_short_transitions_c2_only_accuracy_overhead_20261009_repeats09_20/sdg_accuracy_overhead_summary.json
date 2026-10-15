@@ -1,0 +1,70 @@
+{
+  "status": "complete",
+  "repeats_requested": 12,
+  "sessions_completed": 12,
+  "workload_script": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_short_transitions_20/sdg_short_transition_suite_remaining_09_20_manifest.json",
+  "trace_suite_case_count": 12,
+  "mode": "c2_only",
+  "model_name": "qwen3.8-flash",
+  "planner_max_iters": 20,
+  "stream_interval_tokens": 20,
+  "performance_means": {
+    "worker_calls": {
+      "mean_per_session": 2.0,
+      "sessions_with_value": 12
+    },
+    "e2e_elapsed_ms": {
+      "mean_per_session": 102903.73515316666,
+      "sessions_with_value": 12
+    },
+    "avg_wait_ms": {
+      "mean_per_session": 2468.829,
+      "sessions_with_value": 12
+    },
+    "p50_wait_ms": {
+      "mean_per_session": 2468.829,
+      "sessions_with_value": 12
+    },
+    "p95_wait_ms": {
+      "mean_per_session": 1851.3531666666665,
+      "sessions_with_value": 12
+    },
+    "cold_starts": {
+      "mean_per_session": 1.6666666666666667,
+      "sessions_with_value": 12
+    }
+  },
+  "prefetch_hit_rate": 0.18181818181818182,
+  "prefetch_hit_rate_numerator": 2,
+  "prefetch_hit_rate_denominator_eligible_sandbox_requests": 11,
+  "false_positive_rate": 0.875,
+  "false_positive_rate_numerator_discarded_started_warmups": 14,
+  "false_positive_rate_denominator_started_warmups": 16,
+  "late_warmups_used_total": 0,
+  "late_warmups_used_per_session": 0.0,
+  "discarded_warmups_per_session": 1.1666666666666667,
+  "discarded_warmup_cpu_seconds_per_session": 0.22154952571094036,
+  "discarded_warmup_memory_gib_seconds_per_session": 2.68304339331177,
+  "cpu_resource_sessions_complete": 12,
+  "memory_resource_sessions_complete": 12,
+  "cpu_observed_mean_per_complete_session": 0.22154952571094036,
+  "memory_observed_mean_per_complete_session": 2.68304339331177,
+  "cpu_resource_records_available": 14,
+  "memory_resource_records_available": 14,
+  "resource_measurement": "CPU and memory are estimated by trapezoidal integration of Docker stats samples for all base and request-scoped containers matching the MCP target group. Integration starts at warmup start and ends at the detected cold-demand/supersession boundary or forced run cleanup. Overlapping discarded warmups for one group split that group's sampled integral equally. Samples are taken at the configured interval; attribution is estimated at group/container level, not directly measured per warmup process.",
+  "lifecycle_accounting": "A started predictive executor counts as a warmup only if its executor created or resumed a container (effective=true). It is marked used when a later demand for the same MCP group reaches a running/resume ready state after that warmup started. A hit additionally requires the warmup to be ready before the demand activation began. Thus a late-but-used warmup is not counted as a false positive. Discard timestamps are detected boundaries, not directly observed Docker removal timestamps.",
+  "attribution_limitations": "C1 prompt/stream prewarming is disabled in c2_only mode. In c1_c2 mode, if both mechanisms target the same MCP group, timing and group-level Docker stats cannot causally separate their contribution.",
+  "hit_rate_accounting": "The denominator is every tool_group_activation_requested event preceded, since the prior sandbox activation in the same worker record, by a completed predictive-stage predict_candidates event with candidate_count > 0. The requested group need not match a predicted candidate, so wrong-target predictions count as misses. A hit requires an effective predictive executor for the requested group and a running/resume ready event after warmup completion and before the activation.",
+  "aggregation": "Hit and false-positive rates pool numerators and denominators across completed sessions. Per-session discarded counts and resource integrals are pooled totals divided by completed sessions. Resource means include zero-cost sessions with no discarded warmups; records missing sufficient Docker samples are counted separately.",
+  "resource_session_completeness": {
+    "cpu": 12,
+    "memory": 12,
+    "total_sessions": 12,
+    "paper_table_values_are_null_unless_all_sessions_are_measured": true
+  },
+  "files": {
+    "warmup_records": "sdg_warmup_records.csv",
+    "repeat_summary": "sdg_accuracy_overhead_by_repeat.csv",
+    "prediction_events": "sdg_predictive_events.jsonl"
+  }
+}

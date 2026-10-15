@@ -1,0 +1,6 @@
+{"repeat_id": 3, "record_index": 0, "event_index": 1, "timestamp_unix_ms": 1791558691060.357, "current_server": "laplace-wikipedia", "status": "completed", "candidate_count": 1}
+{"repeat_id": 3, "record_index": 1, "event_index": 1, "timestamp_unix_ms": 1791558722284.788, "current_server": "laplace-google-maps", "status": "completed", "candidate_count": 1}
+{"repeat_id": 3, "record_index": 1, "event_index": 4, "timestamp_unix_ms": 1791558724955.409, "current_server": "laplace-google-maps", "status": "completed", "candidate_count": 1}
+{"repeat_id": 3, "record_index": 1, "event_index": 6, "timestamp_unix_ms": 1791558726933.768, "current_server": "laplace-google-maps", "status": "completed", "candidate_count": 1}
+{"repeat_id": 3, "record_index": 1, "event_index": 9, "timestamp_unix_ms": 1791558738108.612, "current_server": "laplace-google-maps", "status": "completed", "candidate_count": 1}
+{"repeat_id": 3, "record_index": 1, "event_index": 11, "timestamp_unix_ms": 1791558740218.814, "current_server": "laplace-google-maps", "status": "completed", "candidate_count": 1}

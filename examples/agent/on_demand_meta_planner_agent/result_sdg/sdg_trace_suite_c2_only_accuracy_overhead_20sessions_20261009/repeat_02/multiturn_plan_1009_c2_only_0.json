@@ -1,0 +1,36 @@
+{
+  "artifact_path": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/result_sdg/sdg_trace_suite_c2_only_accuracy_overhead_20sessions_20261009/repeat_02/multiturn_plan_1009_c2_only_0.json",
+  "started_at": "2026-10-09 20:40:56",
+  "finished_at": "2026-10-09 20:50:28",
+  "run_mode": "c2_only",
+  "model_name": "qwen3.8-flash",
+  "planner_max_iters": 20,
+  "stream_interval_tokens": 20,
+  "turns": [
+    "Complete this request: I read about a recent solar flare that might affect pacemaker patients. Can you assess the clinical risk using real biomedical data and space weather reports?\n\nFor this controlled trace-replay experiment, use the listed MCP groups and tools in exactly this order. Actually call each listed tool; do not skip a step or replace tool execution with a mental answer. Use returned data as input to later steps. If a tool call fails or is unavailable, state that explicitly and continue only where possible.\n\nRecorded workflow:\n1. Activate MCP group \"laplace_nasa_data\" (server: NASA Data) and call tool \"get_solar_flare\". Goal: Fetch the latest solar flare event data to identify intensity and timing.\n2. Activate MCP group \"laplace_wikipedia\" (server: Wikipedia) and call tool \"search_wikipedia\". Goal: Search for general medical effects of solar flares on implanted cardiac devices.\n3. Activate MCP group \"laplace_paper_search\" (server: Paper Search) and call tool \"search_pubmed\". Goal: Find peer-reviewed studies linking geomagnetic activity to pacemaker malfunction.\n4. Activate MCP group \"laplace_paper_search\" (server: Paper Search) and call tool \"read_pubmed_paper\". Goal: Read the most relevant PubMed paper to extract clinical thresholds or risk factors.\n5. Activate MCP group \"laplace_biomcp\" (server: BioMCP) and call tool \"think\". Goal: Interpret extracted clinical thresholds in context of the solar flare’s X-class rating.\n6. Activate MCP group \"laplace_medical_calculator\" (server: Medical Calculator) and call tool \"has_bled_score\". Goal: As a proxy for patient vulnerability, compute HAS-BLED score assuming baseline comorbidities (fallback due to missing patient data).\n7. Activate MCP group \"laplace_nasa_data\" (server: NASA Data) and call tool \"get_notifications\". Goal: Check if NASA issued any public health advisories related to the flare.\n\nReturn a concise result based on the tool outputs."
+  ],
+  "transcript": [
+    {
+      "user": "Complete this request: I read about a recent solar flare that might affect pacemaker patients. Can you assess the clinical risk using real biomedical data and space weather reports?\n\nFor this controlled trace-replay experiment, use the listed MCP groups and tools in exactly this order. Actually call each listed tool; do not skip a step or replace tool execution with a mental answer. Use returned data as input to later steps. If a tool call fails or is unavailable, state that explicitly and continue only where possible.\n\nRecorded workflow:\n1. Activate MCP group \"laplace_nasa_data\" (server: NASA Data) and call tool \"get_solar_flare\". Goal: Fetch the latest solar flare event data to identify intensity and timing.\n2. Activate MCP group \"laplace_wikipedia\" (server: Wikipedia) and call tool \"search_wikipedia\". Goal: Search for general medical effects of solar flares on implanted cardiac devices.\n3. Activate MCP group \"laplace_paper_search\" (server: Paper Search) and call tool \"search_pubmed\". Goal: Find peer-reviewed studies linking geomagnetic activity to pacemaker malfunction.\n4. Activate MCP group \"laplace_paper_search\" (server: Paper Search) and call tool \"read_pubmed_paper\". Goal: Read the most relevant PubMed paper to extract clinical thresholds or risk factors.\n5. Activate MCP group \"laplace_biomcp\" (server: BioMCP) and call tool \"think\". Goal: Interpret extracted clinical thresholds in context of the solar flare’s X-class rating.\n6. Activate MCP group \"laplace_medical_calculator\" (server: Medical Calculator) and call tool \"has_bled_score\". Goal: As a proxy for patient vulnerability, compute HAS-BLED score assuming baseline comorbidities (fallback due to missing patient data).\n7. Activate MCP group \"laplace_nasa_data\" (server: NASA Data) and call tool \"get_notifications\". Goal: Check if NASA issued any public health advisories related to the flare.\n\nReturn a concise result based on the tool outputs.",
+      "assistant": "Now executing step 4: read the most relevant PubMed paper (PMID 25659238) to extract clinical thresholds and risk factors."
+    }
+  ],
+  "timing_log_path": "/mnt/d/Project/agentscope/examples/agent/on_demand_meta_planner_agent/temp_file/sdg_overhead_timing_20261009_203200_71902.jsonl",
+  "worker_records": 3,
+  "metrics": {
+    "run_mode": "c2_only",
+    "worker_calls": 3,
+    "avg_wait_ms": 3052.8613333333333,
+    "p50_wait_ms": 3988.44,
+    "p95_wait_ms": 3988.44,
+    "cold_starts": 3,
+    "non_cold_starts": 0,
+    "telemetry_prompt_route_calls": 0,
+    "telemetry_predict_calls": 36,
+    "telemetry_schedule_attempts": 36,
+    "telemetry_schedule_accepted": 3,
+    "telemetry_executor_runs": 3,
+    "telemetry_executor_errors": 0,
+    "e2e_elapsed_ms": 576343.2825700002
+  }
+}

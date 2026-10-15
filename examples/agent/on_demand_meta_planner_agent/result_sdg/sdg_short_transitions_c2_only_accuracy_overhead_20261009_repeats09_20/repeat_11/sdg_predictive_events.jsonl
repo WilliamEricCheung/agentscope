@@ -1,0 +1,3 @@
+{"repeat_id": 11, "record_index": 0, "event_index": 1, "timestamp_unix_ms": 1791559553566.352, "current_server": "laplace-google-maps", "status": "completed", "candidate_count": 1}
+{"repeat_id": 11, "record_index": 0, "event_index": 4, "timestamp_unix_ms": 1791559556395.35, "current_server": "laplace-google-maps", "status": "completed", "candidate_count": 1}
+{"repeat_id": 11, "record_index": 1, "event_index": 1, "timestamp_unix_ms": 1791559597129.7, "current_server": "playwright-mcp", "status": "completed", "candidate_count": 1}

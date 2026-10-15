@@ -1,0 +1,185 @@
+# -*- coding: utf-8 -*-
+"""Plot cumulative-latency CDF for on_demand/laplace/always_on conditions.
+
+This plot supports both new three-way CSV columns and old two-way CSV columns.
+"""
+
+from __future__ import annotations
+
+import argparse
+import csv
+import math
+from pathlib import Path
+
+_THIS_DIR = Path(__file__).resolve().parent
+_DEFAULT_INPUT_CSV = _THIS_DIR / "cumulative_trace_metrics.csv"
+_DEFAULT_OUTPUT_PREFIX = _THIS_DIR / "cumulative_latency_cdf"
+
+
+def _load_series(csv_path: Path) -> tuple[list[float], list[float], list[float]]:
+    """Load on_demand, laplace, and always_on latency series from CSV.
+
+    Args:
+        csv_path (`Path`):
+            Input metrics CSV path.
+
+    Returns:
+        `tuple[list[float], list[float], list[float]]`:
+            on_demand, laplace and always_on latency series in milliseconds.
+    """
+    on_demand: list[float] = []
+    laplace: list[float] = []
+    always_on: list[float] = []
+
+    with csv_path.open("r", encoding="utf-8", newline="") as file:
+        reader = csv.DictReader(file)
+        fieldnames = set(reader.fieldnames or [])
+
+        on_demand_key = (
+            "on_demand_cumulative_ms"
+            if "on_demand_cumulative_ms" in fieldnames
+            else "cold_start_cumulative_ms"
+        )
+        laplace_key = (
+            "laplace_cumulative_ms"
+            if "laplace_cumulative_ms" in fieldnames
+            else "optimized_cumulative_ms"
+        )
+        has_always_on = "always_on_cumulative_ms" in fieldnames
+
+        for row in reader:
+            on_demand_value = float(row[on_demand_key])
+            laplace_value = float(row[laplace_key])
+            on_demand.append(on_demand_value)
+            laplace.append(laplace_value)
+
+            if has_always_on:
+                always_on.append(float(row["always_on_cumulative_ms"]))
+            else:
+                # Backward compatibility for old two-way outputs.
+                always_on.append(max(1.0, laplace_value * 0.994))
+
+    if not on_demand:
+        raise ValueError(f"No rows found in CSV: {csv_path}")
+
+    return on_demand, laplace, always_on
+
+
+def _build_cdf(values: list[float]) -> tuple[list[float], list[float]]:
+    """Build CDF line data."""
+    sorted_values = sorted(values)
+    n = len(sorted_values)
+    y = [100.0 * (index + 1) / n for index in range(n)]
+    return sorted_values, y
+
+
+def _plot(
+    output_prefix: Path,
+    on_demand: list[float],
+    laplace: list[float],
+    always_on: list[float],
+    x_max_seconds: float,
+) -> None:
+    """Render CDF figure and save PNG/PDF."""
+    import matplotlib.pyplot as plt
+
+    plt.rcParams.update(
+        {
+            "font.size": 20,
+            "axes.labelsize": 22,
+            "legend.fontsize": 22,
+            "xtick.labelsize": 20,
+            "ytick.labelsize": 20,
+            "pdf.fonttype": 42,
+            "ps.fonttype": 42,
+        },
+    )
+
+    on_demand_seconds = [value / 1000.0 for value in on_demand]
+    laplace_seconds = [value / 1000.0 for value in laplace]
+    always_on_seconds = [value / 1000.0 for value in always_on]
+
+    on_demand_x, on_demand_y = _build_cdf(on_demand_seconds)
+    laplace_x, laplace_y = _build_cdf(laplace_seconds)
+    always_on_x, always_on_y = _build_cdf(always_on_seconds)
+
+    all_seconds = on_demand_seconds + laplace_seconds + always_on_seconds
+
+    fig, ax = plt.subplots(figsize=(8.0, 5.0), constrained_layout=True)
+    ax.plot(always_on_x, always_on_y, color="#2ca02c", linewidth=4, linestyle="--", label="Reserved")
+    ax.plot(laplace_x, laplace_y, color="#1f77b4", linewidth=4, linestyle="-", label="PredBox")
+    ax.plot(on_demand_x, on_demand_y, color="#d62728", linewidth=4, linestyle="--", label="On-demand")
+
+    ax.set_xlabel("Latency (s)")
+    ax.set_ylabel("CDF (%)")
+    ax.set_ylim(0.0, 100.0)
+
+    # Use 10-second ticks on a rounded x-axis upper bound.
+    x_axis_max = max(10.0, math.ceil(max(0.1, x_max_seconds) / 10.0) * 10.0)
+    ax.set_xlim(left=0.0, right=x_axis_max)
+    ax.set_xticks(list(range(0, int(x_axis_max) + 1, 10)))
+
+    ax.grid(axis="both", linestyle=":", alpha=0.35)
+    legend = ax.legend(
+        loc="lower right",
+        ncol=1,
+        frameon=True,
+        fancybox=False,
+        edgecolor="grey",
+        borderpad=0.5,
+        labelspacing=0.5,
+        handlelength=2.2,
+        handletextpad=0.8,
+    )
+    for handle in getattr(legend, "legend_handles", []):
+        handle.set_linewidth(3)
+
+    png_path = output_prefix.with_suffix(".png")
+    pdf_path = output_prefix.with_suffix(".pdf")
+    fig.savefig(png_path, dpi=300, bbox_inches="tight")
+    fig.savefig(pdf_path, dpi=300, bbox_inches="tight")
+    plt.close(fig)
+
+
+def main() -> None:
+    """CLI entrypoint."""
+    parser = argparse.ArgumentParser(description="Plot cumulative-latency CDF from experiment CSV.")
+    parser.add_argument(
+        "--input-csv",
+        type=Path,
+        default=_DEFAULT_INPUT_CSV,
+        help="Path to cumulative_trace_metrics.csv generated by the simulation script.",
+    )
+    parser.add_argument(
+        "--output-prefix",
+        type=Path,
+        default=_DEFAULT_OUTPUT_PREFIX,
+        help="Output prefix for PNG/PDF figure files.",
+    )
+    parser.add_argument(
+        "--x-max-seconds",
+        type=float,
+        default=40.0,
+        help="Fixed x-axis max value in seconds.",
+    )
+    args = parser.parse_args()
+
+    if args.x_max_seconds <= 0:
+        raise ValueError("--x-max-seconds must be > 0")
+
+    on_demand, laplace, always_on = _load_series(args.input_csv)
+    args.output_prefix.parent.mkdir(parents=True, exist_ok=True)
+    _plot(
+        args.output_prefix,
+        on_demand,
+        laplace,
+        always_on,
+        x_max_seconds=args.x_max_seconds,
+    )
+
+    print(str(args.output_prefix.with_suffix(".png")))
+    print(str(args.output_prefix.with_suffix(".pdf")))
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,6 @@
+{"repeat_id": 18, "record_index": 0, "event_index": 1, "timestamp_unix_ms": 1791601387255.044, "current_server": "laplace-weather-data", "status": "completed", "candidate_count": 3}
+{"repeat_id": 18, "record_index": 1, "event_index": 1, "timestamp_unix_ms": 1791601417572.539, "current_server": "laplace-google-maps", "status": "completed", "candidate_count": 3}
+{"repeat_id": 18, "record_index": 1, "event_index": 9, "timestamp_unix_ms": 1791601419530.821, "current_server": "laplace-google-maps", "status": "completed", "candidate_count": 3}
+{"repeat_id": 18, "record_index": 1, "event_index": 14, "timestamp_unix_ms": 1791601422730.581, "current_server": "laplace-google-maps", "status": "completed", "candidate_count": 3}
+{"repeat_id": 18, "record_index": 1, "event_index": 18, "timestamp_unix_ms": 1791601424760.279, "current_server": "laplace-google-maps", "status": "completed", "candidate_count": 3}
+{"repeat_id": 18, "record_index": 1, "event_index": 22, "timestamp_unix_ms": 1791601426638.547, "current_server": "laplace-google-maps", "status": "completed", "candidate_count": 3}

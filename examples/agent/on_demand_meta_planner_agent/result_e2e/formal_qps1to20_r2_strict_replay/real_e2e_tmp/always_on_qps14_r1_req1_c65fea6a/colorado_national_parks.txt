@@ -1,0 +1,95 @@
+# National Parks in Colorado
+
+Based on the National Parks Service data, there are 17 national park sites located within the state of Colorado. These include national parks, national monuments, national historic sites, and national historic trails that pass through Colorado.
+
+## National Parks (3)
+1. **Black Canyon Of The Gunnison National Park**
+   - Designation: National Park
+   - Description: Features some of the steepest cliffs, oldest rock, and craggiest spires in North America. The Gunnison River sculpted this canyon over two million years.
+   - Website: https://www.nps.gov/blca/index.htm
+
+2. **Great Sand Dunes National Park & Preserve**
+   - Designation: National Park & Preserve
+   - Description: Home to the tallest dunes in North America, set against a diverse landscape of grasslands, wetlands, forests, alpine lakes, and tundra.
+   - Website: https://www.nps.gov/grsa/index.htm
+
+3. **Mesa Verde National Park**
+   - Designation: National Park
+   - Description: Protects the cultural heritage of 27 Pueblos and Tribes, featuring Ancestral Pueblo cliff dwellings built over 700 years ago.
+   - Website: https://www.nps.gov/meve/index.htm
+
+4. **Rocky Mountain National Park**
+   - Designation: National Park
+   - Description: Encompasses 415 square miles of mountain environments, from meadows to alpine lakes and towering peaks, with over 300 miles of hiking trails.
+   - Website: https://www.nps.gov/romo/index.htm
+
+## National Monuments (4)
+5. **Colorado National Monument**
+   - Designation: National Monument
+   - Description: Preserves dramatic red rock canyons and towering monoliths along Rim Rock Drive.
+   - Website: https://www.nps.gov/colm/index.htm
+
+6. **Dinosaur National Monument** (also in Utah)
+   - Designation: National Monument
+   - Description: Contains embedded dinosaur fossils from 150 million years ago, plus mountains, desert, rivers, and petroglyphs.
+   - Website: https://www.nps.gov/dino/index.htm
+
+7. **Florissant Fossil Beds National Monument**
+   - Designation: National Monument
+   - Description: Contains one of the richest and most diverse fossil deposits in the world, including petrified redwood stumps and detailed insect fossils.
+   - Website: https://www.nps.gov/flfo/index.htm
+
+8. **Hovenweep National Monument** (also in Utah)
+   - Designation: National Monument
+   - Description: Preserves six prehistoric sites built between 1200-1300 CE, featuring multistory towers perched on canyon rims.
+   - Website: https://www.nps.gov/hove/index.htm
+
+9. **Yucca House National Monument**
+   - Designation: National Monument
+   - Description: Preserves a large unexcavated pueblo in Montezuma Valley, largely untouched since being protected in 1919.
+   - Website: https://www.nps.gov/yuho/index.htm
+
+## National Historic Sites (3)
+10. **Amache National Historic Site**
+    - Designation: National Historic Site
+    - Description: Former incarceration site for Japanese Americans during World War II, where over 10,000 people were unjustly incarcerated from 1942-1945.
+    - Website: https://www.nps.gov/amch/index.htm
+
+11. **Bent's Old Fort National Historic Site**
+    - Designation: National Historic Site
+    - Description: A reconstructed adobe trading post on the Santa Fe Trail from the 1840s, where traders, trappers, travelers, and Native American tribes met for trade.
+    - Website: https://www.nps.gov/beol/index.htm
+
+12. **Sand Creek Massacre National Historic Site**
+    - Designation: National Historic Site
+    - Description: Commemorates the tragic 1864 massacre of Cheyenne and Arapaho people by U.S. troops, preserving the memory and legacy of this painful event.
+    - Website: https://www.nps.gov/sand/index.htm
+
+## National Recreation Area (1)
+13. **Curecanti National Recreation Area**
+    - Designation: National Recreation Area
+    - Description: Comprises three reservoirs and surrounding lands in western Colorado, offering year-round recreation on both land and water.
+    - Website: https://www.nps.gov/cure/index.htm
+
+## National Historic Trails (6)
+These trails pass through Colorado as part of their longer routes:
+
+14. **California National Historic Trail**
+    - States: CA, CO, ID, KS, MO, NE, NV, OR, UT, WY
+    - Description: Follows the route of over 250,000 emigrants who traveled to California during the 1840s-1850s.
+    - Website: https://www.nps.gov/cali/index.htm
+
+15. **Old Spanish National Historic Trail**
+    - States: AZ, CA, CO, NV, NM, UT
+    - Description: Follows the routes of mule pack trains between Santa Fe, New Mexico, and Los Angeles, California.
+    - Website: https://www.nps.gov/olsp/index.htm
+
+16. **Pony Express National Historic Trail**
+    - States: CA, CO, KS, MO, NE, NV, UT, WY
+    - Description: Marks the relay system used to carry mail from Missouri to California in just 10 days before the telegraph.
+    - Website: https://www.nps.gov/poex/index.htm
+
+17. **Santa Fe National Historic Trail**
+    - States: CO, KS, MO, NM, OK
+    - Description: Follows the historic trade route between western Missouri and Santa Fe, New Mexico.
+    - Website: https://www.nps.gov/safe/index.htm
